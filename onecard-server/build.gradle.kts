@@ -25,9 +25,9 @@ dependencies {
     // https://redis.io/docs/connect/clients/om-clients/stack-spring/
     implementation("com.redis.om:redis-om-spring:0.8.9")
 
-    // https://github.com/springfox/springfox
-    implementation("io.springfox:springfox-boot-starter:3.0.0")
-    implementation("io.springfox:springfox-swagger-ui:3.0.0")
+    // https://springdoc.org/
+    implementation("org.springdoc:springdoc-openapi-ui:1.7.0")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
 
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-websocket")
