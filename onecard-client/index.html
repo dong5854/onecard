@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="kor">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>원카드</title>
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+    <script src="/app.js"></script>
+  </head>
+  <body>
+    <div id="deck">deck left:</div>
+    <div id="face-up">face-up card:</div>
+
+    <div class="hand-cnt" id="opponent1-hand">opponent1 hand:</div>
+    <div class="hand-cnt" id="opponent2-hand">opponent2 hand:</div>
+    <div class="hand-cnt" id="opponent3-hand">opponent3 hand:</div>
+
+    <div id="my-hand">my hand:</div>
+  </body>
+  <script>
+    class Card {
+      constructor(suit, rank) {
+        this.suit = suit;
+        this.rank = rank;
+      }
+    }
+
+    // ==================데이터==================
+    // 덱 남은 매수
+    let deckLeft = 31;
+    // 공개된 카드
+    let faceUp = new Card("spades", 1);
+
+    // 상대 패
+    let opponent1Hand = 5;
+    let opponent2Hand = 5;
+    let opponent3Hand = 5;
+
+    // 내 패
+    let myHand = [
+      new Card("clover", 1),
+      new Card("diamond", 2),
+      new Card("heart", 6),
+      new Card("spades", 9),
+      new Card("heart", 2),
+    ];
+    // ==================엘리먼트==================
+    // 덱 엘리먼트
+    const deckElement = document.querySelector("#deck");
+    deckElement.textContent = `${deckElement.textContent} ${deckLeft}`;
+
+    // 공개된 카드 엘리먼트
+    const faceUpElement = document.querySelector("#face-up");
+    faceUpElement.textContent = `${faceUpElement.textContent} {${faceUp.suit} ${faceUp.rank}}`;
+
+    // 상대방 패 엘리먼트
+    const opponent1HandElement = document.querySelector("#opponent1-hand");
+    const opponent2HandElement = document.querySelector("#opponent2-hand");
+    const opponent3HandElement = document.querySelector("#opponent3-hand");
+
+    opponent1HandElement.textContent = `${opponent1HandElement.textContent} ${opponent1Hand}`;
+    opponent2HandElement.textContent = `${opponent2HandElement.textContent} ${opponent2Hand}`;
+    opponent3HandElement.textContent = `${opponent3HandElement.textContent} ${opponent3Hand}`;
+
+    // 내 패 엘리먼트
+    const myHandElement = document.querySelector("#my-hand");
+    myHand.forEach((card) => {
+      const el = document.createTextNode(` {${card.suit} ${card.rank}} `);
+      myHandElement.append(el);
+    });
+  </script>
+</html>
