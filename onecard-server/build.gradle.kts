@@ -26,7 +26,6 @@ dependencies {
     implementation("com.redis.om:redis-om-spring:0.8.9")
 
     // https://springdoc.org/
-    implementation("org.springdoc:springdoc-openapi-ui:1.7.0")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
 
     implementation("org.springframework.boot:spring-boot-starter-web")

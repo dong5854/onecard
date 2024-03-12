@@ -1,5 +1,6 @@
 package com.dong.onecardserver.web;
 
+import com.dong.onecardserver.service.OneCardService;
 import com.dong.onecardserver.dto.CreateOneCardRoomRequestDTO;
 import com.dong.onecardserver.dto.CreateOneCardRoomResponseDTO;
 import lombok.RequiredArgsConstructor;
@@ -13,12 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class OneCardController {
 
+    private final OneCardService oneCardService;
+
     @PostMapping("/room")
     public CreateOneCardRoomResponseDTO createRoom(@RequestBody CreateOneCardRoomRequestDTO createOneCardRoomRequestDTO) {
-        return CreateOneCardRoomResponseDTO.builder()
-                .id("test-1234")
-                .name("테스트 룸")
-                .build();
+        return oneCardService.createRoom(createOneCardRoomRequestDTO);
     }
 }
 
