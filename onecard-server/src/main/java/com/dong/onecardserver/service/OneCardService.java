@@ -28,7 +28,7 @@ public class OneCardService {
                 .build();
     }
 
-    public JoinOneCardRoomResponseDTO joinRoom(String id, JoinOneCardRoomRequestDTO joinOneCardRoomRequestDTO) throws CustomException{
+    public JoinOneCardRoomResponseDTO joinRoom(String id, JoinOneCardRoomRequestDTO joinOneCardRoomRequestDTO) throws CustomException {
         Optional<OneCardRoom> oneCardRoom = oneCardRoomRepository.findById(id);
         if (oneCardRoom.isEmpty())
             throw new CustomException(OneCardErrorCode.ROOM_NOT_FOUND);
@@ -41,5 +41,13 @@ public class OneCardService {
                 .id(updatedRoom.getId())
                 .name(updatedRoom.getName())
                 .build();
+    }
+
+    public Boolean deleteRoom(String id) throws CustomException {
+        Optional<OneCardRoom> oneCardRoom = oneCardRoomRepository.findById(id);
+        if (oneCardRoom.isEmpty())
+            throw new CustomException(OneCardErrorCode.ROOM_NOT_FOUND);
+        oneCardRoomRepository.delete(oneCardRoom.get());
+        return true;
     }
 }
