@@ -29,7 +29,7 @@ public class CreateOneCardRoomRequestDTO {
                 .builder()
                 .name(this.name)
                 .admin(admin)
-                .playersCnt(1)
+                .maxPlayers(4)
                 .players(players)
                 .deck(initDeck())
                 .turnDir(true)

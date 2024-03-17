@@ -21,7 +21,7 @@ public class OneCardRoom {
     @Indexed @NonNull
     private String name;
 
-    private int playersCnt;
+    private int maxPlayers;
     @NonNull
     private Player admin;
 
@@ -34,9 +34,9 @@ public class OneCardRoom {
     private Player curTurn;
 
     @Builder
-    public OneCardRoom(@NonNull String name, int playersCnt, @NonNull Player admin, List<Player> players, ArrayDeque<Card> deck, boolean turnDir, ArrayDeque<Player> turnOrder, Player curTurn) {
+    public OneCardRoom(@NonNull String name, int maxPlayers, @NonNull Player admin, List<Player> players, ArrayDeque<Card> deck, boolean turnDir, ArrayDeque<Player> turnOrder, Player curTurn) {
         this.name = name;
-        this.playersCnt = playersCnt;
+        this.maxPlayers = maxPlayers;
         this.admin = admin;
         this.players = players;
         this.deck = deck;
