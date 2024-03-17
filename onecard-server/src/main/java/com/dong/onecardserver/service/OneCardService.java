@@ -6,6 +6,8 @@ import com.dong.onecardserver.dto.CreateOneCardRoomRequestDTO;
 import com.dong.onecardserver.dto.CreateOneCardRoomResponseDTO;
 import com.dong.onecardserver.dto.JoinOneCardRoomRequestDTO;
 import com.dong.onecardserver.dto.JoinOneCardRoomResponseDTO;
+import com.dong.onecardserver.error.CustomException;
+import com.dong.onecardserver.error.OneCardErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,10 +28,12 @@ public class OneCardService {
                 .build();
     }
 
-    public JoinOneCardRoomResponseDTO joinRoom(String id, JoinOneCardRoomRequestDTO joinOneCardRoomRequestDTO) {
+    public JoinOneCardRoomResponseDTO joinRoom(String id, JoinOneCardRoomRequestDTO joinOneCardRoomRequestDTO) throws CustomException{
         Optional<OneCardRoom> oneCardRoom = oneCardRoomRepository.findById(id);
-        // TODO: 찾는 방이 없을 때 예외 로직
-        // TODO: 사용자가 가득 찼을 때 예외 로직
+        if (oneCardRoom.isEmpty())
+            throw new CustomException(OneCardErrorCode.ROOM_NOT_FOUND);
+        if (oneCardRoom.get().getPlayers().size() >= oneCardRoom.get().getMaxPlayers())
+            throw new CustomException(OneCardErrorCode.FULL_ROOM);
         oneCardRoom.get().getPlayers().add(joinOneCardRoomRequestDTO.toPlayer());
         OneCardRoom updatedRoom = oneCardRoomRepository.update(oneCardRoom.get());
         return JoinOneCardRoomResponseDTO
