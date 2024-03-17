@@ -20,21 +20,23 @@ public class OneCardRoom {
     private String id;
     @Indexed @NonNull
     private String name;
-
-    private int maxPlayers;
+    @NonNull
+    private Integer maxPlayers;
     @NonNull
     private Player admin;
-
+    @NonNull
     private List<Player> players;
-
+    @NonNull
     private ArrayDeque<Card> deck;
-
-    private boolean turnDir;
+    @NonNull
+    private Boolean turnDir;
+    @NonNull
     private ArrayDeque<Player> turnOrder;
+    @NonNull
     private Player curTurn;
 
     @Builder
-    public OneCardRoom(@NonNull String name, int maxPlayers, @NonNull Player admin, List<Player> players, ArrayDeque<Card> deck, boolean turnDir, ArrayDeque<Player> turnOrder, Player curTurn) {
+    public OneCardRoom(@NonNull String name, @NonNull Integer maxPlayers, @NonNull Player admin, @NonNull List<Player> players, @NonNull ArrayDeque<Card> deck, @NonNull Boolean turnDir, @NonNull ArrayDeque<Player> turnOrder, @NonNull Player curTurn) {
         this.name = name;
         this.maxPlayers = maxPlayers;
         this.admin = admin;
