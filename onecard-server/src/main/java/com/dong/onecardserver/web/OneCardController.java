@@ -4,10 +4,7 @@ import com.dong.onecardserver.service.OneCardService;
 import com.dong.onecardserver.dto.CreateOneCardRoomRequestDTO;
 import com.dong.onecardserver.dto.CreateOneCardRoomResponseDTO;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RequestMapping("/one-card")
@@ -16,7 +13,7 @@ public class OneCardController {
 
     private final OneCardService oneCardService;
 
-    @PostMapping("/room")
+    @PostMapping("/rooms")
     public CreateOneCardRoomResponseDTO createRoom(@RequestBody CreateOneCardRoomRequestDTO createOneCardRoomRequestDTO) {
         return oneCardService.createRoom(createOneCardRoomRequestDTO);
     }
