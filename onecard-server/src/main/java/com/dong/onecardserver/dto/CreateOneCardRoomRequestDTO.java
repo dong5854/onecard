@@ -3,24 +3,13 @@ package com.dong.onecardserver.dto;
 import com.dong.onecardserver.domain.onecard.*;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
-@NoArgsConstructor
-public class CreateOneCardRoomRequestDTO {
-    private String name;
-    private String adminID;
-
-    @Builder
-    public CreateOneCardRoomRequestDTO(String name, String adminID) {
-        this.name = name;
-        this.adminID = adminID;
-    }
-
+@Builder
+public record CreateOneCardRoomRequestDTO(String name, String adminID) {
     public OneCardRoom toDocument() {
         List<Player> players = new ArrayList<>();
         Player admin = new Player(this.adminID, new ArrayList<>());
