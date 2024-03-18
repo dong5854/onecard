@@ -1,10 +1,7 @@
 package com.dong.onecardserver.web;
 
-import com.dong.onecardserver.dto.JoinOneCardRoomRequestDTO;
-import com.dong.onecardserver.dto.JoinOneCardRoomResponseDTO;
+import com.dong.onecardserver.dto.*;
 import com.dong.onecardserver.service.OneCardService;
-import com.dong.onecardserver.dto.CreateOneCardRoomRequestDTO;
-import com.dong.onecardserver.dto.CreateOneCardRoomResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +29,7 @@ public class OneCardController {
     }
 
     @DeleteMapping("/rooms/{id}")
-    public ResponseEntity<Boolean> deleteRoom(@PathVariable String id) {
+    public ResponseEntity<DeleteOneCardRoomResponseDTO> deleteRoom(@PathVariable String id) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(oneCardService.deleteRoom(id));

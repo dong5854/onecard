@@ -2,10 +2,7 @@ package com.dong.onecardserver.service;
 
 import com.dong.onecardserver.domain.onecard.OneCardRoom;
 import com.dong.onecardserver.domain.onecard.OneCardRoomRepository;
-import com.dong.onecardserver.dto.CreateOneCardRoomRequestDTO;
-import com.dong.onecardserver.dto.CreateOneCardRoomResponseDTO;
-import com.dong.onecardserver.dto.JoinOneCardRoomRequestDTO;
-import com.dong.onecardserver.dto.JoinOneCardRoomResponseDTO;
+import com.dong.onecardserver.dto.*;
 import com.dong.onecardserver.error.CustomException;
 import com.dong.onecardserver.error.OneCardErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +32,7 @@ public class OneCardService {
         if (oneCardRoom.get().getPlayers().size() >= oneCardRoom.get().getMaxPlayers())
             throw new CustomException(OneCardErrorCode.FULL_ROOM);
         oneCardRoom.get().getPlayers().add(joinOneCardRoomRequestDTO.toPlayer());
+        oneCardRoom.get().getTurnOrder().add(joinOneCardRoomRequestDTO.toPlayer());
         OneCardRoom updatedRoom = oneCardRoomRepository.update(oneCardRoom.get());
         return JoinOneCardRoomResponseDTO
                 .builder()
@@ -43,11 +41,14 @@ public class OneCardService {
                 .build();
     }
 
-    public Boolean deleteRoom(String id) throws CustomException {
+    public DeleteOneCardRoomResponseDTO deleteRoom(String id) throws CustomException {
         Optional<OneCardRoom> oneCardRoom = oneCardRoomRepository.findById(id);
         if (oneCardRoom.isEmpty())
             throw new CustomException(OneCardErrorCode.ROOM_NOT_FOUND);
         oneCardRoomRepository.delete(oneCardRoom.get());
-        return true;
+        return DeleteOneCardRoomResponseDTO.builder()
+                .id(oneCardRoom.get().getId())
+                .name(oneCardRoom.get().getName())
+                .build();
     }
 }
