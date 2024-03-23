@@ -5,6 +5,9 @@ import com.dong.onecardserver.service.OneCardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -21,8 +24,9 @@ public class OneCardController {
                 .body(oneCardService.createRoom(createOneCardRoomRequestDTO));
     }
 
-    @PostMapping("/rooms/{id}/join")
-    public ResponseEntity<JoinOneCardRoomResponseDTO> joinRoom(@PathVariable String id, @RequestBody JoinOneCardRoomRequestDTO joinOneCardRoomRequestDTO) {
+    @MessageMapping("/rooms/{id}/join")
+    @SendTo("/topic/rooms/{id}/join")
+    public ResponseEntity<JoinOneCardRoomResponseDTO> joinRoom(@DestinationVariable String id, @RequestBody JoinOneCardRoomRequestDTO joinOneCardRoomRequestDTO) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(oneCardService.joinRoom(id, joinOneCardRoomRequestDTO));
@@ -35,4 +39,3 @@ public class OneCardController {
                 .body(oneCardService.deleteRoom(id));
     }
 }
-
