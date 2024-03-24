@@ -3,6 +3,7 @@ package com.dong.onecardserver.dto;
 import com.dong.onecardserver.domain.onecard.*;
 import lombok.Builder;
 import lombok.Getter;
+import org.checkerframework.checker.units.qual.C;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -12,10 +13,7 @@ import java.util.List;
 public record CreateOneCardRoomRequestDTO(String name, String adminID) {
     public OneCardRoom toDocument() {
         List<Player> players = new ArrayList<>();
-        ArrayDeque<Player> turnOrder = new ArrayDeque<>();
         Player admin = new Player(this.adminID, new ArrayList<>());
-        players.add(admin);
-        turnOrder.add(admin);
         return OneCardRoom
                 .builder()
                 .name(this.name)
@@ -23,10 +21,6 @@ public record CreateOneCardRoomRequestDTO(String name, String adminID) {
                 .maxPlayers(4)
                 .admin(admin)
                 .players(players)
-                .deck(initDeck())
-                .turnDir(true)
-                .turnOrder(turnOrder)
-                .curTurn(admin)
                 .build();
     }
 

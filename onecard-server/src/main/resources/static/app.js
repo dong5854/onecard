@@ -1,4 +1,5 @@
 // https://spring.io/guides/gs/messaging-stomp-websocket
+// STOMP
 const stompClient = new StompJs.Client({
   brokerURL: "ws://localhost:8080/app",
 });
@@ -23,3 +24,51 @@ stompClient.onStompError = (frame) => {
 stompClient.debug = (frame) => {
   console.log(`debug: ${frame}`);
 };
+
+// REST API
+async function createRoom() {
+  const response = await fetch("http://localhost:8080/one-card/rooms", {
+      method : "POST",
+      headers: {
+          "Content-Type" : "application/json"
+      },
+      body : JSON.stringify(
+          {
+            name: "원카드룸",
+            adminID: "dong5854"
+          }
+      )
+  })
+  return response
+}
+
+let id;
+
+async function createRoomAndConnectSocket() {
+    const response = await createRoom()
+    const roomData = await response.json()
+    id = roomData.id;
+
+    console.log("Room created with ID:", id)
+
+    let subscription = stompClient.subscribe(`/topic/rooms/${id}`, (join) => {
+        try {
+            console.log("Received join message:", JSON.parse(join.body));
+        } catch (error) {
+            console.error('Error parsing JSON:', error);
+        }
+        alert("Received join message!");
+    });
+}
+
+function joinRoom() {
+    console.log(id)
+    stompClient.publish({
+        destination: `/rooms/${id}/join`,
+        body: JSON.stringify(
+            {
+                playerID: "합류한 플레이어"
+            }
+        )
+    })
+}
