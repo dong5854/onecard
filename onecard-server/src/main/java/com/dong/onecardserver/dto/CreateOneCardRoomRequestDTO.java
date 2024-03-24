@@ -19,6 +19,7 @@ public record CreateOneCardRoomRequestDTO(String name, String adminID) {
         return OneCardRoom
                 .builder()
                 .name(this.name)
+                .playing(false)
                 .maxPlayers(4)
                 .admin(admin)
                 .players(players)
