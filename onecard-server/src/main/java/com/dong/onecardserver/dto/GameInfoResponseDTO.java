@@ -1,7 +1,7 @@
 package com.dong.onecardserver.dto;
 
 import com.dong.onecardserver.domain.onecard.Card;
-import com.dong.onecardserver.domain.onecard.Player;
+import com.dong.onecardserver.domain.player.Player;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 

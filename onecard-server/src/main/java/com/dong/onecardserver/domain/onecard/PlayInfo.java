@@ -14,8 +14,12 @@ public class PlayInfo {
      */
     @NonNull
     private Card openedCard;
+
+    /**
+     * 차례의 순서를 ArrayDeque 안에 playerId 로 저장
+     */
     @NonNull
-    private ArrayDeque<Player> turnOrder;
+    private ArrayDeque<String> turnOrder;
     @NonNull
     private Boolean turnDir;
     /**
@@ -24,17 +28,17 @@ public class PlayInfo {
      * False: 다음 순서는 turnOrder.pollLast(), 순서 끝난 후는 turnOrder.addFirst()
      */
     @NonNull
-    private Player curTurn;
+    private String curTurnPlayerId;
     @NonNull
-    private Player nextTurn;
+    private String nextTurnPlayerId;
 
     @Builder
-    public PlayInfo(@NonNull ArrayDeque<Card> deck, @NonNull Card openedCard, @NonNull ArrayDeque<Player> turnOrder, @NonNull Boolean turnDir, @NonNull Player curTurn, @NonNull Player nextTurn) {
+    public PlayInfo(@NonNull ArrayDeque<Card> deck, @NonNull Card openedCard, @NonNull ArrayDeque<String> turnOrder, @NonNull Boolean turnDir, @NonNull String curTurnPlayerId, @NonNull String nextTurnPlayerId) {
         this.deck = deck;
         this.openedCard = openedCard;
         this.turnOrder = turnOrder;
         this.turnDir = turnDir;
-        this.curTurn = curTurn;
-        this.nextTurn = nextTurn;
+        this.curTurnPlayerId = curTurnPlayerId;
+        this.nextTurnPlayerId = nextTurnPlayerId;
     }
 }

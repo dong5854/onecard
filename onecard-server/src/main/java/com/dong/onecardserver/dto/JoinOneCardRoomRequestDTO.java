@@ -1,9 +1,6 @@
 package com.dong.onecardserver.dto;
 
-import com.dong.onecardserver.domain.onecard.*;
-import lombok.Builder;
-
-import java.util.ArrayList;
+import com.dong.onecardserver.domain.player.Player;
 
 public record JoinOneCardRoomRequestDTO(String playerId, String sessionId) {
 

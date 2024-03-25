@@ -10,16 +10,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public record CreateOneCardRoomRequestDTO(String name, String adminId) {
-
     public OneCardRoom toDocument() {
-        List<Player> players = new ArrayList<>();
         return OneCardRoom
                 .builder()
                 .name(this.name)
                 .playing(false)
                 .maxPlayers(4)
                 .adminId(adminId)
-                .players(players)
+                .playerIds(new ArrayList<>())
                 .build();
     }
 

@@ -9,8 +9,6 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -36,9 +34,9 @@ public class OneCardController {
     }
 
     // TODO: 참여중인 모든 플레이어에게 send
-    @MessageMapping("/rooms/{roodId}/start")
+    @MessageMapping("/rooms/{roomId}/start")
     public ResponseEntity<GameInfoResponseDTO> startPlaying(@DestinationVariable String roomID, @DestinationVariable String playerId) {
-        // TODO: /queue/players/{playerID} 로 보내기
+        // TODO: player/queue/{playerID} 로 보내기
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(null);

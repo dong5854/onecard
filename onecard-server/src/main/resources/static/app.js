@@ -5,11 +5,29 @@ const stompClient = new StompJs.Client({
 });
 
 console.log("app.js loaded");
+const userId = "dong5854"
 stompClient.activate();
 console.log(stompClient);
 
 stompClient.onConnect = (frame) => {
-  console.log(`connected: ${frame}`);
+    console.log(`connected: ${frame}`);
+    stompClient.subscribe(`/queue/player/${userId}`, (join) => {
+      try {
+        console.log("Received join message:", JSON.parse(join.body));
+      } catch (error) {
+        console.error('Error parsing JSON:', error);
+      }
+      alert(`player ${userId} entered app!`);
+    });
+
+    stompClient.publish({
+        destination: `/players`,
+        body: JSON.stringify(
+            {
+                playerId: `${userId}`
+            }
+        )
+    })
 };
 
 stompClient.onWebSocketError = (error) => {
@@ -64,7 +82,7 @@ async function createRoomAndConnectSocket() {
         destination: `/rooms/${id}/join`,
         body: JSON.stringify(
             {
-                playerId: "dong5854"
+                playerId: `${userId}`
             }
         )
     })

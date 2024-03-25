@@ -32,10 +32,10 @@ public class OneCardService {
 
         if (oneCardRoom.isEmpty())
             throw new CustomException(OneCardErrorCode.ROOM_NOT_FOUND);
-        if (oneCardRoom.get().getPlayers().size() >= oneCardRoom.get().getMaxPlayers())
+        if (oneCardRoom.get().getPlayerIds().size() >= oneCardRoom.get().getMaxPlayers())
             throw new CustomException(OneCardErrorCode.FULL_ROOM);
 
-        oneCardRoom.get().getPlayers().add(joinOneCardRoomRequestDTO.toPlayer());
+        oneCardRoom.get().getPlayerIds().add(joinOneCardRoomRequestDTO.toPlayer().getId());
         OneCardRoom updatedRoom = oneCardRoomRepository.update(oneCardRoom.get());
 
         return JoinOneCardRoomResponseDTO
