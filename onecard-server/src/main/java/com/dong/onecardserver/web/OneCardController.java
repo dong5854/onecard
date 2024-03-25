@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
@@ -28,12 +29,10 @@ public class OneCardController {
 
     @MessageMapping("/rooms/{id}/join")
     @SendTo("/topic/rooms/{id}")
-    public ResponseEntity<JoinOneCardRoomResponseDTO> joinRoom(@DestinationVariable String id, @RequestBody JoinOneCardRoomRequestDTO joinOneCardRoomRequestDTO, SimpMessageHeaderAccessor headerAccessor) {
-        // TODO: Player 정보에 SessionID 도 추가
-        headerAccessor.getSessionId();
+    public ResponseEntity<JoinOneCardRoomResponseDTO> joinRoom(@DestinationVariable String id, @RequestBody JoinOneCardRoomRequestDTO joinOneCardRoomRequestDTO, @Header("simpSessionId") String sessionId) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(oneCardService.joinRoom(id, joinOneCardRoomRequestDTO));
+                .body(oneCardService.joinRoom(id, joinOneCardRoomRequestDTO.withSessionId(sessionId)));
     }
 
     // TODO: 참여중인 모든 플레이어에게 send

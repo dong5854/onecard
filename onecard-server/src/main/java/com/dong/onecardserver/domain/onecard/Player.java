@@ -1,5 +1,8 @@
 package com.dong.onecardserver.domain.onecard;
 
+import lombok.Builder;
+
 import java.util.*;
 
-public record Player(String id, List<Card> hand) {}
+@Builder
+public record Player(String id, String sessionId, List<Card> hand) {}

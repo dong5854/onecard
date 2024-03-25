@@ -9,17 +9,16 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 
-@Builder
-public record CreateOneCardRoomRequestDTO(String name, String adminID) {
+public record CreateOneCardRoomRequestDTO(String name, String adminId) {
+
     public OneCardRoom toDocument() {
         List<Player> players = new ArrayList<>();
-        Player admin = new Player(this.adminID, new ArrayList<>());
         return OneCardRoom
                 .builder()
                 .name(this.name)
                 .playing(false)
                 .maxPlayers(4)
-                .admin(admin)
+                .adminId(adminId)
                 .players(players)
                 .build();
     }

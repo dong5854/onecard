@@ -2,13 +2,18 @@ package com.dong.onecardserver.dto;
 
 import com.dong.onecardserver.domain.onecard.*;
 import lombok.Builder;
-import lombok.Getter;
 
 import java.util.ArrayList;
 
-@Builder
-public record JoinOneCardRoomRequestDTO(String playerID) {
+public record JoinOneCardRoomRequestDTO(String playerId, String sessionId) {
+
+    public JoinOneCardRoomRequestDTO withSessionId(String sessionId) {
+        return new JoinOneCardRoomRequestDTO(this.playerId, sessionId);
+    }
     public Player toPlayer() {
-        return new Player(this.playerID, new ArrayList<>());
+        return Player.builder()
+                .id(this.playerId)
+                .sessionId(this.sessionId)
+                .build();
     }
 }

@@ -35,7 +35,7 @@ async function createRoom() {
       body : JSON.stringify(
           {
             name: "원카드룸",
-            adminID: "dong5854"
+            adminId: "dong5854"
           }
       )
   })
@@ -59,6 +59,15 @@ async function createRoomAndConnectSocket() {
         }
         alert("Received join message!");
     });
+
+    stompClient.publish({
+        destination: `/rooms/${id}/join`,
+        body: JSON.stringify(
+            {
+                playerId: "dong5854"
+            }
+        )
+    })
 }
 
 function joinRoom() {
@@ -67,7 +76,7 @@ function joinRoom() {
         destination: `/rooms/${id}/join`,
         body: JSON.stringify(
             {
-                playerID: "합류한 플레이어"
+                playerId: "합류한 플레이어"
             }
         )
     })

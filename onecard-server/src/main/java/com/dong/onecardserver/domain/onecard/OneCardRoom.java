@@ -25,18 +25,18 @@ public class OneCardRoom {
     @NonNull
     private Boolean playing;
     @NonNull
-    private Player admin;
+    private String adminId;
     @NonNull
     private List<Player> players;
 
     private PlayInfo playInfo;
 
     @Builder
-    public OneCardRoom(@NonNull String name, @NonNull Integer maxPlayers, @NonNull Boolean playing, @NonNull Player admin, @NonNull List<Player> players, PlayInfo playInfo) {
+    public OneCardRoom(@NonNull String name, @NonNull Integer maxPlayers, @NonNull Boolean playing, @NonNull String adminId, @NonNull List<Player> players, PlayInfo playInfo) {
         this.name = name;
         this.maxPlayers = maxPlayers;
         this.playing = playing;
-        this.admin = admin;
+        this.adminId = adminId;
         this.players = players;
         this.playInfo = playInfo;
     }

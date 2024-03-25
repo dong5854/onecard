@@ -20,7 +20,6 @@ public class OneCardService {
     @Transactional
     public CreateOneCardRoomResponseDTO createRoom(CreateOneCardRoomRequestDTO createOneCardRoomRequestDTO) {
         OneCardRoom oneCardRoom = oneCardRoomRepository.save(createOneCardRoomRequestDTO.toDocument());
-        joinRoom(oneCardRoom.getId(), new JoinOneCardRoomRequestDTO(createOneCardRoomRequestDTO.adminID()));
         return CreateOneCardRoomResponseDTO
                 .builder()
                 .id(oneCardRoom.getId())
@@ -30,12 +29,15 @@ public class OneCardService {
 
     public JoinOneCardRoomResponseDTO joinRoom(String id, JoinOneCardRoomRequestDTO joinOneCardRoomRequestDTO) throws CustomException {
         Optional<OneCardRoom> oneCardRoom = oneCardRoomRepository.findById(id);
+
         if (oneCardRoom.isEmpty())
             throw new CustomException(OneCardErrorCode.ROOM_NOT_FOUND);
         if (oneCardRoom.get().getPlayers().size() >= oneCardRoom.get().getMaxPlayers())
             throw new CustomException(OneCardErrorCode.FULL_ROOM);
+
         oneCardRoom.get().getPlayers().add(joinOneCardRoomRequestDTO.toPlayer());
         OneCardRoom updatedRoom = oneCardRoomRepository.update(oneCardRoom.get());
+
         return JoinOneCardRoomResponseDTO
                 .builder()
                 .id(updatedRoom.getId())
