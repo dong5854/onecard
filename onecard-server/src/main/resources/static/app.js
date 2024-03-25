@@ -88,6 +88,13 @@ async function createRoomAndConnectSocket() {
     })
 }
 
+
+function startPlaying() {
+    stompClient.publish({
+        destination: `/one-card/rooms/${id}/start`
+    })
+}
+
 function joinRoom() {
     console.log(id)
     stompClient.publish({

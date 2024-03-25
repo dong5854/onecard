@@ -95,6 +95,8 @@ public class OneCardService {
 
     private void initOrder(OneCardRoom oneCardRoom) {
         ArrayDeque<String> turnOrder = new ArrayDeque<>(oneCardRoom.getPlayerIds());
+        if (oneCardRoom.getPlayerIds().size() <= 1)
+            throw new CustomException(OneCardErrorCode.NOT_ENOUGH_PLAYERS);
         Boolean turnDir = true;
         String cuTurnPlayerId = Objects.requireNonNull(turnOrder.pollFirst());
         String nextTurnPlayerId = Objects.requireNonNull(turnOrder.peekFirst());
@@ -112,6 +114,7 @@ public class OneCardService {
                 playHand.get(player).add(deck.pollFirst());
             }
         }
+        oneCardRoom.getGameInfo().updateCardStatus(deck, playedCards, playHand);
     }
 
     private ArrayDeque<Card> initDeck() {

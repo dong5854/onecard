@@ -1,13 +1,13 @@
 package com.dong.onecardserver.dto;
 
 import com.dong.onecardserver.domain.onecard.Card;
-import com.dong.onecardserver.domain.player.Player;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.*;
 
-@Builder
+@Builder @Getter
 @RequiredArgsConstructor
 public class GameInfoResponseDTO {
     private final Card openedCard;
