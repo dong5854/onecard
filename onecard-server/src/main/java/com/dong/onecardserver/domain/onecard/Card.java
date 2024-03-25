@@ -1,4 +1,4 @@
 package com.dong.onecardserver.domain.onecard;
 
 
-public record Card(SUIT suit, RANK rank) {}
+public record Card(int id, SUIT suit, RANK rank) {}

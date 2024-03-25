@@ -29,15 +29,19 @@ public class OneCardRoom {
     @NonNull
     private List<String> playerIds;
 
-    private PlayInfo playInfo;
+    private GameInfo gameInfo;
 
     @Builder
-    public OneCardRoom(@NonNull String name, @NonNull Integer maxPlayers, @NonNull Boolean playing, @NonNull String adminId, @NonNull List<String> playerIds, PlayInfo playInfo) {
+    public OneCardRoom(@NonNull String name, @NonNull Integer maxPlayers, @NonNull Boolean playing, @NonNull String adminId, @NonNull List<String> playerIds, GameInfo gameInfo) {
         this.name = name;
         this.maxPlayers = maxPlayers;
         this.playing = playing;
         this.adminId = adminId;
         this.playerIds = playerIds;
-        this.playInfo = playInfo;
+        this.gameInfo = gameInfo;
+    }
+
+    public void updateGameInfo(GameInfo gameInfo) {
+        this.gameInfo = gameInfo;
     }
 }

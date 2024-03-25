@@ -11,10 +11,10 @@ import java.util.*;
 @RequiredArgsConstructor
 public class GameInfoResponseDTO {
     private final Card openedCard;
-    private final ArrayDeque<Player> turnOrder;
+    private final ArrayDeque<String> turnOrder;
     private final Boolean turnDir;
-    private final Player curTurn;
-    private final Player nextTurn;
-    private final List<Card> myHand;
-    private final Map<Player, Integer> opponentsRemainingCards;
+    private final String curTurn;
+    private final String nextTurn;
+    private final Set<Card> myHand;
+    private final Map<String, Integer> opponentsRemainingCards;
 }

@@ -20,17 +20,4 @@ public record CreateOneCardRoomRequestDTO(String name, String adminId) {
                 .playerIds(new ArrayList<>())
                 .build();
     }
-
-    private ArrayDeque<Card> initDeck() {
-        ArrayDeque<Card> deck = new ArrayDeque<>();
-        for (SUIT suit : SUIT.values()) {
-            if (suit.equals(SUIT.JOKER)) continue;
-            for (RANK rank : RANK.values()) {
-                if (rank.equals(RANK.JOKER)) continue;
-                deck.add(new Card(suit, rank));
-            }
-        }
-        deck.add(new Card(SUIT.JOKER, RANK.JOKER));
-        return deck;
-    }
 }

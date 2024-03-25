@@ -9,14 +9,18 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.*;
 
 @RequiredArgsConstructor
 @Controller
 public class OneCardWebSocketHandler {
 
     private final OneCardService oneCardService;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @MessageMapping("/one-card/rooms/{id}/join")
     @SendTo("/topic/rooms/{id}")
@@ -26,12 +30,10 @@ public class OneCardWebSocketHandler {
                 .body(oneCardService.joinRoom(id, joinOneCardRoomRequestDTO.withSessionId(sessionId)));
     }
 
-    // TODO: 참여중인 모든 플레이어에게 send
     @MessageMapping("/one-card/rooms/{roomId}/start")
-    public ResponseEntity<GameInfoResponseDTO> startPlaying(@DestinationVariable String roomId) {
-        // TODO: player/queue/{playerID} 로 보내기
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(null);
+    public void startPlaying(@DestinationVariable String roomId) {
+        for (Map.Entry<String, GameInfoResponseDTO> responseDTOEntry : oneCardService.startGame(roomId).entrySet()) {
+            messagingTemplate.convertAndSend("/queue/player/" + responseDTOEntry.getKey(), responseDTOEntry.getValue());
+        }
     }
 }
