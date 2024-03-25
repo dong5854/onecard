@@ -79,7 +79,7 @@ async function createRoomAndConnectSocket() {
     });
 
     stompClient.publish({
-        destination: `/rooms/${id}/join`,
+        destination: `/one-card/rooms/${id}/join`,
         body: JSON.stringify(
             {
                 playerId: `${userId}`
@@ -91,7 +91,7 @@ async function createRoomAndConnectSocket() {
 function joinRoom() {
     console.log(id)
     stompClient.publish({
-        destination: `/rooms/${id}/join`,
+        destination: `/one-card/rooms/${id}/join`,
         body: JSON.stringify(
             {
                 playerId: "합류한 플레이어"

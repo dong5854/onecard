@@ -25,24 +25,6 @@ public class OneCardController {
                 .body(oneCardService.createRoom(createOneCardRoomRequestDTO));
     }
 
-    @MessageMapping("/rooms/{id}/join")
-    @SendTo("/topic/rooms/{id}")
-    public ResponseEntity<JoinOneCardRoomResponseDTO> joinRoom(@DestinationVariable String id, @RequestBody JoinOneCardRoomRequestDTO joinOneCardRoomRequestDTO, @Header("simpSessionId") String sessionId) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(oneCardService.joinRoom(id, joinOneCardRoomRequestDTO.withSessionId(sessionId)));
-    }
-
-    // TODO: 참여중인 모든 플레이어에게 send
-    @MessageMapping("/rooms/{roomId}/start")
-    public ResponseEntity<GameInfoResponseDTO> startPlaying(@DestinationVariable String roomID, @DestinationVariable String playerId) {
-        // TODO: player/queue/{playerID} 로 보내기
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(null);
-    }
-
-
     @DeleteMapping("/rooms/{id}")
     public ResponseEntity<DeleteOneCardRoomResponseDTO> deleteRoom(@PathVariable String id) {
         return ResponseEntity
