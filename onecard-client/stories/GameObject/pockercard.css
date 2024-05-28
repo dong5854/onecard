@@ -1,0 +1,30 @@
+.poker-card {
+  border: 1px solid #000;
+  border-radius: 8px;
+  width: 100px;
+  height: 140px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.rank {
+  font-size: 32px;
+}
+
+.suit {
+  font-size: 24px;
+}
+
+.joker {
+  font-size: 32px;
+  font-weight: bold;
+  background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
