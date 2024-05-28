@@ -1,5 +1,5 @@
 package com.dong.onecardserver.domain.onecard;
 
 public enum SUIT {
-    CLOVER, HEART, DIAMOND, SPADE, JOKER
+    JOKER, CLOVER, HEART, DIAMOND, SPADE
 }
