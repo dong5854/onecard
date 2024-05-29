@@ -1,0 +1,22 @@
+/* StartGameButton.css */
+.start-game-button {
+  background-color: #28a745;
+  color: #FFFFFF;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.start-game-button:hover {
+  background-color: #218838;
+}
+
+.start-game-button:disabled {
+  background-color: #CCCCCC;
+  color: #666666;
+  cursor: not-allowed;
+}
