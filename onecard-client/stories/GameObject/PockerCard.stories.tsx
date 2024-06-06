@@ -3,7 +3,7 @@ import { action } from '@storybook/addon-actions';
 import { PockerCard } from './PockerCard'
 
 const meta = {
-  title: 'GamObject/PockerCard',
+  title: 'GameObject/PockerCard',
   component: PockerCard,
   parameters: {
     // Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
