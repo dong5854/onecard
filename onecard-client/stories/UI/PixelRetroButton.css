@@ -1,0 +1,58 @@
+.pixel-button {
+  background-color: #2E4F4F;
+  border: none;
+  padding: 0;
+  font-family: "Courier New", monospace;
+  font-size: 22px;
+  font-weight: bold;
+  color: #CBE4DE;
+  text-transform: uppercase;
+  cursor: pointer;
+  position: relative;
+  width: 220px;
+  height: 70px;
+  image-rendering: pixelated;
+  box-shadow: 0 0 0 4px #2E4F4F,
+  0 4px 0 4px #0E8388,
+  4px 0 0 4px #0E8388,
+  -4px 0 0 4px #2C3333,
+  0 -4px 0 4px #2C3333,
+  4px 4px 0 4px #0E8388;
+  transition: all 0.1s ease;
+}
+
+.pixel-button.pressed {
+  box-shadow: 0 0 0 4px #2E4F4F,
+  0 4px 0 4px #0E8388,
+  inset 4px 4px 0 0 #0E8388;
+  transform: translate(4px, 4px);
+}
+
+.inner {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  right: 4px;
+  bottom: 4px;
+  background-color: #2C3333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: linear-gradient(45deg, #2E4F4F 25%, transparent 25%),
+  linear-gradient(-45deg, #2E4F4F 25%, transparent 25%),
+  linear-gradient(45deg, transparent 75%, #2E4F4F 75%),
+  linear-gradient(-45deg, transparent 75%, #2E4F4F 75%);
+  background-size: 8px 8px;
+  transition: all 0.1s ease;
+}
+
+.pixel-button.pressed .inner {
+  background-position: 4px 4px, 4px 8px, 8px 0px, 0px 4px;
+}
+
+.button-text {
+  position: relative;
+  z-index: 2;
+  text-shadow: 2px 2px 0 #0E8388, -1px -1px 0 #0E8388, 1px -1px 0 #0E8388, -1px 1px 0 #0E8388;
+  letter-spacing: 2px;
+}
