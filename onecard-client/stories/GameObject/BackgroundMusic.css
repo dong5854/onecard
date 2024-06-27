@@ -5,56 +5,56 @@
 }
 
 .mini-pixel-button {
-  background-color: #E0F2F1;
+  background-color: #5A6B3F; /* 어두운 올리브 그린 */
   border: none;
   padding: 0;
-  color: #00796B;
+  color: #D0DB61; /* 밝은 올리브 옐로우 */
   cursor: pointer;
   position: relative;
   width: 60px;
   height: 60px;
   image-rendering: pixelated;
-  box-shadow: 0 0 0 4px #E0F2F1,
-  0 4px 0 4px #B2DFDB,
-  4px 0 0 4px #B2DFDB,
-  -4px 0 0 4px #80CBC4,
-  0 -4px 0 4px #80CBC4,
-  4px 4px 0 4px #4DB6AC;
+  box-shadow: 0 0 0 4px #5A6B3F,
+  0 4px 0 4px #4A5A33,
+  4px 0 0 4px #4A5A33,
+  -4px 0 0 4px #3A4A27,
+  0 -4px 0 4px #3A4A27,
+  4px 4px 0 4px #2A3A1B;
   transition: all 0.1s ease;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.pixel-button:hover {
-  background-color: #B2DFDB;
-  box-shadow: 0 0 0 4px #B2DFDB,
-  0 4px 0 4px #80CBC4,
-  4px 0 0 4px #80CBC4,
-  -4px 0 0 4px #4DB6AC,
-  0 -4px 0 4px #4DB6AC,
-  4px 4px 0 4px #009688;
+.mini-pixel-button:hover {
+  background-color: #6A7B4F;
+  box-shadow: 0 0 0 4px #6A7B4F,
+  0 4px 0 4px #5A6B3F,
+  4px 0 0 4px #5A6B3F,
+  -4px 0 0 4px #4A5A33,
+  0 -4px 0 4px #4A5A33,
+  4px 4px 0 4px #3A4A27;
 }
 
-.pixel-button:active {
-  box-shadow: 0 0 0 4px #B2DFDB,
-  0 4px 0 4px #80CBC4,
-  inset 4px 4px 0 0 #4DB6AC;
+.mini-pixel-button:active {
+  box-shadow: 0 0 0 4px #5A6B3F,
+  0 4px 0 4px #4A5A33,
+  inset 4px 4px 0 0 #3A4A27;
   transform: translate(4px, 4px);
 }
 
-.pixel-button.on {
-  background-color: #E1F5FE;
+.mini-pixel-button.on {
+  background-color: #7A8B5F; /* 약간 밝은 올리브 그린 */
 }
 
-.pixel-button.on:hover {
-  background-color: #B3E5FC;
+.mini-pixel-button.on:hover {
+  background-color: #8A9B6F; /* 더 밝은 올리브 그린 */
 }
 
-.pixel-button.off {
-  background-color: #F1F8E9;
+.mini-pixel-button.off {
+  background-color: #4A5A33; /* 더 어두운 올리브 그린 */
 }
 
-.pixel-button.off:hover {
-  background-color: #DCEDC8;
+.mini-pixel-button.off:hover {
+  background-color: #5A6B43; /* 약간 밝은 어두운 올리브 그린 */
 }

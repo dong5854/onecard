@@ -3,27 +3,37 @@ import './BackgroundMusic.css'
 import { FaVolumeUp, FaVolumeMute } from 'react-icons/fa';
 
 interface BackgroundMusicProps {
-  url : string
+  url: string;
+  className?: string; // 선택적 className prop 추가
 }
 
-export const BackgroundMusic = ({url}: BackgroundMusicProps) => {
+export const BackgroundMusic = ({ url, className = '' }: BackgroundMusicProps) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [isUserInteracted, setIsUserInteracted] = useState(false);
 
-  const playAudio = () => {
+
+  const togglePlayPause = () => {
     if (audioRef.current) {
-      audioRef.current.play().catch((error) => {
-        console.error("Failed to play audio:", error);
-      });
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play().catch((error) => {
+          console.error("Failed to play audio:", error);
+          setIsPlaying(false);
+          return;
+        });
+      }
+      setIsPlaying(!isPlaying);
     }
   };
+
 
   useEffect(() => {
     audioRef.current = new Audio(url);
     audioRef.current.loop = true;
 
-    playAudio();
+    togglePlayPause()
 
     return () => {
       if (audioRef.current) {
@@ -37,7 +47,9 @@ export const BackgroundMusic = ({url}: BackgroundMusicProps) => {
     const handleUserInteraction = () => {
       if (!isUserInteracted) {
         setIsUserInteracted(true);
-        playAudio();
+        if (!isPlaying) {
+          togglePlayPause();
+        }
       }
     };
 
@@ -52,21 +64,8 @@ export const BackgroundMusic = ({url}: BackgroundMusicProps) => {
     };
   }, [isUserInteracted]);
 
-  const togglePlayPause = () => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause();
-      } else {
-        audioRef.current.play().catch((error) => {
-          console.error("Failed to play audio:", error);
-        });
-      }
-      setIsPlaying(!isPlaying);
-    }
-  };
-
   return (
-      <div className="button-container">
+      <div className={`button-container ${className}`}> {/* className prop 적용 */}
         <button
             className={`mini-pixel-button ${isPlaying ? 'on' : 'off'}`}
             onClick={togglePlayPause}
