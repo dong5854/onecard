@@ -1,0 +1,34 @@
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+.game-title {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.title-text {
+    font-family: 'VT323', monospace;
+    font-size: 64px;
+    color: #0F380F;
+    text-shadow: 3px 3px 0 #8BAC0F,
+    -2px -2px 0 #8BAC0F,
+    2px -2px 0 #8BAC0F,
+    -2px 2px 0 #8BAC0F;
+    letter-spacing: 8px;
+    white-space: nowrap;
+}
+
+.subtitle-text {
+    font-family: 'VT323', monospace;
+    font-size: 48px;
+    color: #0F380F;
+    text-shadow: 2px 2px 0 #8BAC0F,
+    -1px -1px 0 #8BAC0F,
+    1px -1px 0 #8BAC0F,
+    -1px 1px 0 #8BAC0F;
+    letter-spacing: 6px;
+    white-space: nowrap;
+    margin-top: -10px;
+}
