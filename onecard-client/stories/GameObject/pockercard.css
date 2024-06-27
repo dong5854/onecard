@@ -1,27 +1,30 @@
+.poker-card-size {
+  width: 50px;
+  height: 70px;
+}
+
 .poker-card {
   border: 1px solid #000;
   border-radius: 8px;
-  width: 100px;
-  height: 140px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  font-size: 24px;
+  font-size: 12px;
   background-color: #fff;
   cursor: pointer;
 }
 
 .rank {
-  font-size: 32px;
+  font-size: 16px;
 }
 
 .suit {
-  font-size: 24px;
+  font-size: 12px;
 }
 
 .joker {
-  font-size: 32px;
+  font-size: 16px;
   font-weight: bold;
   background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
   -webkit-background-clip: text;
