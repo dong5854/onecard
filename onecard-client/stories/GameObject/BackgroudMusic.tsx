@@ -1,11 +1,12 @@
-
 import React, { useEffect, useRef, useState } from 'react';
+import './BackgroundMusic.css'
+import { FaVolumeUp, FaVolumeMute } from 'react-icons/fa';
 
-interface BackgroudMusicProps {
+interface BackgroundMusicProps {
   url : string
 }
 
-export const BackgroudMusic = ({url}: BackgroudMusicProps) => {
+export const BackgroundMusic = ({url}: BackgroundMusicProps) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(true);
 
@@ -29,7 +30,7 @@ export const BackgroudMusic = ({url}: BackgroudMusicProps) => {
         audioRef.current = null;
       }
     };
-    
+
   }, [url]);
 
   const togglePlayPause = () => {
@@ -46,10 +47,13 @@ export const BackgroudMusic = ({url}: BackgroudMusicProps) => {
   };
 
   return (
-    <div>
-      <button onClick={togglePlayPause}>
-        {isPlaying ? 'Pause' : 'Play'}
-      </button>
-    </div>
+      <div className="button-container">
+        <button
+            className={`pixel-button ${isPlaying ? 'off' : 'on'}`}
+            onClick={togglePlayPause}
+        >
+          {isPlaying ? <FaVolumeMute size={24}/> : <FaVolumeUp size={24}/>}
+        </button>
+      </div>
   );
 }
