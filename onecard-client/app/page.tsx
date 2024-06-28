@@ -18,6 +18,7 @@ export default function MainPage() {
                 />
                 <PixelRetroButton
                     text="START GAME"
+                    className="mt-6"
                 />
             </div>
         </main>
