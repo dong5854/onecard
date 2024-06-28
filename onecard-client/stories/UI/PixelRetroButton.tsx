@@ -6,7 +6,7 @@ import {className} from "postcss-selector-parser";
 
 interface PixelRetroButtonProps {
   text: string;
-  className: string;
+  className?: string;
   onClick?: () => void;
 }
 
