@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useState } from 'react';
 import './PixelRetroButton.css';
 import {className} from "postcss-selector-parser";
