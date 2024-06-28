@@ -21,7 +21,7 @@ export default function RootLayout({
             <main className="w-full h-full flex flex-grow flex-col max-w-[95%] sm:max-w-[90%] md:max-w-[1400px] lg:max-w-[1600px] xl:max-w-[1800px] 2xl:max-w-[2000px]
                           bg-[rgba(39,67,42,1)]">
                 <nav className="w-full p-4">
-                    <div className="container mx-auto flex justify-end items-center">
+                    <div className="container mx-auto flex justify-end items-center mr-2">
                         <BackgroundMusic
                             url="audio/bgm/SHK_055_Cosmic_Rainbow.mp3"
                             className="z-10"
