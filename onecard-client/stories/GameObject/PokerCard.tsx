@@ -1,3 +1,5 @@
+'use client'
+
 import React, {useEffect, useState} from "react";
 import './pockercard.css';
 
@@ -35,6 +37,7 @@ const isValidSuit = (suit: any): suit is SuitsValue => {
 
 type PokerCardProps = {
   isJoker: boolean;
+  isFlipped: boolean;
   rank?: RankValue;
   suit?: SuitsValue;
   onClick?: () => void;
@@ -44,8 +47,21 @@ const FallBackCard = ({
                         rank,
                         suit,
                         isJoker,
+                        isFlipped,
                         onClick,
                       }: PokerCardProps) => {
+  if (isFlipped) {
+      return (
+          <div className="poker-card poker-card-size poker-card-back" onClick={onClick}>
+              <div className="card-back-design">
+                  <div className="card-back-pattern"></div>
+                  <div className="card-back-logo">♠♥♣♦</div>
+              </div>
+          </div>
+      );
+  }
+
+
   if (isJoker) {
     return (
         <div className="poker-card poker-card-size" onClick={onClick}>
@@ -67,19 +83,23 @@ export const PokerCard = ({
                             rank,
                             suit,
                             isJoker,
+                            isFlipped,
                             onClick,
                           }: PokerCardProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
     setImageLoaded(false);
-  }, [rank, suit, isJoker]);
+  }, [rank, suit, isJoker, isFlipped]);
 
   const getCardImage = () => {
-    if (isJoker) {
-      return `cards/Joker.png`;
+    if (isFlipped) {
+      return '/cards/backs/back_4.png'
     }
-    return `cards/${suit}/${suit}_card_${rank}.png`;
+    if (isJoker) {
+      return `/cards/Joker.png`;
+    }
+    return `/cards/${suit}/${suit}_card_${rank}.png`;
   };
 
   const handleImageLoad = () => {
@@ -96,12 +116,12 @@ export const PokerCard = ({
             className="poker-card-size"
             style={{ display: imageLoaded ? 'block' : 'none' }}
             src={getCardImage()}
-            alt={isJoker ? 'Joker' : `${rank} of ${suit}`}
+            alt={isFlipped ? 'Card Back' : (isJoker ? 'Joker' : `${rank} of ${suit}`)}
             onLoad={handleImageLoad}
             onError={handleImageError}
             onClick={onClick}
         />
-        {!imageLoaded && <FallBackCard rank={rank} suit={suit} isJoker={isJoker} onClick={onClick}/>}
+        {!imageLoaded && <FallBackCard isFlipped={isFlipped} rank={rank} suit={suit} isJoker={isJoker} onClick={onClick}/>}
       </>
   );
 };

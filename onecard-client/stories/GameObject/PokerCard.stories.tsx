@@ -27,12 +27,14 @@ export const Default: Story = {
     rank: 1,
     suit: 'spades',
     isJoker: false,
+    isFlipped: false
   },
 };
 
 export const JokerCard: Story = {
   args: {
-    isJoker: true
+    isJoker: true,
+    isFlipped: false
   },
 };
 
@@ -41,6 +43,7 @@ export const AceOfSpades: Story = {
     rank: 1,
     suit: 'spades',
     isJoker: false,
+    isFlipped: false
   },
 }
 
@@ -49,5 +52,13 @@ export const FiveOfHearts: Story = {
     rank: 5,
     suit: 'hearts',
     isJoker: false,
+    isFlipped: false
   },
+};
+
+export const FlippedCard: Story = {
+  args: {
+    isJoker: false,
+    isFlipped: true
+  }
 };

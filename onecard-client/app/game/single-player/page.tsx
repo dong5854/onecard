@@ -1,4 +1,5 @@
 import GameTitle from "@/stories/UI/GameTitle";
+import PokerCard from "@/stories/GameObject/PokerCard";
 
 interface RectangleProps {
         orientation: 'horizontal' | 'vertical';
@@ -33,19 +34,13 @@ export default function SinglePlayerPage() {
                                     <Rectangle orientation="vertical"/>
                             </div>
                             <div className="bg-gray-100 flex items-center justify-center text-xs">29</div>
-                            <div className="bg-gray-100 flex items-center justify-center text-xs">30</div>
-                            <div className="bg-gray-100 flex items-center justify-center text-xs">31</div>
-                            <div className="bg-gray-100 flex items-center justify-center text-xs">32</div>
+                            <div className="bg-gray-100 flex items-center justify-center text-xs col-span-3 row-span-3">
+                                    <PokerCard isJoker={false} isFlipped={true} />
+                            </div>
                             <div className="bg-gray-100 flex items-center justify-center text-xs">33</div>
                             <div className="bg-gray-100 flex items-center justify-center text-xs">38</div>
-                            <div className="bg-gray-100 flex items-center justify-center text-xs">39</div>
-                            <div className="bg-gray-100 flex items-center justify-center text-xs">40</div>
-                            <div className="bg-gray-100 flex items-center justify-center text-xs">41</div>
                             <div className="bg-gray-100 flex items-center justify-center text-xs">42</div>
                             <div className="bg-gray-100 flex items-center justify-center text-xs">47</div>
-                            <div className="bg-gray-100 flex items-center justify-center text-xs">48</div>
-                            <div className="bg-gray-100 flex items-center justify-center text-xs">49</div>
-                            <div className="bg-gray-100 flex items-center justify-center text-xs">50</div>
                             <div className="bg-gray-100 flex items-center justify-center text-xs">51</div>
                             <div className="bg-gray-100 flex items-center justify-center text-xs">56</div>
                             <div className="bg-gray-100 flex items-center justify-center text-xs">57</div>
