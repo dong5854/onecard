@@ -1,11 +1,11 @@
-import GameTitle from "@/stories/UI/GameTitle";
 import PokerCard from "@/stories/GameObject/PokerCard";
+import CardPlayHolder from "@/app/_components/CardPlayHolder";
 
 interface RectangleProps {
         orientation: 'horizontal' | 'vertical';
 }
 
-const Rectangle: React.FC<RectangleProps> = ({ orientation }) => (
+const Rectangle = ({ orientation }: RectangleProps) => (
     <div className="w-full h-full flex items-center justify-center bg-gray-200">
             <div className={`${orientation === 'horizontal' ? 'w-full h-1/2' : 'w-1/2 h-full'} bg-blue-500 rounded-lg flex items-center justify-center text-white`}>
                     {orientation === 'horizontal' ? 'H' : 'V'}
@@ -35,7 +35,10 @@ export default function SinglePlayerPage() {
                             </div>
                             <div className="bg-gray-100 flex items-center justify-center text-xs">29</div>
                             <div className="bg-gray-100 flex items-center justify-center text-xs col-span-3 row-span-3">
-                                    <PokerCard isJoker={false} isFlipped={true} />
+                                    <CardPlayHolder width="200px" height="150px">
+                                            <PokerCard isJoker={false} isFlipped={true} />
+                                            <PokerCard isJoker={true} isFlipped={false} />
+                                    </CardPlayHolder>
                             </div>
                             <div className="bg-gray-100 flex items-center justify-center text-xs">33</div>
                             <div className="bg-gray-100 flex items-center justify-center text-xs">38</div>
