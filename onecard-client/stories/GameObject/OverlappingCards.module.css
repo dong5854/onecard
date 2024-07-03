@@ -1,0 +1,20 @@
+.container {
+    position: relative;
+    height: 150px;  /* 카드의 높이에 따라 조정 */
+    display: inline-block;
+}
+
+.cardWrapper {
+    position: absolute;
+    transition: transform 0.3s ease;
+}
+
+.cardWrapper:hover {
+    transform: translateY(-20px);
+    z-index: 100 !important;
+}
+
+/* 마지막 카드에 오른쪽 마진을 추가하여 모든 카드가 보이도록 함 */
+.cardWrapper:last-child {
+    margin-right: 20px;
+}
