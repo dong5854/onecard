@@ -3,17 +3,17 @@ import styles from './OverlappingCards.module.css';
 
 interface OverlappingCardsProps {
     children: ReactElement[];
+    vertical?: boolean
     spacing?: number;
 }
 
-export const OverlappingCards = ({ children, spacing = 30 } : OverlappingCardsProps) => {
+export const OverlappingCards = ({ children, vertical = false, spacing = 30 } : OverlappingCardsProps) => {
     return (
-        <div className={styles.container}>
+        <div className={vertical ? styles.containerVertical : styles.container}>
             {React.Children.map(children, (child, index) => (
                 <div
-                    className={styles.cardWrapper}
-                    style={{
-                        left: `${index * spacing}px`,
+                    className={vertical ? styles.cardWrapperVertical : styles.cardWrapper}
+                    style={ vertical? {} :{
                         zIndex: index
                     }}
                 >

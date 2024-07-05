@@ -57,6 +57,7 @@ export const FewCards: Story = {
 export const ManyCards: Story = {
   args: {
     ...Default.args,
+
     children: [
       ...defaultCards,
       <PokerCard key={6} rank={3} isJoker={false} isFlipped={false} suit="spades" />,
@@ -74,6 +75,29 @@ export const WithJoker: Story = {
       ...defaultCards.slice(0, 2),
       <PokerCard key={3} isJoker={true} isFlipped={false} />,
       ...defaultCards.slice(3, 5),
+    ],
+  },
+};
+
+// 카드가 적은 스토리
+export const FewCardsVertical: Story = {
+  args: {
+    ...Default.args,
+    vertical: true,
+    children: defaultCards.slice(0, 3),
+  },
+};
+
+// 카드가 많은 스토리
+export const ManyCardsVertical: Story = {
+  args: {
+    ...Default.args,
+    vertical: true,
+    children: [
+      ...defaultCards,
+      <PokerCard key={6} rank={3} isJoker={false} isFlipped={false} suit="spades" />,
+      <PokerCard key={7} rank={5} isJoker={false} isFlipped={false} suit="diamonds" />,
+      <PokerCard key={8} rank={9} isJoker={false} isFlipped={false} suit="clubs" />,
     ],
   },
 };

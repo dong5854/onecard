@@ -1,20 +1,48 @@
 .container {
     position: relative;
-    height: 150px;  /* 카드의 높이에 따라 조정 */
-    display: inline-block;
+    height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .cardWrapper {
-    position: absolute;
+    position: relative;
     transition: transform 0.3s ease;
 }
 
 .cardWrapper:hover {
     transform: translateY(-20px);
-    z-index: 100 !important;
 }
 
-/* 마지막 카드에 오른쪽 마진을 추가하여 모든 카드가 보이도록 함 */
-.cardWrapper:last-child {
-    margin-right: 20px;
+/* 카드 겹침을 위한 추가 스타일 */
+.cardWrapper:not(:first-child) {
+    margin-left: -60px;  /* 겹침 정도를 조절할 수 있는 값 */
+}
+
+
+.containerVertical {
+    position: relative;
+    width: 100px;
+    display: flex;
+    flex-direction: column;
+}
+
+.cardWrapperVertical {
+    position: relative;
+    height: 150px;  /* 카드의 실제 높이 */
+    transition: transform 0.3s ease;
+}
+
+.cardWrapperVertical:hover {
+    transform: translateX(20px);
+}
+
+.cardWrapperVertical:last-child {
+    margin-bottom: 0;
+}
+
+/* 카드 겹침을 위한 추가 스타일 */
+.cardWrapperVertical:not(:first-child) {
+    margin-top: -130px;
 }
