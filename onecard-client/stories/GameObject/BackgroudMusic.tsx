@@ -11,8 +11,7 @@ interface BackgroundMusicProps {
 
 export const BackgroundMusic = ({ url, className = '' }: BackgroundMusicProps) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isUserInteracted, setIsUserInteracted] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
 
 
   const togglePlayPause = () => {
@@ -30,7 +29,6 @@ export const BackgroundMusic = ({ url, className = '' }: BackgroundMusicProps) =
     }
   };
 
-
   useEffect(() => {
     audioRef.current = new Audio(url);
     audioRef.current.loop = true;
@@ -44,27 +42,6 @@ export const BackgroundMusic = ({ url, className = '' }: BackgroundMusicProps) =
       }
     };
   }, [url]);
-
-  useEffect(() => {
-    const handleUserInteraction = () => {
-      if (!isUserInteracted) {
-        setIsUserInteracted(true);
-        if (!isPlaying) {
-          togglePlayPause();
-        }
-      }
-    };
-
-    document.addEventListener('click', handleUserInteraction);
-    document.addEventListener('touchstart', handleUserInteraction);
-    document.addEventListener('keydown', handleUserInteraction);
-
-    return () => {
-      document.removeEventListener('click', handleUserInteraction);
-      document.removeEventListener('touchstart', handleUserInteraction);
-      document.removeEventListener('keydown', handleUserInteraction);
-    };
-  }, [isUserInteracted]);
 
   return (
       <div className={`button-container ${className}`}> {/* className prop 적용 */}

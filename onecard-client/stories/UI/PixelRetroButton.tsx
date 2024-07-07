@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import './PixelRetroButton.css';
-import {className} from "postcss-selector-parser";
 
 interface PixelRetroButtonProps {
   text: string;
