@@ -27,16 +27,31 @@ export default function SinglePlayerPage() {
                                     </OverlappingCards>
                             </div>
                             <div className="bg-gray-100 flex items-center justify-center col-span-2 row-span-2">8-9-17-18</div>
-                            <div className="bg-gray-100 flex items-center justify-center row-span-5 col-span-2">
-                                    <Rectangle orientation="vertical"/>
+                            <div className="flex items-center justify-center row-span-5 col-span-2">
+                                    <OverlappingCards vertical={true}>
+                                            <PokerCard isJoker={false} isFlipped={true}/>
+                                            <PokerCard isJoker={false} isFlipped={true}/>
+                                            <PokerCard isJoker={false} isFlipped={true}/>
+                                            <PokerCard isJoker={false} isFlipped={true}/>
+                                            <PokerCard isJoker={false} isFlipped={true}/>
+                                            <PokerCard isJoker={false} isFlipped={true}/>
+                                            <PokerCard isJoker={false} isFlipped={true}/>
+                                            <PokerCard isJoker={false} isFlipped={true}/>
+                                    </OverlappingCards>
                             </div>
                             <div className="bg-gray-100 flex items-center justify-center text-xs">20</div>
                             <div className="bg-gray-100 flex items-center justify-center text-xs">21</div>
                             <div className="bg-gray-100 flex items-center justify-center text-xs">22</div>
                             <div className="bg-gray-100 flex items-center justify-center text-xs">23</div>
                             <div className="bg-gray-100 flex items-center justify-center text-xs">24</div>
-                            <div className="bg-gray-100 flex items-center justify-center row-span-5 col-span-2">
-                                    <Rectangle orientation="vertical"/>
+                            <div className="flex items-center justify-center row-span-5 col-span-2">
+                                    <OverlappingCards vertical={true}>
+                                            <PokerCard isJoker={false} isFlipped={true}/>
+                                            <PokerCard isJoker={false} isFlipped={true}/>
+                                            <PokerCard isJoker={false} isFlipped={true}/>
+                                            <PokerCard isJoker={false} isFlipped={true}/>
+                                            <PokerCard isJoker={false} isFlipped={true}/>
+                                    </OverlappingCards>
                             </div>
                             <div className="bg-gray-100 flex items-center justify-center text-xs">29</div>
                             <div className="flex items-center justify-center text-xs col-span-3 row-span-3">
