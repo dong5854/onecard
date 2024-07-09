@@ -1,5 +1,6 @@
 import PokerCard from "@/stories/GameObject/PokerCard";
 import CardPlayHolder from "@/app/_components/CardPlayHolder";
+import OverlappingCards from "@/stories/GameObject/OverlappingCards";
 
 interface RectangleProps {
         orientation: 'horizontal' | 'vertical';
@@ -19,7 +20,11 @@ export default function SinglePlayerPage() {
                     <div className="aspect-square w-full max-w-[150vh] max-h-[85vh] grid grid-cols-9 grid-rows-9 gap-0.5">
                             <div className="bg-gray-100 flex items-center justify-center col-span-2 row-span-2">1-2-10-11</div>
                             <div className="bg-gray-100 flex items-center justify-center col-span-5 row-span-2">
-                                    <Rectangle orientation="horizontal"/>
+                                    <OverlappingCards>
+                                            <PokerCard isJoker={false} isFlipped={true}/>
+                                            <PokerCard isJoker={false} isFlipped={true}/>
+                                            <PokerCard isJoker={false} isFlipped={true}/>
+                                    </OverlappingCards>
                             </div>
                             <div className="bg-gray-100 flex items-center justify-center col-span-2 row-span-2">8-9-17-18</div>
                             <div className="bg-gray-100 flex items-center justify-center row-span-5 col-span-2">
@@ -52,7 +57,11 @@ export default function SinglePlayerPage() {
                             <div className="bg-gray-100 flex items-center justify-center text-xs">60</div>
                             <div className="bg-gray-100 flex items-center justify-center col-span-2 row-span-2">63-64-73-74</div>
                             <div className="bg-gray-100 flex items-center justify-center col-span-5 row-span-2">
-                                    <Rectangle orientation="horizontal"/>
+                                    <OverlappingCards>
+                                            <PokerCard key={6} rank={3} isJoker={false} isFlipped={false} suit="spades" />
+                                            <PokerCard key={7} rank={5} isJoker={false} isFlipped={false} suit="diamonds" />
+                                            <PokerCard key={8} rank={9} isJoker={false} isFlipped={false} suit="clubs" />
+                                    </OverlappingCards>
                             </div>
                             <div className="bg-gray-100 flex items-center justify-center col-span-2 row-span-2">71-72-80-81</div>
                     </div>
