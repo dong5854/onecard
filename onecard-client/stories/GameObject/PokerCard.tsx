@@ -14,6 +14,7 @@ export const PokerCard = ({
                                                     } : PokerCardProps) => {
     const [imageLoaded, setImageLoaded] = useState(false);
     const [imageError, setImageError] = useState(false);
+    const [draggedData, setDraggedData] = useState("");
 
     const getCardImage = () => {
         if (isFlipped) {
@@ -49,6 +50,17 @@ export const PokerCard = ({
         };
     }, [rank, suit, isJoker, isFlipped]);
 
+    const handleDragStart = (e : React.DragEvent<HTMLElement>) => {
+        const data = JSON.stringify({rank, suit, isJoker})
+        e.dataTransfer.setData("text/plain", data)
+        setDraggedData(data)
+    }
+
+    const onDragEnd = (e : React.DragEvent<HTMLElement>) => {
+        console.log("드래그 종료. 드래그된 데이터:", draggedData);
+        setDraggedData("");
+    }
+
     if (imageError) {
         return <FallBackCard isFlipped={isFlipped} rank={rank} suit={suit} isJoker={isJoker} onClick={onClick}/>;
     }
@@ -63,6 +75,9 @@ export const PokerCard = ({
             src={getCardImage()}
             alt={isFlipped ? 'Card Back' : (isJoker ? 'Joker' : `${rank} of ${suit}`)}
             onClick={onClick}
+            draggable={true}
+            onDragStart={handleDragStart}
+            onDragEnd={onDragEnd}
         />
     );
 };
