@@ -6,13 +6,12 @@ import { PokerCardProps } from './types';
 import './Pokercard.css';
 
 export const PokerCard = ({
-                                                        rank,
-                                                        suit,
-                                                        isJoker,
-                                                        isFlipped,
-                                                        onClick,
-                                                    } : PokerCardProps) => {
-    const [imageLoaded, setImageLoaded] = useState(false);
+                              rank,
+                              suit,
+                              isJoker,
+                              isFlipped,
+                              onClick,
+                          } : PokerCardProps) => {
     const [imageError, setImageError] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
     const [draggedData, setDraggedData] = useState("");
@@ -28,20 +27,17 @@ export const PokerCard = ({
     };
 
     useEffect(() => {
-        setImageLoaded(false);
         setImageError(false);
 
         const img = new Image();
         img.src = getCardImage();
 
         img.onload = () => {
-            setImageLoaded(true);
             setImageError(false);
         };
 
         img.onerror = () => {
             console.error(`Failed to load image: ${img.src}`);
-            setImageLoaded(false);
             setImageError(true);
         };
 
@@ -53,12 +49,17 @@ export const PokerCard = ({
 
     const handleDragStart = (e : React.DragEvent<HTMLElement>) => {
         setIsDragging(true);
+
+        const img = new Image()
+        img.src = getCardImage()
+        img.style.opacity = '1';
+
         const data = JSON.stringify({rank, suit, isJoker})
         e.dataTransfer.setData("text/plain", data)
         setDraggedData(data)
     }
 
-    const onDragEnd = (e : React.DragEvent<HTMLElement>) => {
+    const handleDragEnd = (e : React.DragEvent<HTMLElement>) => {
         setIsDragging(false);
         console.log("드래그 종료. 드래그된 데이터:", draggedData);
         setDraggedData("");
@@ -68,19 +69,21 @@ export const PokerCard = ({
         return <FallBackCard isFlipped={isFlipped} rank={rank} suit={suit} isJoker={isJoker} onClick={onClick}/>;
     }
 
-    if (!imageLoaded) {
-        // TODO: 카드 이미지가 미처 로딩되지 않은 경우 ex) 네트워크 상태 나쁨
-    }
-
     return (
-        <img
+        <div
             className={`poker-card-size ${isDragging ? 'dragging' : ''}`}
-            src={getCardImage()}
-            alt={isFlipped ? 'Card Back' : (isJoker ? 'Joker' : `${rank} of ${suit}`)}
+            style={{
+                backgroundImage: `url(${getCardImage()})`,
+                backgroundSize: 'contain',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
+            }}
             onClick={onClick}
             draggable={true}
             onDragStart={handleDragStart}
-            onDragEnd={onDragEnd}
+            onDragEnd={handleDragEnd}
+            role="img"
+            aria-label={isFlipped ? 'Card Back' : (isJoker ? 'Joker' : `${rank} of ${suit}`)}
         />
     );
 };
