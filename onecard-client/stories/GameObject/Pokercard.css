@@ -1,3 +1,7 @@
+.dragging {
+  opacity: 0;
+}
+
 .poker-card-size {
   width: 85px;
   height: 120px;
