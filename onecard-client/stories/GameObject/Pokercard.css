@@ -1,5 +1,6 @@
 .poker-hand {
   transition: transform 0.3s ease;
+  user-select: none;
 }
 
 .poker-hand.dragging {
