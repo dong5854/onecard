@@ -1,3 +1,12 @@
+.poker-hand {
+  transition: transform 0.3s ease;
+}
+
+.poker-hand.dragging {
+  z-index: 1000;
+  transition: none;
+}
+
 .poker-card-size {
   width: 85px;
   height: 120px;

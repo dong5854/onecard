@@ -1,22 +1,22 @@
 'use client'
 
-import React, {useCallback, useEffect, useRef, useState} from "react";
+import React, { useCallback, useEffect, useRef, useState, memo } from "react";
 import FallBackCard from './FallBackCard';
 import { PokerCardProps } from './types';
 import './Pokercard.css';
 
-export const PokerCard = ({
-        rank,
-        suit,
-        isJoker,
-        isFlipped,
-        onClick,
-    } : PokerCardProps) => {
+const PokerCard= memo(({
+          rank,
+          suit,
+          isJoker,
+          isFlipped,
+          onClick,
+      } : PokerCardProps) => {
     const [imageError, setImageError] = useState(false);
-    const [isDragging, setIsDragging] = useState(false);
-    const [dragOffset, setDragOffset] = useState({x: 0, y: 0});
+    const isDraggingRef = useRef(false);
+    const dragOffsetRef = useRef({ x: 0, y: 0 });
     const cardRef = useRef<HTMLDivElement>(null);
-    const initialPosition = useRef({x: 0, y: 0});
+    const initialPositionRef = useRef({ x: 0, y: 0 });
 
     const getCardImage = useCallback(() => {
         if (isFlipped) return '/cards/backs/back_4.png';
@@ -27,54 +27,44 @@ export const PokerCard = ({
     useEffect(() => {
         const img = new Image();
         img.src = getCardImage();
-
-        const handleImageLoad = () => setImageError(false);
-        const handleImageError = () => {
+        img.onload = () => setImageError(false);
+        img.onerror = () => {
             console.error(`Failed to load image: ${img.src}`);
             setImageError(true);
         };
-
-        img.addEventListener('load', handleImageLoad);
-        img.addEventListener('error', handleImageError);
-
-        return () => {
-            img.removeEventListener('load', handleImageLoad);
-            img.removeEventListener('error', handleImageError);
-        };
     }, [getCardImage]);
 
-    const handleDragStart = (e: React.MouseEvent<HTMLElement>) => {
-        // Set drag data
-        const data = JSON.stringify({rank, suit, isJoker});
-
+    const handleDragStart = useCallback((e: React.MouseEvent<HTMLElement>) => {
         if (cardRef.current) {
             const rect = cardRef.current.getBoundingClientRect();
-            initialPosition.current = {x: rect.left, y: rect.top};
-            setDragOffset({
+            initialPositionRef.current = { x: rect.left, y: rect.top };
+            dragOffsetRef.current = {
                 x: e.clientX - rect.left,
                 y: e.clientY - rect.top
-            });
+            };
         }
-        setIsDragging(true);
-    }
+        isDraggingRef.current = true;
+        cardRef.current?.classList.add('dragging');
+    }, []);
 
-    const handleDrag = (e: React.MouseEvent<HTMLElement>) => {
-        if (e.clientX === 0 && e.clientY === 0) return; // Ignore invalid drag events
+    const handleDrag = useCallback((e: React.MouseEvent<HTMLElement>) => {
+        if (e.clientX === 0 && e.clientY === 0 || !isDraggingRef.current) return;
 
-        const newX = e.clientX - initialPosition.current.x - dragOffset.x;
-        const newY = e.clientY - initialPosition.current.y - dragOffset.y;
+        const newX = e.clientX - initialPositionRef.current.x - dragOffsetRef.current.x;
+        const newY = e.clientY - initialPositionRef.current.y - dragOffsetRef.current.y;
 
         if (cardRef.current) {
             cardRef.current.style.transform = `translate(${newX}px, ${newY}px)`;
         }
-    }
+    }, []);
 
-    const handleDragEnd = () => {
-        setIsDragging(false);
+    const handleDragEnd = useCallback(() => {
+        isDraggingRef.current = false;
         if (cardRef.current) {
             cardRef.current.style.transform = 'none';
+            cardRef.current.classList.remove('dragging');
         }
-    }
+    }, []);
 
     if (imageError) {
         return <FallBackCard isFlipped={isFlipped} rank={rank} suit={suit} isJoker={isJoker} onClick={onClick}/>;
@@ -83,26 +73,25 @@ export const PokerCard = ({
     return (
         <div
             ref={cardRef}
-            className={`poker-card-size ${isDragging ? 'dragging' : ''}`}
+            className="poker-hand poker-card-size"
             style={{
                 backgroundImage: `url(${getCardImage()})`,
                 backgroundSize: 'contain',
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat',
                 position: 'relative',
-                zIndex: isDragging ? 1000 : 'auto',
-                transition: isDragging ? 'none' : 'transform 0.3s ease',
-
             }}
             onClick={onClick}
-            draggable={false}
             onMouseDown={handleDragStart}
-            onMouseMove={isDragging ? handleDrag : undefined}
+            onMouseMove={handleDrag}
             onMouseUp={handleDragEnd}
+            onMouseLeave={handleDragEnd}
             role="img"
             aria-label={isFlipped ? 'Card Back' : (isJoker ? 'Joker' : `${rank} of ${suit}`)}
         />
     );
-};
+});
+
+PokerCard.displayName = 'PokerCard';
 
 export default PokerCard;
