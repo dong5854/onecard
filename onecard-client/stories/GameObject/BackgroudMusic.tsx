@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useRef, useState } from 'react';
-import './BackgroundMusic.css'
+import styles from './BackgroundMusic.module.css'
 import { FaVolumeUp, FaVolumeMute } from 'react-icons/fa';
 
 interface BackgroundMusicProps {
@@ -44,9 +44,9 @@ export const BackgroundMusic = ({ url, className = '' }: BackgroundMusicProps) =
   }, [url]);
 
   return (
-      <div className={`button-container ${className}`}> {/* className prop 적용 */}
+      <div className={`${styles.buttonContainer} ${className}`}> {/* className prop 적용 */}
         <button
-            className={`mini-pixel-button ${isPlaying ? 'on' : 'off'}`}
+            className={`${styles.miniPixelButton} ${isPlaying ? styles.on : styles.off}`}
             onClick={togglePlayPause}
         >
           {isPlaying ? <FaVolumeUp style={{ width: '60%', height: '60%' }} /> : <FaVolumeMute style={{ width: '60%', height: '60%' }} />}
