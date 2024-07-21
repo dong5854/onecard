@@ -1,4 +1,4 @@
-import React, {forwardRef} from 'react';
+import React, {forwardRef, memo} from 'react';
 import { suits, ranks, colors, isValidRank, isValidSuit, PokerCardProps } from './types';
 import styles from './Pokercard.module.css';
 
@@ -6,7 +6,7 @@ interface FallBackCardProps extends PokerCardProps {
     onMouseDown?: (e: React.MouseEvent<HTMLElement>) => void;
 }
 
-export const FallBackCard = forwardRef<HTMLDivElement, FallBackCardProps>(({
+export const FallBackCard = memo(forwardRef<HTMLDivElement, FallBackCardProps>(({
             rank,
             suit,
             isJoker,
@@ -47,7 +47,7 @@ export const FallBackCard = forwardRef<HTMLDivElement, FallBackCardProps>(({
             <div className={styles.suit}>{displaySuit}</div>
         </div>
     );
-});
+}));
 
 FallBackCard.displayName = 'FallBackCard';
 
