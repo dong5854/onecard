@@ -21,22 +21,22 @@ export default function SinglePlayerPage() {
                             <div className="bg-gray-100 flex items-center justify-center col-span-2 row-span-2">1-2-10-11</div>
                             <div className="flex items-center justify-center col-span-5 row-span-2">
                                     <OverlappingCards>
-                                            <PokerCard isJoker={false} isFlipped={true}/>
-                                            <PokerCard isJoker={false} isFlipped={true}/>
-                                            <PokerCard isJoker={false} isFlipped={true}/>
+                                            <PokerCard isJoker={false} isFlipped={true} draggable={false}/>
+                                            <PokerCard isJoker={false} isFlipped={true} draggable={false}/>
+                                            <PokerCard isJoker={false} isFlipped={true} draggable={false}/>
                                     </OverlappingCards>
                             </div>
                             <div className="bg-gray-100 flex items-center justify-center col-span-2 row-span-2">8-9-17-18</div>
                             <div className="flex items-center justify-center row-span-5 col-span-2">
                                     <OverlappingCards vertical={true}>
-                                            <PokerCard isJoker={false} isFlipped={true}/>
-                                            <PokerCard isJoker={false} isFlipped={true}/>
-                                            <PokerCard isJoker={false} isFlipped={true}/>
-                                            <PokerCard isJoker={false} isFlipped={true}/>
-                                            <PokerCard isJoker={false} isFlipped={true}/>
-                                            <PokerCard isJoker={false} isFlipped={true}/>
-                                            <PokerCard isJoker={false} isFlipped={true}/>
-                                            <PokerCard isJoker={false} isFlipped={true}/>
+                                            <PokerCard isJoker={false} isFlipped={true} draggable={false}/>
+                                            <PokerCard isJoker={false} isFlipped={true} draggable={false}/>
+                                            <PokerCard isJoker={false} isFlipped={true} draggable={false}/>
+                                            <PokerCard isJoker={false} isFlipped={true} draggable={false}/>
+                                            <PokerCard isJoker={false} isFlipped={true} draggable={false}/>
+                                            <PokerCard isJoker={false} isFlipped={true} draggable={false}/>
+                                            <PokerCard isJoker={false} isFlipped={true} draggable={false}/>
+                                            <PokerCard isJoker={false} isFlipped={true} draggable={false}/>
                                     </OverlappingCards>
                             </div>
                             <div className="bg-gray-100 flex items-center justify-center text-xs">20</div>
@@ -46,18 +46,18 @@ export default function SinglePlayerPage() {
                             <div className="bg-gray-100 flex items-center justify-center text-xs">24</div>
                             <div className="flex items-center justify-center row-span-5 col-span-2">
                                     <OverlappingCards vertical={true}>
-                                            <PokerCard isJoker={false} isFlipped={true}/>
-                                            <PokerCard isJoker={false} isFlipped={true}/>
-                                            <PokerCard isJoker={false} isFlipped={true}/>
-                                            <PokerCard isJoker={false} isFlipped={true}/>
-                                            <PokerCard isJoker={false} isFlipped={true}/>
+                                            <PokerCard isJoker={false} isFlipped={true} draggable={false}/>
+                                            <PokerCard isJoker={false} isFlipped={true} draggable={false}/>
+                                            <PokerCard isJoker={false} isFlipped={true} draggable={false}/>
+                                            <PokerCard isJoker={false} isFlipped={true} draggable={false}/>
+                                            <PokerCard isJoker={false} isFlipped={true} draggable={false}/>
                                     </OverlappingCards>
                             </div>
                             <div className="bg-gray-100 flex items-center justify-center text-xs">29</div>
                             <div className="flex items-center justify-center text-xs col-span-3 row-span-3">
                                     <CardPlayHolder width="200px" height="150px">
-                                            <PokerCard isJoker={false} isFlipped={true} />
-                                            <PokerCard isJoker={true} isFlipped={false} />
+                                            <PokerCard isJoker={false} isFlipped={true} draggable={false}/>
+                                            <PokerCard isJoker={true} isFlipped={false} draggable={false}/>
                                     </CardPlayHolder>
                             </div>
                             <div className="bg-gray-100 flex items-center justify-center text-xs">33</div>
@@ -73,9 +73,9 @@ export default function SinglePlayerPage() {
                             <div className="bg-gray-100 flex items-center justify-center col-span-2 row-span-2">63-64-73-74</div>
                             <div className="flex items-center justify-center col-span-5 row-span-2">
                                     <OverlappingCards>
-                                            <PokerCard key={6} rank={3} isJoker={false} isFlipped={false} suit="spades" />
-                                            <PokerCard key={7} rank={5} isJoker={false} isFlipped={false} suit="diamonds" />
-                                            <PokerCard key={8} rank={9} isJoker={false} isFlipped={false} suit="clubs" />
+                                            <PokerCard key={6} rank={3} isJoker={false} isFlipped={false} draggable={true} suit="spades" />
+                                            <PokerCard key={7} rank={5} isJoker={false} isFlipped={false} draggable={true} suit="diamonds" />
+                                            <PokerCard key={8} rank={9} isJoker={false} isFlipped={false} draggable={true} suit="clubs" />
                                     </OverlappingCards>
                             </div>
                             <div className="bg-gray-100 flex items-center justify-center col-span-2 row-span-2">71-72-80-81</div>

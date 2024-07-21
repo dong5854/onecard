@@ -5,13 +5,14 @@ import FallBackCard from './FallBackCard';
 import { PokerCardProps } from './types';
 import styles from './Pokercard.module.css';
 
-const PokerCard: React.FC<PokerCardProps> = memo(({
-                                                      rank,
-                                                      suit,
-                                                      isJoker,
-                                                      isFlipped,
-                                                      onClick,
-                                                  }) => {
+const PokerCard = memo(({
+        rank,
+        suit,
+        isJoker,
+        isFlipped,
+        onClick,
+        draggable = true,
+      } : PokerCardProps) => {
     const [imageError, setImageError] = useState(false);
     const isDraggingRef = useRef(false);
     const dragOffsetRef = useRef({ x: 0, y: 0 });
@@ -35,51 +36,40 @@ const PokerCard: React.FC<PokerCardProps> = memo(({
     }, [getCardImage]);
 
     const handleDragStart = useCallback((e: React.MouseEvent<HTMLElement>) => {
-        if (cardRef.current) {
-            const rect = cardRef.current.getBoundingClientRect();
-            initialPositionRef.current = { x: rect.left, y: rect.top };
-            dragOffsetRef.current = {
-                x: e.clientX - rect.left,
-                y: e.clientY - rect.top
-            };
-            cardRef.current.style.transition = 'none';
-        }
+        if (!draggable || !cardRef.current) return;
+
+        const rect = cardRef.current.getBoundingClientRect();
+        initialPositionRef.current = { x: rect.left, y: rect.top };
+        dragOffsetRef.current = {
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top
+        };
+        cardRef.current.style.transition = 'none';
         isDraggingRef.current = true;
-        cardRef.current?.classList.add('dragging');
-    }, []);
+    }, [draggable]);
 
     const handleDrag = useCallback((e: MouseEvent) => {
-        if (!isDraggingRef.current) return;
+        if (!isDraggingRef.current || !cardRef.current) return;
 
         const newX = e.clientX - initialPositionRef.current.x - dragOffsetRef.current.x;
         const newY = e.clientY - initialPositionRef.current.y - dragOffsetRef.current.y;
 
-        if (cardRef.current) {
-            cardRef.current.style.transform = `translate(${newX}px, ${newY}px)`;
-        }
+        cardRef.current.style.transform = `translate(${newX}px, ${newY}px)`;
     }, []);
 
     const handleDragEnd = useCallback(() => {
+        if (!cardRef.current) return;
+
         isDraggingRef.current = false;
-        if (cardRef.current) {
-            cardRef.current.classList.remove('dragging');
-            cardRef.current.style.transition = 'transform 0.3s ease';
-            cardRef.current.style.transform = 'translate(0, 0)';
-        }
+        cardRef.current.style.transition = 'transform 0.3s ease';
+        cardRef.current.style.transform = 'translate(0, 0)';
     }, []);
 
     useEffect(() => {
-        const handleMouseMove = (e: MouseEvent) => {
-            if (isDraggingRef.current) {
-                handleDrag(e);
-            }
-        };
+        if (!draggable) return;
 
-        const handleMouseUp = () => {
-            if (isDraggingRef.current) {
-                handleDragEnd();
-            }
-        };
+        const handleMouseMove = (e: MouseEvent) => isDraggingRef.current && handleDrag(e);
+        const handleMouseUp = () => isDraggingRef.current && handleDragEnd();
 
         window.addEventListener('mousemove', handleMouseMove);
         window.addEventListener('mouseup', handleMouseUp);
@@ -88,16 +78,22 @@ const PokerCard: React.FC<PokerCardProps> = memo(({
             window.removeEventListener('mousemove', handleMouseMove);
             window.removeEventListener('mouseup', handleMouseUp);
         };
-    }, [handleDrag, handleDragEnd]);
+    }, [draggable, handleDrag, handleDragEnd]);
 
     if (imageError) {
-        return <FallBackCard isFlipped={isFlipped} rank={rank} suit={suit} isJoker={isJoker} onClick={onClick}/>;
+        return <FallBackCard ref={cardRef}
+                             isFlipped={isFlipped}
+                             rank={rank}
+                             suit={suit}
+                             isJoker={isJoker}
+                             onClick={onClick}
+                             onMouseDown={handleDragStart}/>;
     }
 
     return (
         <div
             ref={cardRef}
-            className={styles.pokerCardSize}
+            className={`${styles.pokerCardSize} ${draggable ? styles.pointerCardCursor : ''}`}
             style={{
                 backgroundImage: `url(${getCardImage()})`,
                 backgroundSize: 'contain',

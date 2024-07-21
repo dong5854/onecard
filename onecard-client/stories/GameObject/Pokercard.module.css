@@ -3,6 +3,10 @@
   height: 120px;
 }
 
+.pointerCardCursor {
+  cursor: pointer;
+}
+
 .pokerCard {
   border: 1px solid #000;
   border-radius: 8px;

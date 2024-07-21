@@ -34,5 +34,6 @@ export type PokerCardProps = {
     isFlipped: boolean;
     rank?: RankValue;
     suit?: SuitsValue;
+    draggable?: boolean;
     onClick?: () => void;
 }

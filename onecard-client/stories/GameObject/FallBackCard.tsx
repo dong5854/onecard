@@ -1,19 +1,27 @@
-import React from 'react';
+import React, {forwardRef} from 'react';
 import { suits, ranks, colors, isValidRank, isValidSuit, PokerCardProps } from './types';
 import styles from './Pokercard.module.css';
 
-export const FallBackCard = ({
+interface FallBackCardProps extends PokerCardProps {
+    onMouseDown?: (e: React.MouseEvent<HTMLElement>) => void;
+}
+
+export const FallBackCard = forwardRef<HTMLDivElement, FallBackCardProps>(({
             rank,
             suit,
             isJoker,
             isFlipped,
             onClick,
-        } : PokerCardProps) => {
+            draggable,
+            onMouseDown,
+        }, ref) => {
+
+    const baseClassName = `${styles.pokerCard} ${styles.pokerCardSize}`
     if (isFlipped) {
         return (
-            <div className={`${styles.pokerCard} ${styles.pokerCardSize} ${styles.pokerCardBack}`} onClick={onClick}>
+            <div ref={ref} className={`${baseClassName} ${styles.pokerCardBack} ${draggable ? styles.pointerCardCursor : ''}`} onClick={onClick} onMouseDown={onMouseDown}>
                 <div className={styles.cardBackDesign}>
-                    <div className={styles.cardBackPattern}></div>
+                    <div className={styles.cardBackPattern}/>
                     <div className={styles.cardBackLogo}>♠♥♣♦</div>
                 </div>
             </div>
@@ -22,19 +30,25 @@ export const FallBackCard = ({
 
     if (isJoker) {
         return (
-            <div className={`${styles.pokerCard} ${styles.pokerCardSize}`} onClick={onClick}>
+            <div ref={ref} className={`${baseClassName} ${draggable ? styles.pointerCardCursor : ''}`} onClick={onClick} onMouseDown={onMouseDown}>
                 <div className={styles.joker}>joker</div>
                 <div className={styles.suit}>🤡</div>
             </div>
         );
     }
 
+    const cardColor = suit && isValidSuit(suit) ? colors[suit] : 'black';
+    const displayRank = isValidRank(rank) ? ranks[rank] : 'error';
+    const displaySuit = isValidSuit(suit) ? suits[suit] : 'error';
+
     return (
-        <div className={`${styles.pokerCard} ${styles.pokerCardSize}`} style={{ color: suit ? colors[suit] : 'black' }} onClick={onClick}>
-            <div className={styles.rank}>{isValidRank(rank) ? ranks[rank] : 'error'}</div>
-            <div className={styles.suit}>{isValidSuit(suit) ? suits[suit] : 'error'}</div>
+        <div ref={ref} className={`${baseClassName} ${draggable ? styles.pointerCardCursor : ''}`} style={{ color: cardColor}} onClick={onClick} onMouseDown={onMouseDown}>
+            <div className={styles.rank}>{displayRank}</div>
+            <div className={styles.suit}>{displaySuit}</div>
         </div>
     );
-};
+});
+
+FallBackCard.displayName = 'FallBackCard';
 
 export default FallBackCard;
