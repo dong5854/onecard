@@ -1,6 +1,6 @@
 import React from 'react';
 import { suits, ranks, colors, isValidRank, isValidSuit, PokerCardProps } from './types';
-import './Pokercard.css';
+import styles from './Pokercard.module.css';
 
 export const FallBackCard = ({
             rank,
@@ -11,10 +11,10 @@ export const FallBackCard = ({
         } : PokerCardProps) => {
     if (isFlipped) {
         return (
-            <div className="poker-card poker-card-size poker-card-back" onClick={onClick}>
-                <div className="card-back-design">
-                    <div className="card-back-pattern"></div>
-                    <div className="card-back-logo">♠♥♣♦</div>
+            <div className={`${styles.pokerCard} ${styles.pokerCardSize} ${styles.pokerCardBack}`} onClick={onClick}>
+                <div className={styles.cardBackDesign}>
+                    <div className={styles.cardBackPattern}></div>
+                    <div className={styles.cardBackLogo}>♠♥♣♦</div>
                 </div>
             </div>
         );
@@ -22,17 +22,17 @@ export const FallBackCard = ({
 
     if (isJoker) {
         return (
-            <div className="poker-card poker-card-size" onClick={onClick}>
-                <div className="joker">joker</div>
-                <div className="suit">🤡</div>
+            <div className={`${styles.pokerCard} ${styles.pokerCardSize}`} onClick={onClick}>
+                <div className={styles.joker}>joker</div>
+                <div className={styles.suit}>🤡</div>
             </div>
         );
     }
 
     return (
-        <div className="poker-card poker-card-size" style={{ color: suit ? colors[suit] : 'black' }} onClick={onClick}>
-            <div className="rank">{isValidRank(rank) ? ranks[rank] : 'error'}</div>
-            <div className="suit">{isValidSuit(suit) ? suits[suit] : 'error'}</div>
+        <div className={`${styles.pokerCard} ${styles.pokerCardSize}`} style={{ color: suit ? colors[suit] : 'black' }} onClick={onClick}>
+            <div className={styles.rank}>{isValidRank(rank) ? ranks[rank] : 'error'}</div>
+            <div className={styles.suit}>{isValidSuit(suit) ? suits[suit] : 'error'}</div>
         </div>
     );
 };

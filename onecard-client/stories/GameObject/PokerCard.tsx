@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useRef, useState, memo } from "react";
 import FallBackCard from './FallBackCard';
 import { PokerCardProps } from './types';
-import './Pokercard.css';
+import styles from './Pokercard.module.css';
 
 const PokerCard: React.FC<PokerCardProps> = memo(({
                                                       rank,
@@ -97,7 +97,7 @@ const PokerCard: React.FC<PokerCardProps> = memo(({
     return (
         <div
             ref={cardRef}
-            className="poker-card-size"
+            className={styles.pokerCardSize}
             style={{
                 backgroundImage: `url(${getCardImage()})`,
                 backgroundSize: 'contain',
