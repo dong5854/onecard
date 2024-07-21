@@ -6,7 +6,7 @@ import { FaVolumeUp, FaVolumeMute } from 'react-icons/fa';
 
 interface BackgroundMusicProps {
   url: string;
-  className?: string; // 선택적 className prop 추가
+  className?: string;
 }
 
 export const BackgroundMusic = ({ url, className = '' }: BackgroundMusicProps) => {
@@ -44,7 +44,7 @@ export const BackgroundMusic = ({ url, className = '' }: BackgroundMusicProps) =
   }, [url]);
 
   return (
-      <div className={`${styles.buttonContainer} ${className}`}> {/* className prop 적용 */}
+      <div className={`${styles.buttonContainer} ${className}`}>
         <button
             className={`${styles.miniPixelButton} ${isPlaying ? styles.on : styles.off}`}
             onClick={togglePlayPause}

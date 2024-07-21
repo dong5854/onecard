@@ -1,14 +1,14 @@
-.button-container {
+.buttonContainer {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.mini-pixel-button {
-  background-color: #5A6B3F; /* 어두운 올리브 그린 */
+.miniPixelButton {
+  background-color: #5A6B3F;
   border: none;
   padding: 0;
-  color: #D0DB61; /* 밝은 올리브 옐로우 */
+  color: #D0DB61;
   cursor: pointer;
   position: relative;
   width: 60px;
@@ -26,7 +26,7 @@
   align-items: center;
 }
 
-.mini-pixel-button:hover {
+.miniPixelButton:hover {
   background-color: #6A7B4F;
   box-shadow: 0 0 0 4px #6A7B4F,
   0 4px 0 4px #5A6B3F,
@@ -36,25 +36,25 @@
   4px 4px 0 4px #3A4A27;
 }
 
-.mini-pixel-button:active {
+.miniPixelButton:active {
   box-shadow: 0 0 0 4px #5A6B3F,
   0 4px 0 4px #4A5A33,
   inset 4px 4px 0 0 #3A4A27;
   transform: translate(4px, 4px);
 }
 
-.mini-pixel-button.on {
-  background-color: #7A8B5F; /* 약간 밝은 올리브 그린 */
+.miniPixelButton.on {
+  background-color: #7A8B5F;
 }
 
-.mini-pixel-button.on:hover {
-  background-color: #8A9B6F; /* 더 밝은 올리브 그린 */
+.miniPixelButton.on:hover {
+  background-color: #8A9B6F;
 }
 
-.mini-pixel-button.off {
-  background-color: #4A5A33; /* 더 어두운 올리브 그린 */
+.miniPixelButton.off {
+  background-color: #4A5A33;
 }
 
-.mini-pixel-button.off:hover {
-  background-color: #5A6B43; /* 약간 밝은 어두운 올리브 그린 */
+.miniPixelButton.off:hover {
+  background-color: #5A6B43;
 }
