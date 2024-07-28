@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from 'react';
-import './PixelRetroButton.css';
+import styles from './PixelRetroButton.module.css';
 
 interface PixelRetroButtonProps {
   text: string;
@@ -9,20 +9,20 @@ interface PixelRetroButtonProps {
   onClick?: () => void;
 }
 
-const PixelRetroButton = ({ text, className, onClick }: PixelRetroButtonProps) => {
+const PixelRetroButton: React.FC<PixelRetroButtonProps> = ({ text, className, onClick }) => {
   const [isPressed, setIsPressed] = useState(false);
-  const buttonClass = isPressed ? 'pixel-button pressed' : 'pixel-button';
+  const buttonClass = `${styles.pixelButton} ${isPressed ? styles.pressed : ''} ${className || ''}`;
 
   return (
       <button
-          className={`${buttonClass} ${className}`}
+          className={buttonClass}
           onMouseDown={() => setIsPressed(true)}
           onMouseUp={() => setIsPressed(false)}
           onMouseLeave={() => setIsPressed(false)}
           onClick={onClick}
       >
-        <div className="inner">
-          <span className="button-text">{text}</span>
+        <div className={styles.inner}>
+          <span className={styles.buttonText}>{text}</span>
         </div>
       </button>
   );

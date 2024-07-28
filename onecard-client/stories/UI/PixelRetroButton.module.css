@@ -1,4 +1,4 @@
-.pixel-button {
+.pixelButton {
   background-color: rgba(39, 67, 42, 1); /* 배경색과 동일 */
   border: none;
   padding: 0;
@@ -21,7 +21,7 @@
   transition: all 0.1s ease;
 }
 
-.pixel-button.pressed {
+.pressed {
   box-shadow: 0 0 0 4px #3A5234,
   0 4px 0 4px #5A7A3F,
   inset 4px 4px 0 0 #5A7A3F;
@@ -46,11 +46,11 @@
   transition: all 0.1s ease;
 }
 
-.pixel-button.pressed .inner {
+.pressed .inner {
   background-position: 4px 4px, 4px 8px, 8px 0px, 0px 4px;
 }
 
-.button-text {
+.buttonText {
   position: relative;
   z-index: 2;
   text-shadow: 2px 2px 0 #3A5234,
