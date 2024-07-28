@@ -1,4 +1,4 @@
-.game-title {
+.gameTitle {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -6,7 +6,7 @@
     padding: 20px;
 }
 
-.title-text {
+.titleText {
     font-family: Stacked-pixel, monospace;
     font-size: 64px;
     font-weight: bold;
@@ -19,7 +19,7 @@
     white-space: nowrap;
 }
 
-.subtitle-text {
+.subtitleText {
     font-family: Stacked-pixel, monospace;
     font-size: 48px;
     color: #FFFFFF;

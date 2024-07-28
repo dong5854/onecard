@@ -1,15 +1,16 @@
 import React from 'react';
-import './GameTitle.css';
+import styles from './GameTitle.module.css';
 
 interface GameTitleProps {
-    title : string,
+    title: string,
     subtitle?: string
 }
-const GameTitle = ({title, subtitle} : GameTitleProps) => {
+
+const GameTitle: React.FC<GameTitleProps> = ({title, subtitle}) => {
     return (
-        <div className="game-title">
-            <div className="title-text">{title}</div>
-            {subtitle && <div className="subtitle-text">{subtitle}</div> }
+        <div className={styles.gameTitle}>
+            <div className={styles.titleText}>{title}</div>
+            {subtitle && <div className={styles.subtitleText}>{subtitle}</div>}
         </div>
     );
 };
