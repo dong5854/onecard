@@ -1,20 +1,44 @@
-import PokerCard from "@/stories/GameObject/PokerCard";
-import CardPlayHolder from "@/app/_components/CardPlayHolder";
-import OverlappingCards from "@/stories/GameObject/OverlappingCards";
+"use client"
 
-interface RectangleProps {
-        orientation: 'horizontal' | 'vertical';
-}
+import PokerCard from "@/components/GameObject/PokerCard";
+import CardPlayHolder from "@/components/UI/board/CardPlayHolder";
+import OverlappingCards from "@/components/GameObject/OverlappingCards";
+import {useOneCardGame} from "@/lib/hooks/useOneCardGame";
+import {useEffect} from "react";
 
-const Rectangle = ({ orientation }: RectangleProps) => (
-    <div className="w-full h-full flex items-center justify-center bg-gray-200">
-            <div className={`${orientation === 'horizontal' ? 'w-full h-1/2' : 'w-1/2 h-full'} bg-blue-500 rounded-lg flex items-center justify-center text-white`}>
-                    {orientation === 'horizontal' ? 'H' : 'V'}
-            </div>
-    </div>
-);
 
 export default function SinglePlayerPage() {
+        const {
+                gameState,
+                initializeGame,
+                playCard,
+                drawCard,
+                getCurrentPlayer
+        } = useOneCardGame();
+
+        useEffect(() => {
+                initializeGame({numberOfPlayers: 4, includeJokers: false, maxHandSize: 10})
+        }, [initializeGame])
+
+        const openedCard = gameState.discardPile[0];
+
+        if (gameState.gameStatus == 'waiting')  {
+                return <div style={{color : 'white'}}>Loading game...</div>;
+        }
+
+        if (gameState.gameStatus === 'finished') {
+                return (
+                    <div>
+                            <h1>Game Over!</h1>
+                            <p>Winner: {gameState.winner?.name}</p>
+                            <button onClick={() => initializeGame(gameState.settings)}>Play Again</button>
+                    </div>
+                );
+        }
+
+        const currentPlayer = getCurrentPlayer();
+
+
         return (
             <div className="w-full h-full flex items-center justify-center">
                     <div className="aspect-square w-full max-w-[150vh] max-h-[85vh] grid grid-cols-9 grid-rows-9 gap-0.5">
@@ -57,7 +81,11 @@ export default function SinglePlayerPage() {
                             <div className="flex items-center justify-center text-xs col-span-3 row-span-3">
                                     <CardPlayHolder width="200px" height="150px">
                                             <PokerCard isJoker={false} isFlipped={true} draggable={false}/>
-                                            <PokerCard isJoker={true} isFlipped={false} draggable={false}/>
+                                            <PokerCard
+                                                isJoker={openedCard.isJoker} isFlipped={false}
+                                                suit={openedCard.suit} rank={openedCard.rank}
+                                                draggable={false}
+                                            />
                                     </CardPlayHolder>
                             </div>
                             <div className="bg-gray-100 flex items-center justify-center text-xs">33</div>

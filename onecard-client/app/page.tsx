@@ -1,6 +1,6 @@
 import Link from "next/link"
-import GameTitle from "@/stories/UI/GameTitle";
-import PixelRetroButton from "@/stories/UI/PixelRetroButton";
+import GameTitle from "@/components/UI/GameTitle";
+import PixelRetroButton from "@/components/UI/PixelRetroButton";
 
 export default function MainPage() {
     return (
