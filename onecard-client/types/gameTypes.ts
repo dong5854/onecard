@@ -1,7 +1,8 @@
+// 기본 게임 요소 정의
 export const suits = {
     clubs: '♣',
-    hearts: '♥',
     diamonds: '♦',
+    hearts: '♥',
     spades: '♠',
 } as const;
 
@@ -12,10 +13,10 @@ export const ranks = {
 } as const;
 
 export const colors = {
-    spades: 'black',
-    hearts: 'red',
-    diamonds: 'red',
     clubs: 'black',
+    diamonds: 'red',
+    hearts: 'red',
+    spades: 'black',
 } as const;
 
 export type RankValue = keyof typeof ranks;
@@ -37,3 +38,50 @@ export type PokerCardProps = {
     draggable?: boolean;
     onClick?: () => void;
 }
+
+// 플레이어 관련 정의
+export interface Player {
+    id: string;
+    name: string;
+    hand: PokerCardProps[];
+    isAI: boolean;
+}
+
+export type AIDifficulty = 'easy' | 'medium' | 'hard';
+
+export interface AIPlayer extends Player {
+    difficulty: AIDifficulty;
+}
+
+// 게임 상태 및 설정 관련 정의
+export type Direction = 'clockwise' | 'counterclockwise';
+export type GameStatus = 'waiting' | 'playing' | 'finished';
+export type SpecialEffect = 'drawTwo' | 'reverse' | 'skip' | 'wildcard';
+
+export interface GameSettings {
+    numberOfPlayers: number;
+    includeJokers: boolean;
+    maxHandSize: number;
+}
+
+export interface GameState {
+    players: Player[];
+    currentPlayerIndex: number;
+    deck: PokerCardProps[];
+    discardPile: PokerCardProps[];
+    direction: Direction;
+    gameStatus: GameStatus;
+    settings: GameSettings;
+    specialEffectInPlay?: SpecialEffect;
+    winner?: Player;
+}
+
+// 게임 액션 정의
+export type GameAction =
+    | { type: 'INITIALIZE_GAME'; payload: GameSettings }
+    | { type: 'PLAY_CARD'; payload: { playerIndex: number; cardIndex: number } }
+    | { type: 'DRAW_CARD' }
+    | { type: 'NEXT_TURN' }
+    | { type: 'CHANGE_DIRECTION' }
+    | { type: 'APPLY_SPECIAL_EFFECT'; payload: SpecialEffect }
+    | { type: 'END_GAME'; payload: { winnerIndex: number } };
