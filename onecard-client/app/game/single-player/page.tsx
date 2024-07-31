@@ -23,10 +23,12 @@ export default function SinglePlayerPage() {
         const openedCard = gameState.discardPile[0];
 
         if (gameState.gameStatus == 'waiting')  {
+                // TODO: 디자인 다듬기
                 return <div style={{color : 'white'}}>Loading game...</div>;
         }
 
         if (gameState.gameStatus === 'finished') {
+                // TODO: 디자인 다듬기
                 return (
                     <div>
                             <h1>Game Over!</h1>
