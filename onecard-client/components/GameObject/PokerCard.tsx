@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useRef, useState, memo } from "react";
 import FallBackCard from './FallBackCard';
-import { PokerCardProps } from './types';
+import { PokerCardProps } from '../../types/gameTypes';
 import styles from './Pokercard.module.css';
 
 const PokerCard = memo(({

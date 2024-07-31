@@ -1,5 +1,5 @@
 import React, {forwardRef, memo} from 'react';
-import { suits, ranks, colors, isValidRank, isValidSuit, PokerCardProps } from './types';
+import { suits, ranks, colors, isValidRank, isValidSuit, PokerCardProps } from '../../types/gameTypes';
 import styles from './Pokercard.module.css';
 
 interface FallBackCardProps extends PokerCardProps {

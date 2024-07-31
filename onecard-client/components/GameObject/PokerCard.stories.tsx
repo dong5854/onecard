@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
-import PokerCard from "@/stories/GameObject/PokerCard";
+import PokerCard from "@/components/GameObject/PokerCard";
 
 const meta = {
   title: 'GameObject/PokerCard',
