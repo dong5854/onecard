@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useRef, useState, memo } from "react";
 import FallBackCard from './FallBackCard';
-import { PokerCardProps } from '../../types/gameTypes';
+import { PokerCardProps } from '@/types/gameTypes';
 import styles from './Pokercard.module.css';
 
 const PokerCard = memo(({
@@ -12,6 +12,9 @@ const PokerCard = memo(({
         isFlipped,
         onClick,
         draggable = true,
+        onDragStart,
+        onDrag,
+        onDragEnd,
       } : PokerCardProps) => {
     const [imageError, setImageError] = useState(false);
     const isDraggingRef = useRef(false);
@@ -46,7 +49,8 @@ const PokerCard = memo(({
         };
         cardRef.current.style.transition = 'none';
         isDraggingRef.current = true;
-    }, [draggable]);
+        onDragStart && onDragStart();
+    }, [draggable, onDragStart]);
 
     const handleDrag = useCallback((e: MouseEvent) => {
         if (!isDraggingRef.current || !cardRef.current) return;
@@ -55,7 +59,8 @@ const PokerCard = memo(({
         const newY = e.clientY - initialPositionRef.current.y - dragOffsetRef.current.y;
 
         cardRef.current.style.transform = `translate(${newX}px, ${newY}px)`;
-    }, []);
+        onDrag && onDrag(e.clientX, e.clientY);
+    }, [onDrag]);
 
     const handleDragEnd = useCallback(() => {
         if (!cardRef.current) return;
@@ -63,7 +68,8 @@ const PokerCard = memo(({
         isDraggingRef.current = false;
         cardRef.current.style.transition = 'transform 0.3s ease';
         cardRef.current.style.transform = 'translate(0, 0)';
-    }, []);
+        onDragEnd && onDragEnd();
+    }, [onDragEnd]);
 
     useEffect(() => {
         if (!draggable) return;

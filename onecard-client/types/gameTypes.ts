@@ -36,6 +36,9 @@ export type PokerCardProps = {
     rank?: RankValue;
     suit?: SuitsValue;
     draggable?: boolean;
+    onDragStart?: () => void;
+    onDrag?: (clientX: number, clientY: number) => void;
+    onDragEnd?: () => void;
     onClick?: () => void;
 }
 
