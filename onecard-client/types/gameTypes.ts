@@ -64,6 +64,7 @@ export type SpecialEffect = 'drawTwo' | 'reverse' | 'skip' | 'wildcard';
 export interface GameSettings {
     numberOfPlayers: number;
     includeJokers: boolean;
+    initHandSize: number;
     maxHandSize: number;
 }
 

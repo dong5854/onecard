@@ -13,6 +13,7 @@ const initialState: GameState = {
     settings: {
         numberOfPlayers: 4,
         includeJokers: false,
+        initHandSize : 5,
         maxHandSize: 7
     }
 };

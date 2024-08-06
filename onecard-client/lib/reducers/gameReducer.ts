@@ -11,6 +11,7 @@ const initialState: GameState = {
     settings: {
         numberOfPlayers: 4,
         includeJokers: false,
+        initHandSize: 5,
         maxHandSize: 7
     }
 };
@@ -25,7 +26,7 @@ const initialState: GameState = {
                 hand: [],
                 isAI: i !== 0 // 첫번째 플레이어만 사람이고, 나머지는 AI
             }));
-            const { updatedPlayers, updatedDeck } = dealCards(players, deck, action.payload.maxHandSize);
+            const { updatedPlayers, updatedDeck } = dealCards(players, deck, action.payload.initHandSize);
             return {
                 ...state,
                 players: updatedPlayers,
