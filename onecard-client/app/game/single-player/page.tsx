@@ -78,9 +78,14 @@ export default function SinglePlayerPage() {
                             </div>
                             <div className="flex items-center justify-center col-span-5 row-span-2">
                                     <OverlappingCards>
-                                            <PokerCard isJoker={false} isFlipped={true} draggable={false}/>
-                                            <PokerCard isJoker={false} isFlipped={true} draggable={false}/>
-                                            <PokerCard isJoker={false} isFlipped={true} draggable={false}/>
+                                            {gameState.players[2].hand.map((card, index) => (
+                                                <PokerCard key={index} rank={card.rank} isJoker={card.isJoker} isFlipped={card.isFlipped}
+                                                           draggable={card.draggable} suit={card.suit}
+                                                           onDragStart={()=> handleCardDragStart(index)}
+                                                           onDrag={handleCardDrag}
+                                                           onDragEnd={handleCardDragEnd}
+                                                />
+                                            ))}
                                     </OverlappingCards>
                             </div>
                             <div
@@ -88,24 +93,27 @@ export default function SinglePlayerPage() {
                             </div>
                             <div className="flex items-center justify-center row-span-5 col-span-2">
                                     <OverlappingCards vertical={true}>
-                                            <PokerCard isJoker={false} isFlipped={true} draggable={false}/>
-                                            <PokerCard isJoker={false} isFlipped={true} draggable={false}/>
-                                            <PokerCard isJoker={false} isFlipped={true} draggable={false}/>
-                                            <PokerCard isJoker={false} isFlipped={true} draggable={false}/>
-                                            <PokerCard isJoker={false} isFlipped={true} draggable={false}/>
-                                            <PokerCard isJoker={false} isFlipped={true} draggable={false}/>
-                                            <PokerCard isJoker={false} isFlipped={true} draggable={false}/>
-                                            <PokerCard isJoker={false} isFlipped={true} draggable={false}/>
+                                            {gameState.players[1].hand.map((card, index) => (
+                                                <PokerCard key={index} rank={card.rank} isJoker={card.isJoker} isFlipped={card.isFlipped}
+                                                           draggable={card.draggable} suit={card.suit}
+                                                           onDragStart={()=> handleCardDragStart(index)}
+                                                           onDrag={handleCardDrag}
+                                                           onDragEnd={handleCardDragEnd}
+                                                />
+                                            ))}
                                     </OverlappingCards>
                             </div>
                             <div className="bg-gray-100 flex items-center justify-center text-xs col-span-5"/>
                             <div className="flex items-center justify-center row-span-5 col-span-2">
                                     <OverlappingCards vertical={true}>
-                                            <PokerCard isJoker={false} isFlipped={true} draggable={false}/>
-                                            <PokerCard isJoker={false} isFlipped={true} draggable={false}/>
-                                            <PokerCard isJoker={false} isFlipped={true} draggable={false}/>
-                                            <PokerCard isJoker={false} isFlipped={true} draggable={false}/>
-                                            <PokerCard isJoker={false} isFlipped={true} draggable={false}/>
+                                            {gameState.players[3].hand.map((card, index) => (
+                                                <PokerCard key={index} rank={card.rank} isJoker={card.isJoker} isFlipped={card.isFlipped}
+                                                           draggable={card.draggable} suit={card.suit}
+                                                           onDragStart={()=> handleCardDragStart(index)}
+                                                           onDrag={handleCardDrag}
+                                                           onDragEnd={handleCardDragEnd}
+                                                />
+                                            ))}
                                     </OverlappingCards>
                             </div>
                             <div className="bg-gray-100 flex items-center justify-center text-xs row-span-3" />
