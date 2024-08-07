@@ -42,11 +42,13 @@ export type PokerCardProps = {
     onClick?: () => void;
 }
 
+export type PokerCardPropsWithId = PokerCardProps & { id: string };
+
 // 플레이어 관련 정의
 export interface Player {
     id: string;
     name: string;
-    hand: PokerCardProps[];
+    hand: PokerCardPropsWithId[];
     isAI: boolean;
 }
 
@@ -71,8 +73,8 @@ export interface GameSettings {
 export interface GameState {
     players: Player[];
     currentPlayerIndex: number;
-    deck: PokerCardProps[];
-    discardPile: PokerCardProps[];
+    deck: PokerCardPropsWithId[];
+    discardPile: PokerCardPropsWithId[];
     direction: Direction;
     gameStatus: GameStatus;
     settings: GameSettings;

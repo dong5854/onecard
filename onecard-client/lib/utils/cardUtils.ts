@@ -1,11 +1,12 @@
-import {PokerCardProps, Player, SuitsValue, RankValue, SpecialEffect} from '@/types/gameTypes';
+import {PokerCardPropsWithId, Player, SuitsValue, RankValue, SpecialEffect} from '@/types/gameTypes';
 
-export const createDeck = (includeJokers: boolean): PokerCardProps[] => {
+export const createDeck = (includeJokers: boolean): PokerCardPropsWithId[] => {
     const suits: SuitsValue[] = ['hearts', 'diamonds', 'clubs', 'spades'];
     const ranks: RankValue[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
 
-    let deck: PokerCardProps[] = suits.flatMap(suit =>
+    let deck: PokerCardPropsWithId[] = suits.flatMap(suit =>
         ranks.map(rank => ({
+            id : crypto.randomUUID(),
             suit,
             rank,
             isJoker: false,
@@ -16,15 +17,15 @@ export const createDeck = (includeJokers: boolean): PokerCardProps[] => {
 
     if (includeJokers) {
         deck.push(
-            { isJoker: true, isFlipped: true, draggable: false },
-            { isJoker: true, isFlipped: true, draggable: false }
+            { id: crypto.randomUUID(), isJoker: true, isFlipped: true, draggable: false },
+            { id: crypto.randomUUID(), isJoker: true, isFlipped: true, draggable: false }
         );
     }
 
     return deck;
 };
 
-export const shuffleDeck = (deck: PokerCardProps[]): PokerCardProps[] => {
+export const shuffleDeck = (deck: PokerCardPropsWithId[]): PokerCardPropsWithId[] => {
     const shuffled = [...deck];
     for (let i = shuffled.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -35,27 +36,27 @@ export const shuffleDeck = (deck: PokerCardProps[]): PokerCardProps[] => {
 
 export const dealCards = (
     players: Player[],
-    deck: PokerCardProps[],
-    handSize: number
-): { updatedPlayers: Player[], updatedDeck: PokerCardProps[] } => {
-    const updatedPlayers = players.map(player => ({
+    deck: PokerCardPropsWithId[],
+    initHandSize: number
+): { updatedPlayers: Player[], updatedDeck: PokerCardPropsWithId[] } => {
+    const updatedPlayers = players.map((player, idx) => ({
         ...player,
-        hand: deck.slice(player.hand.length, player.hand.length + handSize)
+        hand: deck.slice(idx * initHandSize, idx * initHandSize + initHandSize)
     }));
 
-    const updatedDeck = deck.slice(players.length * handSize);
+    const updatedDeck = deck.slice(players.length * initHandSize);
 
     return { updatedPlayers, updatedDeck };
 };
 
 // 카드의 유효성 검사 함수
-export const isValidPlay = (playedCard: PokerCardProps, topCard: PokerCardProps): boolean => {
+export const isValidPlay = (playedCard: PokerCardPropsWithId, topCard: PokerCardPropsWithId): boolean => {
     if (playedCard.isJoker) return true;
     if (!playedCard.rank || !playedCard.suit || !topCard.rank || !topCard.suit) return false;
     return playedCard.rank === topCard.rank || playedCard.suit === topCard.suit;
 };
 
-export const applySpecialCardEffect = (card: PokerCardProps): SpecialEffect | null => {
+export const applySpecialCardEffect = (card: PokerCardPropsWithId): SpecialEffect | null => {
     if (!card.rank) return null;
 
     switch (card.rank) {
