@@ -4,7 +4,7 @@ import PokerCard from "@/components/GameObject/PokerCard";
 import CardPlayHolder from "@/components/UI/board/CardPlayHolder";
 import OverlappingCards from "@/components/GameObject/OverlappingCards";
 import {useOneCardGame} from "@/lib/hooks/useOneCardGame";
-import {useEffect, useRef, useState} from "react";
+import {useCallback, useEffect, useRef, useState} from "react";
 import styles from './SinglePlayerPage.module.css'
 
 export default function SinglePlayerPage() {
@@ -13,7 +13,6 @@ export default function SinglePlayerPage() {
                 initializeGame,
                 playCard,
                 drawCard,
-                getCurrentPlayer
         } = useOneCardGame();
 
         const [draggingCard, setDraggingCard] = useState<number | null>(null);
@@ -25,6 +24,7 @@ export default function SinglePlayerPage() {
         }, [initializeGame])
 
         const openedCard = gameState.discardPile[0];
+        const isMyTurn = useCallback(() => {return gameState.currentPlayerIndex === 0}, [gameState.currentPlayerIndex])
 
         if (gameState.gameStatus == 'waiting')  {
                 // TODO: 디자인 다듬기
@@ -47,6 +47,7 @@ export default function SinglePlayerPage() {
         }
 
         const handleCardDrag = (clientX: number, clientY: number) => {
+                if (!isMyTurn()) return
                 if (dropZoneRef.current) {
                         const rect = dropZoneRef.current.getBoundingClientRect();
                         setIsOverDropZone(
@@ -74,12 +75,14 @@ export default function SinglePlayerPage() {
                             <div
                                 className="bg-gray-100 flex items-center justify-center col-span-2 row-span-2">1
                             </div>
-                            <div className="flex items-center justify-center col-span-5 row-span-2">
+                            <div className="relative flex items-center justify-center col-span-5 row-span-2">
+                                    <span className={`absolute top-3 left-5 ${gameState.currentPlayerIndex == 2 ? "text-yellow-500" : "text-gray-500"}`}>{gameState.players[2].name}</span>
                                     <OverlappingCards>
                                             {gameState.players[2].hand.map((card, index) => (
-                                                <PokerCard key={card.id} rank={card.rank} isJoker={card.isJoker} isFlipped={card.isFlipped}
+                                                <PokerCard key={card.id} rank={card.rank} isJoker={card.isJoker}
+                                                           isFlipped={card.isFlipped}
                                                            draggable={card.draggable} suit={card.suit}
-                                                           onDragStart={()=> handleCardDragStart(index)}
+                                                           onDragStart={() => handleCardDragStart(index)}
                                                            onDrag={handleCardDrag}
                                                            onDragEnd={handleCardDragEnd}
                                                 />
@@ -89,12 +92,15 @@ export default function SinglePlayerPage() {
                             <div
                                 className="bg-gray-100 flex items-center justify-center col-span-2 row-span-2">2
                             </div>
-                            <div className="flex items-center justify-center row-span-5 col-span-2">
+                            <div className="relative flex items-center justify-center row-span-5 col-span-2">
+                                    <span
+                                        className={`absolute top-3 left-5 ${gameState.currentPlayerIndex == 1 ? "text-yellow-500" : "text-gray-500"}`}>{gameState.players[1].name}</span>
                                     <OverlappingCards vertical={true}>
                                             {gameState.players[1].hand.map((card, index) => (
-                                                <PokerCard key={card.id} rank={card.rank} isJoker={card.isJoker} isFlipped={card.isFlipped}
+                                                <PokerCard key={card.id} rank={card.rank} isJoker={card.isJoker}
+                                                           isFlipped={card.isFlipped}
                                                            draggable={card.draggable} suit={card.suit}
-                                                           onDragStart={()=>handleCardDragStart(index)}
+                                                           onDragStart={() => handleCardDragStart(index)}
                                                            onDrag={handleCardDrag}
                                                            onDragEnd={handleCardDragEnd}
                                                 />
@@ -102,12 +108,14 @@ export default function SinglePlayerPage() {
                                     </OverlappingCards>
                             </div>
                             <div className="bg-gray-100 flex items-center justify-center text-xs col-span-5"/>
-                            <div className="flex items-center justify-center row-span-5 col-span-2">
+                            <div className="relative flex items-center justify-center row-span-5 col-span-2">
+                                    <span className={`absolute top-3 left-5 ${gameState.currentPlayerIndex == 3 ? "text-yellow-500" : "text-gray-500"}`}>{gameState.players[3].name}</span>
                                     <OverlappingCards vertical={true}>
                                             {gameState.players[3].hand.map((card, index) => (
-                                                <PokerCard key={card.id} rank={card.rank} isJoker={card.isJoker} isFlipped={card.isFlipped}
+                                                <PokerCard key={card.id} rank={card.rank} isJoker={card.isJoker}
+                                                           isFlipped={card.isFlipped}
                                                            draggable={card.draggable} suit={card.suit}
-                                                           onDragStart={()=> handleCardDragStart(index)}
+                                                           onDragStart={() => handleCardDragStart(index)}
                                                            onDrag={handleCardDrag}
                                                            onDragEnd={handleCardDragEnd}
                                                 />
@@ -142,7 +150,9 @@ export default function SinglePlayerPage() {
                             <div
                                 className="bg-gray-100 flex items-center justify-center col-span-2 row-span-2">3
                             </div>
-                            <div className="flex items-center justify-center col-span-5 row-span-2">
+                            <div className="relative flex items-center justify-center col-span-5 row-span-2">
+                                    <span
+                                        className={`absolute top-3 left-5 ${gameState.currentPlayerIndex == 0 ? "text-yellow-500" : "text-gray-500"}`}>{gameState.players[0].name}</span>
                                     <OverlappingCards>
                                             {gameState.players[0].hand.map((card, index) => (
                                                 <PokerCard key={card.id} rank={card.rank} isJoker={card.isJoker} isFlipped={false}
