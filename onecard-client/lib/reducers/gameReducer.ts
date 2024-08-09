@@ -1,5 +1,5 @@
 import { GameState, GameAction, Player, PokerCardProps } from '@/types/gameTypes';
-import {createDeck, dealCards, shuffleDeck} from "@/lib/utils/cardUtils";
+import {applySpecialCardEffect, checkWinner, createDeck, dealCards, shuffleDeck} from "@/lib/utils/cardUtils";
 
 const initialState: GameState = {
     players: [],
@@ -17,6 +17,7 @@ const initialState: GameState = {
 };
 
     export const gameReducer = (state: GameState = initialState, action: GameAction): GameState => {
+    const nextPlayerIndex = getNextPlayerIndex(state)
     switch (action.type) {
         case 'INITIALIZE_GAME':
             const deck = shuffleDeck(createDeck(action.payload.includeJokers));
@@ -40,14 +41,30 @@ const initialState: GameState = {
             const { playerIndex, cardIndex } = action.payload;
             const player = state.players[playerIndex];
             const playedCard = player.hand[cardIndex];
-            const updatedPlayer = {
-                ...player,
-                hand: player.hand.filter((_, index) => index !== cardIndex)
-            };
+
+            const updatedPlayersAfterPlayCard  = state.players.map((p, index) =>
+                index === playerIndex
+                    ? { ...p, hand: p.hand.filter((_, i) => i !== cardIndex) }
+                    : p
+            );
+            const updatedDiscardPile = [playedCard, ...state.discardPile];
+
+            const effect = applySpecialCardEffect(playedCard);
+            const winner = checkWinner(updatedPlayersAfterPlayCard);
+            if (winner) {
+                return {
+                    ...state,
+                    players: updatedPlayersAfterPlayCard,
+                    discardPile: updatedDiscardPile,
+                    gameStatus: 'finished',
+                    winner : winner
+                };
+            }
             return {
                 ...state,
-                players: state.players.map((p, index) => index === playerIndex ? updatedPlayer : p),
-                discardPile: [playedCard, ...state.discardPile]
+                players: updatedPlayersAfterPlayCard,
+                discardPile: updatedDiscardPile,
+                currentPlayerIndex: nextPlayerIndex
             };
 
         case 'DRAW_CARD':
@@ -62,13 +79,7 @@ const initialState: GameState = {
                 players: state.players.map((p, index) =>
                     index === state.currentPlayerIndex ? updatedCurrentPlayer : p
                 ),
-                deck: state.deck.slice(1)
-            };
-
-        case 'NEXT_TURN':
-            const nextPlayerIndex = getNextPlayerIndex(state);
-            return {
-                ...state,
+                deck: state.deck.slice(1),
                 currentPlayerIndex: nextPlayerIndex
             };
 

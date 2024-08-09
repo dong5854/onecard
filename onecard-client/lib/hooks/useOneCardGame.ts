@@ -29,21 +29,8 @@ export const useOneCardGame = () => {
         const player = gameState.players[playerIndex];
         const card = player.hand[cardIndex];
         const topCard = gameState.discardPile[0];
-
         if (isValidPlay(card, topCard)) {
             dispatch({ type: 'PLAY_CARD', payload: { playerIndex, cardIndex } });
-
-            const effect = applySpecialCardEffect(card);
-            if (effect) {
-                dispatch({ type: 'APPLY_SPECIAL_EFFECT', payload: effect });
-            }
-
-            const winner = checkWinner(gameState.players);
-            if (winner) {
-                dispatch({ type: 'END_GAME', payload: { winnerIndex: playerIndex } });
-            } else {
-                dispatch({ type: 'NEXT_TURN' });
-            }
         }
     }, [gameState]);
 
