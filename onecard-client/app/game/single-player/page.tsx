@@ -6,6 +6,7 @@ import OverlappingCards from "@/components/GameObject/OverlappingCards";
 import {useOneCardGame} from "@/lib/hooks/useOneCardGame";
 import {useCallback, useEffect, useRef, useState} from "react";
 import styles from './SinglePlayerPage.module.css'
+import {isValidPlay} from "@/lib/utils/cardUtils";
 
 export default function SinglePlayerPage() {
         const {
@@ -13,6 +14,7 @@ export default function SinglePlayerPage() {
                 initializeGame,
                 playCard,
                 drawCard,
+                getCurrentPlayer
         } = useOneCardGame();
 
         const [draggingCard, setDraggingCard] = useState<number | null>(null);
@@ -24,6 +26,7 @@ export default function SinglePlayerPage() {
         }, [initializeGame])
 
         const openedCard = gameState.discardPile[0];
+        const currentPlayer = getCurrentPlayer()
         const isMyTurn = useCallback(() => {return gameState.currentPlayerIndex === 0}, [gameState.currentPlayerIndex])
 
         if (gameState.gameStatus == 'waiting')  {
@@ -51,6 +54,7 @@ export default function SinglePlayerPage() {
                 if (dropZoneRef.current) {
                         const rect = dropZoneRef.current.getBoundingClientRect();
                         setIsOverDropZone(
+                            isValidPlay(currentPlayer.hand[draggingCard!], openedCard) &&
                             clientX >= rect.left &&
                             clientX <= rect.right &&
                             clientY >= rect.top &&
