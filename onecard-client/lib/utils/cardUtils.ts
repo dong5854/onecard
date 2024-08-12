@@ -34,6 +34,24 @@ export const shuffleDeck = (deck: PokerCardPropsWithId[]): PokerCardPropsWithId[
     return shuffled;
 };
 
+export const refillDeck = (currentDeck : PokerCardPropsWithId[], discardPile: PokerCardPropsWithId[]): {
+    newDeck: PokerCardPropsWithId[],
+    newDiscardPile: PokerCardPropsWithId[]
+} => {
+    if (discardPile.length === 0) {
+        return {newDeck : currentDeck, newDiscardPile : []};
+    }
+
+    const cardsToShuffle = [...currentDeck, ...discardPile.slice(1)];
+    const shuffledDeck = shuffleDeck(cardsToShuffle);
+    const newDiscardPile = [discardPile[0]];
+
+    return {
+        newDeck : shuffledDeck,
+        newDiscardPile : newDiscardPile,
+    }
+}
+
 export const dealCards = (
     players: Player[],
     deck: PokerCardPropsWithId[],

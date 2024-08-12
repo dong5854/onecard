@@ -1,5 +1,12 @@
-import { GameState, GameAction, Player, PokerCardProps } from '@/types/gameTypes';
-import {applySpecialCardEffect, checkWinner, createDeck, dealCards, shuffleDeck} from "@/lib/utils/cardUtils";
+import {GameState, GameAction, Player, PokerCardProps, PokerCardPropsWithId} from '@/types/gameTypes';
+import {
+    applySpecialCardEffect,
+    checkWinner,
+    createDeck,
+    dealCards,
+    refillDeck,
+    shuffleDeck
+} from "@/lib/utils/cardUtils";
 
 const initialState: GameState = {
     players: [],
@@ -68,18 +75,13 @@ const initialState: GameState = {
             };
 
         case 'DRAW_CARD':
-            const currentPlayer = state.players[state.currentPlayerIndex];
-            const drawnCard = state.deck[0];
-            const updatedCurrentPlayer = {
-                ...currentPlayer,
-                hand: [...currentPlayer.hand, drawnCard]
-            };
+            const { updatedPlayer, remainingDeck } = drawCard(state);
+            const { newDeck, newDiscardPile } = handleEmptyDeck(remainingDeck, state.discardPile);
             return {
                 ...state,
-                players: state.players.map((p, index) =>
-                    index === state.currentPlayerIndex ? updatedCurrentPlayer : p
-                ),
-                deck: state.deck.slice(1),
+                players: updatePlayers(state.players, state.currentPlayerIndex, updatedPlayer),
+                deck: newDeck,
+                discardPile: newDiscardPile,
                 currentPlayerIndex: nextPlayerIndex
             };
 
@@ -112,4 +114,33 @@ const getNextPlayerIndex = (state: GameState): number => {
     } else {
         return (state.currentPlayerIndex - 1 + playerCount) % playerCount;
     }
+};
+
+const drawCard = (state: GameState) => {
+    const currentPlayer = state.players[state.currentPlayerIndex];
+    const [drawnCard, ...remainingDeck] = state.deck;
+
+    const updatedPlayer = {
+        ...currentPlayer,
+        hand: [...currentPlayer.hand, drawnCard]
+    };
+
+    return {
+        updatedPlayer,
+        remainingDeck
+    };
+};
+
+
+const updatePlayers = (players: Player[], currentPlayerIndex : number, updatedPlayer: Player) => {
+    return players.map((p, index) =>
+        index === currentPlayerIndex ? updatedPlayer : p
+    );
+};
+
+const handleEmptyDeck = (remainingDeck: PokerCardPropsWithId[], discardPile: PokerCardPropsWithId[]) => {
+    if (remainingDeck.length === 0) {
+        return refillDeck(remainingDeck, discardPile);
+    }
+    return { newDeck: remainingDeck, newDiscardPile: discardPile };
 };
