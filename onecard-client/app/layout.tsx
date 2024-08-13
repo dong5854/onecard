@@ -23,7 +23,7 @@ export default function RootLayout({
                 <nav className="w-full p-4">
                     <div className="container mx-auto flex justify-end items-center mr-2">
                         <BackgroundMusic
-                            url="audio/bgm/SHK_055_Cosmic_Rainbow.mp3"
+                            url="/audio/bgm/SHK_055_Cosmic_Rainbow.mp3"
                             className="z-10"
                         />
                     </div>
