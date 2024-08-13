@@ -76,9 +76,7 @@ export default function SinglePlayerPage() {
             <div className="w-full h-full flex items-center justify-center">
                     <div
                         className="aspect-square w-full max-w-[150vh] max-h-[85vh] grid grid-cols-9 grid-rows-9 gap-0.5">
-                            <div
-                                className="bg-gray-100 flex items-center justify-center col-span-2 row-span-2">1
-                            </div>
+                            <div className="flex items-center justify-center col-span-2 row-span-2"/>
                             <div className="relative flex items-center justify-center col-span-5 row-span-2">
                                     <span className={`absolute top-3 left-5 ${gameState.currentPlayerIndex == 2 ? "text-yellow-500" : "text-gray-500"}`}>{gameState.players[2].name}</span>
                                     <OverlappingCards>
@@ -93,9 +91,7 @@ export default function SinglePlayerPage() {
                                             ))}
                                     </OverlappingCards>
                             </div>
-                            <div
-                                className="bg-gray-100 flex items-center justify-center col-span-2 row-span-2">2
-                            </div>
+                            <div className="flex items-center justify-center col-span-2 row-span-2" />
                             <div className="relative flex items-center justify-center row-span-5 col-span-2">
                                     <span
                                         className={`absolute top-3 left-5 ${gameState.currentPlayerIndex == 1 ? "text-yellow-500" : "text-gray-500"}`}>{gameState.players[1].name}</span>
@@ -151,9 +147,7 @@ export default function SinglePlayerPage() {
                             </div>
                             <div className="bg-gray-100 flex items-center justify-center text-xs row-span-3" />
                             <div className="bg-gray-100 flex items-center justify-center text-xs col-span-5" />
-                            <div
-                                className="bg-gray-100 flex items-center justify-center col-span-2 row-span-2">3
-                            </div>
+                            <div  className="flex items-center justify-center col-span-2 row-span-2" />
                             <div className="relative flex items-center justify-center col-span-5 row-span-2">
                                     <span
                                         className={`absolute top-3 left-5 ${gameState.currentPlayerIndex == 0 ? "text-yellow-500" : "text-gray-500"}`}>{gameState.players[0].name}</span>
@@ -168,9 +162,7 @@ export default function SinglePlayerPage() {
                                             ))}
                                     </OverlappingCards>
                             </div>
-                            <div
-                                className="bg-gray-100 flex items-center justify-center col-span-2 row-span-2">4
-                            </div>
+                            <div className="flex items-center justify-center col-span-2 row-span-2"/>
                     </div>
             </div>
         );
