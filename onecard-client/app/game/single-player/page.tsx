@@ -107,7 +107,7 @@ export default function SinglePlayerPage() {
                                             ))}
                                     </OverlappingCards>
                             </div>
-                            <div className="bg-gray-100 flex items-center justify-center text-xs col-span-5"/>
+                            <div className="flex items-center justify-center text-xs col-span-5"/>
                             <div className="relative flex items-center justify-center row-span-5 col-span-2">
                                     <span className={`absolute top-3 left-5 ${gameState.currentPlayerIndex == 3 ? "text-yellow-500" : "text-gray-500"}`}>{gameState.players[3].name}</span>
                                     <OverlappingCards vertical={true}>
@@ -122,7 +122,7 @@ export default function SinglePlayerPage() {
                                             ))}
                                     </OverlappingCards>
                             </div>
-                            <div className="bg-gray-100 flex items-center justify-center text-xs row-span-3" />
+                            <div className="flex items-center justify-center text-xs row-span-3" />
                             <div className="flex items-center justify-center text-xs col-span-3 row-span-3">
                                     <div
                                         ref={dropZoneRef}
@@ -146,7 +146,7 @@ export default function SinglePlayerPage() {
                                     </div>
                             </div>
                             <div className="bg-gray-100 flex items-center justify-center text-xs row-span-3" />
-                            <div className="bg-gray-100 flex items-center justify-center text-xs col-span-5" />
+                            <div className="flex items-center justify-center text-xs col-span-5" />
                             <div  className="flex items-center justify-center col-span-2 row-span-2" />
                             <div className="relative flex items-center justify-center col-span-5 row-span-2">
                                     <span
