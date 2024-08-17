@@ -145,7 +145,10 @@ export default function SinglePlayerPage() {
                                             </CardPlayHolder>
                                     </div>
                             </div>
-                            <div className="bg-gray-100 flex items-center justify-center text-xs row-span-3" />
+                            <div className="bg-gray-100 flex text-center items-center justify-center text-xl row-span-3">
+                                    Damage<br/>
+                                    0
+                            </div>
                             <div className="flex items-center justify-center text-xs col-span-5" />
                             <div  className="flex items-center justify-center col-span-2 row-span-2" />
                             <div className="relative flex items-center justify-center col-span-5 row-span-2">
