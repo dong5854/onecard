@@ -10,8 +10,9 @@ export const playCard = (playerIndex: number, cardIndex: number): GameAction => 
     payload: { playerIndex, cardIndex }
 });
 
-export const drawCard = (): GameAction => ({
-    type: 'DRAW_CARD'
+export const drawCard = (amount : number): GameAction => ({
+    type: 'DRAW_CARD',
+    payload: { amount }
 });
 
 export const nextTurn = (): GameAction => ({

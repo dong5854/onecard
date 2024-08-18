@@ -14,6 +14,7 @@ const initialState: GameState = {
     deck: [],
     discardPile: [],
     direction: 'clockwise',
+    damage : 0,
     gameStatus: 'waiting',
     settings: {
         numberOfPlayers: 4,
@@ -74,14 +75,30 @@ const initialState: GameState = {
                 currentPlayerIndex: nextPlayerIndex
             };
 
-        case 'DRAW_CARD':
-            const { updatedPlayer, remainingDeck } = drawCard(state);
-            const { newDeck, newDiscardPile } = handleEmptyDeck(remainingDeck, state.discardPile);
+        case 'ATTACK':
+            const {damage} = action.payload;
             return {
                 ...state,
-                players: updatePlayers(state.players, state.currentPlayerIndex, updatedPlayer),
-                deck: newDeck,
-                discardPile: newDiscardPile,
+                damage: state.damage + damage
+            };
+
+        case 'DRAW_CARD':
+            const {amount} = action.payload;
+            let updatedState = { ...state };
+
+            for (let i = 0; i < amount; i++) {
+                const { updatedPlayer, remainingDeck } = drawCard(state);
+                const { newDeck, newDiscardPile } = handleEmptyDeck(remainingDeck, state.discardPile);
+                updatedState = {
+                    ...updatedState,
+                    players: updatePlayers(updatedState.players, updatedState.currentPlayerIndex, updatedPlayer),
+                    deck: newDeck,
+                    discardPile: newDiscardPile,
+                };
+            }
+
+            return {
+                ...updatedState,
                 currentPlayerIndex: nextPlayerIndex
             };
 

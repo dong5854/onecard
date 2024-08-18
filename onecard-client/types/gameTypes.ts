@@ -76,6 +76,7 @@ export interface GameState {
     deck: PokerCardPropsWithId[];
     discardPile: PokerCardPropsWithId[];
     direction: Direction;
+    damage : number;
     gameStatus: GameStatus;
     settings: GameSettings;
     specialEffectInPlay?: SpecialEffect;
@@ -86,7 +87,8 @@ export interface GameState {
 export type GameAction =
     | { type: 'INITIALIZE_GAME'; payload: GameSettings }
     | { type: 'PLAY_CARD'; payload: { playerIndex: number; cardIndex: number } }
-    | { type: 'DRAW_CARD' }
+    | { type: 'ATTACK', payload: {damage: number} }
+    | { type: 'DRAW_CARD'; payload: {amount: number } }
     | { type: 'NEXT_TURN' }
     | { type: 'CHANGE_DIRECTION' }
     | { type: 'APPLY_SPECIAL_EFFECT'; payload: SpecialEffect }

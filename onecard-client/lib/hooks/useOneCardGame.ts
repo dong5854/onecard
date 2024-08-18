@@ -2,6 +2,7 @@ import { useReducer, useEffect, useCallback } from 'react';
 import { gameReducer } from '../reducers/gameReducer';
 import { GameState, Player } from '@/types/gameTypes';
 import { isValidPlay, applySpecialCardEffect, checkWinner } from '@/lib/utils/cardUtils';
+import {number} from "prop-types";
 
 const initialState: GameState = {
     players: [],
@@ -9,6 +10,7 @@ const initialState: GameState = {
     deck: [],
     discardPile: [],
     direction: 'clockwise',
+    damage : 0,
     gameStatus: 'waiting',
     settings: {
         numberOfPlayers: 4,
@@ -34,9 +36,13 @@ export const useOneCardGame = () => {
         }
     }, [gameState]);
 
+    const attack = useCallback((damage : number) => {
+        dispatch({ type: 'ATTACK', payload: {damage} });
+    }, [])
+
     // 카드 뽑기
     const drawCard = useCallback(() => {
-        dispatch({ type: 'DRAW_CARD' });
+        dispatch({ type: 'DRAW_CARD', payload: {amount : gameState.damage > 0 ? gameState.damage : 1}});
         dispatch({ type: 'NEXT_TURN' });
     }, []);
 
