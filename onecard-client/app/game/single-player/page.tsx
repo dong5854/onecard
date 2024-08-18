@@ -147,7 +147,7 @@ export default function SinglePlayerPage() {
                             </div>
                             <div className="bg-gray-100 flex text-center items-center justify-center text-xl row-span-3">
                                     Damage<br/>
-                                    0
+                                    {gameState.damage}
                             </div>
                             <div className="flex items-center justify-center text-xs col-span-5" />
                             <div  className="flex items-center justify-center col-span-2 row-span-2" />
