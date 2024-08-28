@@ -79,6 +79,7 @@ export const isAbleToBlock = (playedCard: PokerCardPropsWithId, topCard: PokerCa
 export const attackValue = (card: PokerCardPropsWithId) : number => {
     if (card.rank === 2) return 2; // 2 는 2장
     if (card.rank === 1) return 5; // A 는 5장
+    if (card.isJoker) return 7; // 조커는 7장
     return 0;
 }
 
