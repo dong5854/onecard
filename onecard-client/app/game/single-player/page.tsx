@@ -54,7 +54,7 @@ export default function SinglePlayerPage() {
                 if (dropZoneRef.current) {
                         const rect = dropZoneRef.current.getBoundingClientRect();
                         setIsOverDropZone(
-                            isValidPlay(currentPlayer.hand[draggingCard!], openedCard) &&
+                            isValidPlay(currentPlayer.hand[draggingCard!], openedCard, gameState.damage) &&
                             clientX >= rect.left &&
                             clientX <= rect.right &&
                             clientY >= rect.top &&

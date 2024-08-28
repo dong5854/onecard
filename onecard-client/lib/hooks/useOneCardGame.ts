@@ -1,7 +1,7 @@
 import { useReducer, useEffect, useCallback } from 'react';
 import { gameReducer } from '../reducers/gameReducer';
 import { GameState, Player } from '@/types/gameTypes';
-import { isValidPlay, applySpecialCardEffect, checkWinner } from '@/lib/utils/cardUtils';
+import { isValidPlay, attackValue, checkWinner } from '@/lib/utils/cardUtils';
 import {number} from "prop-types";
 
 const initialState: GameState = {
@@ -27,24 +27,25 @@ export const useOneCardGame = () => {
         dispatch({ type: 'INITIALIZE_GAME', payload: settings });
     }, []);
 
+    const attack = useCallback((damage : number) => {
+        dispatch({ type: 'ATTACK', payload: {damage} });
+    }, [])
+
     const playCard = useCallback((playerIndex: number, cardIndex: number) => {
         const player = gameState.players[playerIndex];
         const card = player.hand[cardIndex];
         const topCard = gameState.discardPile[0];
-        if (isValidPlay(card, topCard)) {
+        if (isValidPlay(card, topCard, gameState.damage)) {
             dispatch({ type: 'PLAY_CARD', payload: { playerIndex, cardIndex } });
+            attack(attackValue(card));
         }
     }, [gameState]);
-
-    const attack = useCallback((damage : number) => {
-        dispatch({ type: 'ATTACK', payload: {damage} });
-    }, [])
 
     // 카드 뽑기
     const drawCard = useCallback(() => {
         dispatch({ type: 'DRAW_CARD', payload: {amount : gameState.damage > 0 ? gameState.damage : 1}});
         dispatch({ type: 'NEXT_TURN' });
-    }, []);
+    }, [gameState.damage]);
 
     const changeDirection = useCallback(() => {
         dispatch({ type: 'CHANGE_DIRECTION' });
@@ -67,7 +68,7 @@ export const useOneCardGame = () => {
         const currentPlayer = getCurrentPlayer();
         if (currentPlayer.isAI) {
             const validCardIndex = currentPlayer.hand.findIndex(card =>
-                isValidPlay(card, gameState.discardPile[0])
+                isValidPlay(card, gameState.discardPile[0], gameState.damage)
             );
 
             if (validCardIndex !== -1) {

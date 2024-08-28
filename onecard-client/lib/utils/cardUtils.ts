@@ -67,28 +67,27 @@ export const dealCards = (
     return { updatedPlayers, updatedDeck };
 };
 
+export const isAbleToBlock = (playedCard: PokerCardPropsWithId, topCard: PokerCardPropsWithId, damage : number): boolean => {
+    if (topCard.rank === 2) {
+        return playedCard.rank === 2 || (playedCard.suit === topCard.suit && playedCard.rank === 1);
+    } else if(topCard.rank === 1) {
+        return  playedCard.rank === 1;
+    }
+    return false;
+}
+
+export const attackValue = (card: PokerCardPropsWithId) : number => {
+    if (card.rank === 2) return 2; // 2 는 2장
+    if (card.rank === 1) return 5; // A 는 5장
+    return 0;
+}
+
 // 카드의 유효성 검사 함수
-export const isValidPlay = (playedCard: PokerCardPropsWithId, topCard: PokerCardPropsWithId): boolean => {
+export const isValidPlay = (playedCard: PokerCardPropsWithId, topCard: PokerCardPropsWithId, damage : number): boolean => {
     if (playedCard.isJoker) return true;
+    if (damage > 0) return isAbleToBlock(playedCard, topCard, damage);
     if (!playedCard.rank || !playedCard.suit || !topCard.rank || !topCard.suit) return false;
     return playedCard.rank === topCard.rank || playedCard.suit === topCard.suit;
-};
-
-export const applySpecialCardEffect = (card: PokerCardPropsWithId): SpecialEffect | null => {
-    if (!card.rank) return null;
-
-    switch (card.rank) {
-        case 2:
-            return 'drawTwo';
-        case 7:
-            return 'reverse';
-        case 11: // Jack
-            return 'skip';
-        case 1: // Ace
-            return 'wildcard';
-        default:
-            return null;
-    }
 };
 
 export const checkWinner = (players: Player[]): Player | null => {

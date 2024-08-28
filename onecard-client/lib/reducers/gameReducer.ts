@@ -1,6 +1,5 @@
 import {GameState, GameAction, Player, PokerCardProps, PokerCardPropsWithId} from '@/types/gameTypes';
 import {
-    applySpecialCardEffect,
     checkWinner,
     createDeck,
     dealCards,
@@ -56,8 +55,6 @@ const initialState: GameState = {
                     : p
             );
             const updatedDiscardPile = [playedCard, ...state.discardPile];
-
-            const effect = applySpecialCardEffect(playedCard);
             const winner = checkWinner(updatedPlayersAfterPlayCard);
             if (winner) {
                 return {
@@ -85,10 +82,9 @@ const initialState: GameState = {
         case 'DRAW_CARD':
             const {amount} = action.payload;
             let updatedState = { ...state };
-
             for (let i = 0; i < amount; i++) {
-                const { updatedPlayer, remainingDeck } = drawCard(state);
-                const { newDeck, newDiscardPile } = handleEmptyDeck(remainingDeck, state.discardPile);
+                const { updatedPlayer, remainingDeck } = drawCard(updatedState);
+                const { newDeck, newDiscardPile } = handleEmptyDeck(remainingDeck, updatedState.discardPile);
                 updatedState = {
                     ...updatedState,
                     players: updatePlayers(updatedState.players, updatedState.currentPlayerIndex, updatedPlayer),
@@ -96,10 +92,10 @@ const initialState: GameState = {
                     discardPile: newDiscardPile,
                 };
             }
-
             return {
                 ...updatedState,
-                currentPlayerIndex: nextPlayerIndex
+                currentPlayerIndex: nextPlayerIndex,
+                damage : 0
             };
 
         case 'CHANGE_DIRECTION':
