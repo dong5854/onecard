@@ -39,6 +39,7 @@ export const useOneCardGame = () => {
             dispatch({ type: 'PLAY_CARD', payload: { playerIndex, cardIndex } });
             applySpecialEffect(card);
         }
+        dispatch({ type: 'NEXT_TURN' });
     }, [gameState]);
 
     // 카드 뽑기

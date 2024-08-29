@@ -61,7 +61,6 @@ export interface AIPlayer extends Player {
 // 게임 상태 및 설정 관련 정의
 export type Direction = 'clockwise' | 'counterclockwise';
 export type GameStatus = 'waiting' | 'playing' | 'finished';
-export type SpecialEffect = 'drawTwo' | 'reverse' | 'skip' | 'wildcard';
 
 export interface GameSettings {
     numberOfPlayers: number;

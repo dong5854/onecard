@@ -1,4 +1,4 @@
-import {PokerCardPropsWithId, Player, SuitsValue, RankValue, SpecialEffect} from '@/types/gameTypes';
+import {PokerCardPropsWithId, Player, SuitsValue, RankValue, PokerCardProps, Direction} from '@/types/gameTypes';
 
 export const createDeck = (includeJokers: boolean): PokerCardPropsWithId[] => {
     const suits: SuitsValue[] = ['hearts', 'diamonds', 'clubs', 'spades'];
@@ -76,11 +76,16 @@ export const isAbleToBlock = (playedCard: PokerCardPropsWithId, topCard: PokerCa
     return false;
 }
 
-export const attackValue = (card: PokerCardPropsWithId) : number => {
+export const attackValue = (card: PokerCardProps) : number => {
     if (card.rank === 2) return 2; // 2 는 2장
     if (card.rank === 1) return 5; // A 는 5장
     if (card.isJoker) return 7; // 조커는 7장
     return 0;
+}
+
+export const changeDirection = (card: PokerCardProps, curDirection: Direction) : Direction =>  {
+    if (card.rank === 12) return curDirection === 'clockwise' ? 'counterclockwise' : 'clockwise'; // Q 에서 반전
+    return curDirection;
 }
 
 // 카드의 유효성 검사 함수

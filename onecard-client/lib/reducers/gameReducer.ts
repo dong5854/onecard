@@ -1,6 +1,6 @@
 import {GameState, GameAction, Player, PokerCardPropsWithId} from '@/types/gameTypes';
 import {
-    attackValue,
+    attackValue, changeDirection,
     checkWinner,
     createDeck,
     dealCards,
@@ -25,7 +25,6 @@ const initialState: GameState = {
 };
 
     export const gameReducer = (state: GameState = initialState, action: GameAction): GameState => {
-    const nextPlayerIndex = getNextPlayerIndex(state)
     switch (action.type) {
         case 'INITIALIZE_GAME':
             const deck = shuffleDeck(createDeck(action.payload.includeJokers));
@@ -70,7 +69,6 @@ const initialState: GameState = {
                 ...state,
                 players: updatedPlayersAfterPlayCard,
                 discardPile: updatedDiscardPile,
-                currentPlayerIndex: nextPlayerIndex
             };
 
         case 'DRAW_CARD':
@@ -88,21 +86,20 @@ const initialState: GameState = {
             }
             return {
                 ...updatedState,
-                currentPlayerIndex: nextPlayerIndex,
                 damage : 0
             };
 
-        case 'CHANGE_DIRECTION':
+        case 'NEXT_TURN':
             return {
                 ...state,
-                direction: state.direction === 'clockwise' ? 'counterclockwise' : 'clockwise'
+                currentPlayerIndex: getNextPlayerIndex(state)
             };
 
         case 'APPLY_SPECIAL_EFFECT':
             const {effectCard} = action.payload;
-
             return {
                 ...state,
+                direction: changeDirection(effectCard, state.direction),
                 damage: state.damage + attackValue(effectCard)
             };
 
