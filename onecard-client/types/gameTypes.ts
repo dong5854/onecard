@@ -79,7 +79,6 @@ export interface GameState {
     damage : number;
     gameStatus: GameStatus;
     settings: GameSettings;
-    specialEffectInPlay?: SpecialEffect;
     winner?: Player;
 }
 
@@ -87,9 +86,8 @@ export interface GameState {
 export type GameAction =
     | { type: 'INITIALIZE_GAME'; payload: GameSettings }
     | { type: 'PLAY_CARD'; payload: { playerIndex: number; cardIndex: number } }
-    | { type: 'ATTACK', payload: {damage: number} }
     | { type: 'DRAW_CARD'; payload: {amount: number } }
     | { type: 'NEXT_TURN' }
     | { type: 'CHANGE_DIRECTION' }
-    | { type: 'APPLY_SPECIAL_EFFECT'; payload: SpecialEffect }
+    | { type: 'APPLY_SPECIAL_EFFECT'; payload: {effectCard: PokerCardPropsWithId} }
     | { type: 'END_GAME'; payload: { winnerIndex: number } };

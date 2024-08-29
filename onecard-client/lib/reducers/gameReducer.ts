@@ -1,5 +1,6 @@
-import {GameState, GameAction, Player, PokerCardProps, PokerCardPropsWithId} from '@/types/gameTypes';
+import {GameState, GameAction, Player, PokerCardPropsWithId} from '@/types/gameTypes';
 import {
+    attackValue,
     checkWinner,
     createDeck,
     dealCards,
@@ -72,13 +73,6 @@ const initialState: GameState = {
                 currentPlayerIndex: nextPlayerIndex
             };
 
-        case 'ATTACK':
-            const {damage} = action.payload;
-            return {
-                ...state,
-                damage: state.damage + damage
-            };
-
         case 'DRAW_CARD':
             const {amount} = action.payload;
             let updatedState = { ...state };
@@ -105,8 +99,12 @@ const initialState: GameState = {
             };
 
         case 'APPLY_SPECIAL_EFFECT':
-            // TODO: 추후 구현
-            return state;
+            const {effectCard} = action.payload;
+
+            return {
+                ...state,
+                damage: state.damage + attackValue(effectCard)
+            };
 
         case 'END_GAME':
             return {

@@ -1,8 +1,7 @@
 import { useReducer, useEffect, useCallback } from 'react';
 import { gameReducer } from '../reducers/gameReducer';
-import { GameState, Player } from '@/types/gameTypes';
-import { isValidPlay, attackValue, checkWinner } from '@/lib/utils/cardUtils';
-import {number} from "prop-types";
+import {GameState, Player, PokerCardPropsWithId} from '@/types/gameTypes';
+import { isValidPlay } from '@/lib/utils/cardUtils';
 
 const initialState: GameState = {
     players: [],
@@ -27,9 +26,10 @@ export const useOneCardGame = () => {
         dispatch({ type: 'INITIALIZE_GAME', payload: settings });
     }, []);
 
-    const attack = useCallback((damage : number) => {
-        dispatch({ type: 'ATTACK', payload: {damage} });
+    const applySpecialEffect = useCallback((effectCard : PokerCardPropsWithId) => {
+        dispatch({ type: 'APPLY_SPECIAL_EFFECT', payload: {effectCard} });
     }, [])
+
 
     const playCard = useCallback((playerIndex: number, cardIndex: number) => {
         const player = gameState.players[playerIndex];
@@ -37,7 +37,7 @@ export const useOneCardGame = () => {
         const topCard = gameState.discardPile[0];
         if (isValidPlay(card, topCard, gameState.damage)) {
             dispatch({ type: 'PLAY_CARD', payload: { playerIndex, cardIndex } });
-            attack(attackValue(card));
+            applySpecialEffect(card);
         }
     }, [gameState]);
 
