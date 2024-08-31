@@ -3,7 +3,7 @@ import {
     attackValue, changeDirection,
     checkWinner,
     createDeck,
-    dealCards,
+    dealCards, getNextPlayerIndex,
     refillDeck,
     shuffleDeck
 } from "@/lib/utils/cardUtils";
@@ -112,15 +112,6 @@ const initialState: GameState = {
 
         default:
             return state;
-    }
-};
-
-const getNextPlayerIndex = (state: GameState): number => {
-    const playerCount = state.players.length;
-    if (state.direction === 'clockwise') {
-        return (state.currentPlayerIndex + 1) % playerCount;
-    } else {
-        return (state.currentPlayerIndex - 1 + playerCount) % playerCount;
     }
 };
 

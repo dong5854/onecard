@@ -1,4 +1,12 @@
-import {PokerCardPropsWithId, Player, SuitsValue, RankValue, PokerCardProps, Direction} from '@/types/gameTypes';
+import {
+    PokerCardPropsWithId,
+    Player,
+    SuitsValue,
+    RankValue,
+    PokerCardProps,
+    Direction,
+    GameState
+} from '@/types/gameTypes';
 
 export const createDeck = (includeJokers: boolean): PokerCardPropsWithId[] => {
     const suits: SuitsValue[] = ['hearts', 'diamonds', 'clubs', 'spades'];
@@ -99,4 +107,13 @@ export const isValidPlay = (playedCard: PokerCardPropsWithId, topCard: PokerCard
 export const checkWinner = (players: Player[]): Player | null => {
     const winner = players.find(player => player.hand.length === 0);
     return winner || null;
+};
+
+export const getNextPlayerIndex = (state: GameState): number => {
+    const playerCount = state.players.length;
+    if (state.direction === 'clockwise') {
+        return (state.currentPlayerIndex + 1) % playerCount;
+    } else {
+        return (state.currentPlayerIndex - 1 + playerCount) % playerCount;
+    }
 };
