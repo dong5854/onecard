@@ -96,6 +96,11 @@ export const changeDirection = (card: PokerCardProps, curDirection: Direction) :
     return curDirection;
 }
 
+export const skipPlayer = (card: PokerCardProps, state : GameState) : number => {
+    if (card.rank === 11) return getNextPlayerIndex(state);
+    return state.currentPlayerIndex;
+}
+
 // 카드의 유효성 검사 함수
 export const isValidPlay = (playedCard: PokerCardPropsWithId, topCard: PokerCardPropsWithId, damage : number): boolean => {
     if (playedCard.isJoker) return true;
@@ -108,6 +113,7 @@ export const checkWinner = (players: Player[]): Player | null => {
     const winner = players.find(player => player.hand.length === 0);
     return winner || null;
 };
+
 
 export const getNextPlayerIndex = (state: GameState): number => {
     const playerCount = state.players.length;

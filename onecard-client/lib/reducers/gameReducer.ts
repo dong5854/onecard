@@ -5,7 +5,7 @@ import {
     createDeck,
     dealCards, getNextPlayerIndex,
     refillDeck,
-    shuffleDeck
+    shuffleDeck, skipPlayer
 } from "@/lib/utils/cardUtils";
 
 const initialState: GameState = {
@@ -99,6 +99,7 @@ const initialState: GameState = {
             const {effectCard} = action.payload;
             return {
                 ...state,
+                currentPlayerIndex: skipPlayer(effectCard, state),
                 direction: changeDirection(effectCard, state.direction),
                 damage: state.damage + attackValue(effectCard)
             };
