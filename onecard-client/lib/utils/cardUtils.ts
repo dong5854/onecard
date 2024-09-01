@@ -7,6 +7,7 @@ import {
     Direction,
     GameState
 } from '@/types/gameTypes';
+import {state} from "sucrase/dist/types/parser/traverser/base";
 
 export const createDeck = (includeJokers: boolean): PokerCardPropsWithId[] => {
     const suits: SuitsValue[] = ['hearts', 'diamonds', 'clubs', 'spades'];
@@ -96,8 +97,9 @@ export const changeDirection = (card: PokerCardProps, curDirection: Direction) :
     return curDirection;
 }
 
-export const skipPlayer = (card: PokerCardProps, state : GameState) : number => {
+export const turnSpecialEffect = (card : PokerCardProps, state: GameState) : number => {
     if (card.rank === 11) return getNextPlayerIndex(state);
+    else if (card.rank === 13) return getPrevPlayerIndex(state);
     return state.currentPlayerIndex;
 }
 
@@ -123,3 +125,12 @@ export const getNextPlayerIndex = (state: GameState): number => {
         return (state.currentPlayerIndex - 1 + playerCount) % playerCount;
     }
 };
+
+export const getPrevPlayerIndex = (state : GameState) : number => {
+    const playerCount = state.players.length;
+    if (state.direction === 'clockwise') {
+        return (state.currentPlayerIndex - 1 + playerCount) % playerCount;
+    } else {
+        return (state.currentPlayerIndex + 1) % playerCount;
+    }
+}
