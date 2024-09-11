@@ -20,8 +20,9 @@ fun Application.configureSockets() {
         masking = false
     }
     routing {
-        webSocket("/game") {
-            val gameState = GameState(
+        webSocket("/game-room/{id}") {
+            val id : String = call.parameters["id"]!!
+            GameStatusRepository.updateGameStatus(id, GameState(
                 players = listOf("dong", "lee", "lim", "park"),
                 currentPlayerIndex = 0,
                 deck = listOf(PokerCard(
@@ -43,9 +44,9 @@ fun Application.configureSockets() {
                     initHandSize = 5,
                     maxHandSize = 15
                 )
-            )
+            ))
 
-            sendSerialized(gameState)
+            sendSerialized(GameStatusRepository.getGameStatus(id))
             delay(1000)
 
             close(CloseReason(CloseReason.Codes.NORMAL, "All done"))
