@@ -14,7 +14,7 @@ export const BackgroundMusic = ({
 	className = '',
 }: BackgroundMusicProps) => {
 	const audioRef = useRef<HTMLAudioElement | null>(null);
-	const [isPlaying, setIsPlaying] = useState(true);
+	const [isPlaying, setIsPlaying] = useState(false);
 
 	const togglePlayPause = () => {
 		if (audioRef.current) {
@@ -34,8 +34,6 @@ export const BackgroundMusic = ({
 	useEffect(() => {
 		audioRef.current = new Audio(url);
 		audioRef.current.loop = true;
-
-		togglePlayPause();
 
 		return () => {
 			if (audioRef.current) {

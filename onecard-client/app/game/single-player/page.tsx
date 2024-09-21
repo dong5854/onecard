@@ -10,19 +10,20 @@ import { isValidPlay } from '@/lib/utils/cardUtils';
 
 export default function SinglePlayerPage() {
 	const { gameState, initializeGame, playCard, drawCard, getCurrentPlayer } =
-		useOneCardGame();
+		useOneCardGame({
+			mode: 'single',
+			numberOfPlayers: 4,
+			includeJokers: false,
+			initHandSize: 5,
+			maxHandSize: 15,
+		});
 
 	const [draggingCard, setDraggingCard] = useState<number | null>(null);
 	const [isOverDropZone, setIsOverDropZone] = useState(false);
 	const dropZoneRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
-		initializeGame({
-			numberOfPlayers: 4,
-			includeJokers: false,
-			initHandSize: 5,
-			maxHandSize: 10,
-		});
+		initializeGame();
 	}, [initializeGame]);
 
 	const openedCard = gameState.discardPile[0];
@@ -42,9 +43,7 @@ export default function SinglePlayerPage() {
 			<div>
 				<h1>Game Over!</h1>
 				<p>Winner: {gameState.winner?.name}</p>
-				<button onClick={() => initializeGame(gameState.settings)}>
-					Play Again
-				</button>
+				<button onClick={initializeGame}>Play Again</button>
 			</div>
 		);
 	}

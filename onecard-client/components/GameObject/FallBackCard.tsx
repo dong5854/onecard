@@ -6,7 +6,7 @@ import {
 	isValidRank,
 	isValidSuit,
 	PokerCardProps,
-} from '../../types/gameTypes';
+} from '../../types/pokerCard';
 import styles from './Pokercard.module.css';
 
 interface FallBackCardProps extends PokerCardProps {

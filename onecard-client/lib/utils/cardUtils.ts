@@ -1,13 +1,11 @@
+import { Player } from '@/types/gamePlayer';
+import { Direction, GameState } from '@/types/gameState';
 import {
-	PokerCardPropsWithId,
-	Player,
-	SuitsValue,
-	RankValue,
 	PokerCardProps,
-	Direction,
-	GameState,
-} from '@/types/gameTypes';
-import { state } from 'sucrase/dist/types/parser/traverser/base';
+	PokerCardPropsWithId,
+	RankValue,
+	SuitsValue,
+} from '@/types/pokerCard';
 
 export const createDeck = (includeJokers: boolean): PokerCardPropsWithId[] => {
 	const suits: SuitsValue[] = ['hearts', 'diamonds', 'clubs', 'spades'];
@@ -92,8 +90,8 @@ export const dealCards = (
 };
 
 export const isAbleToBlock = (
-	playedCard: PokerCardPropsWithId,
-	topCard: PokerCardPropsWithId,
+	playedCard: PokerCardProps,
+	topCard: PokerCardProps,
 	damage: number,
 ): boolean => {
 	if (topCard.rank === 2) {
@@ -134,8 +132,8 @@ export const turnSpecialEffect = (
 
 // 카드의 유효성 검사 함수
 export const isValidPlay = (
-	playedCard: PokerCardPropsWithId,
-	topCard: PokerCardPropsWithId,
+	playedCard: PokerCardProps,
+	topCard: PokerCardProps,
 	damage: number,
 ): boolean => {
 	if (playedCard.isJoker) return true;

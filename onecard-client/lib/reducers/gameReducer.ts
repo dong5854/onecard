@@ -1,66 +1,24 @@
-import {
-	GameState,
-	GameAction,
-	Player,
-	PokerCardPropsWithId,
-} from '@/types/gameTypes';
+import { GameState } from '@/types/gameState';
+import { GameAction } from '@/types/gameAction';
+import { Player } from '@/types/gamePlayer';
+import { PokerCardPropsWithId } from '@/types/pokerCard';
 import {
 	attackValue,
 	changeDirection,
 	checkWinner,
-	createDeck,
-	dealCards,
 	getNextPlayerIndex,
 	refillDeck,
-	shuffleDeck,
 	turnSpecialEffect,
 } from '@/lib/utils/cardUtils';
-
-const initialState: GameState = {
-	players: [],
-	currentPlayerIndex: 0,
-	deck: [],
-	discardPile: [],
-	direction: 'clockwise',
-	damage: 0,
-	gameStatus: 'waiting',
-	settings: {
-		numberOfPlayers: 4,
-		includeJokers: false,
-		initHandSize: 5,
-		maxHandSize: 7,
-	},
-};
+import { initializeGameState, startGame } from '@/lib/state/createGameState';
 
 export const gameReducer = (
-	state: GameState = initialState,
+	state: GameState,
 	action: GameAction,
 ): GameState => {
 	switch (action.type) {
-		case 'INITIALIZE_GAME':
-			const deck = shuffleDeck(createDeck(action.payload.includeJokers));
-			const players = Array.from(
-				{ length: action.payload.numberOfPlayers },
-				(_, i) => ({
-					id: `player-${i}`,
-					name: `Player ${i + 1}`,
-					hand: [],
-					isAI: i !== 0, // 첫번째 플레이어만 사람이고, 나머지는 AI
-				}),
-			);
-			const { updatedPlayers, updatedDeck } = dealCards(
-				players,
-				deck,
-				action.payload.initHandSize,
-			);
-			return {
-				...state,
-				players: updatedPlayers,
-				deck: updatedDeck,
-				discardPile: [updatedDeck.pop()!],
-				gameStatus: 'playing',
-				settings: action.payload,
-			};
+		case 'START_GAME':
+			return startGame(initializeGameState(state.settings));
 
 		case 'PLAY_CARD':
 			const { playerIndex, cardIndex } = action.payload;

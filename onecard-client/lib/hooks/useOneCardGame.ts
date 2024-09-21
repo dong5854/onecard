@@ -1,29 +1,19 @@
 import { useReducer, useEffect, useCallback } from 'react';
 import { gameReducer } from '../reducers/gameReducer';
-import { GameState, Player, PokerCardPropsWithId } from '@/types/gameTypes';
+import { GameSettings, GameState } from '@/types/gameState';
+import { Player } from '@/types/gamePlayer';
+import { PokerCardPropsWithId } from '@/types/pokerCard';
 import { isValidPlay } from '@/lib/utils/cardUtils';
+import { createGameState } from '../state/createGameState';
+import { GameAction } from '@/types/gameAction';
 
-const initialState: GameState = {
-	players: [],
-	currentPlayerIndex: 0,
-	deck: [],
-	discardPile: [],
-	direction: 'clockwise',
-	damage: 0,
-	gameStatus: 'waiting',
-	settings: {
-		numberOfPlayers: 4,
-		includeJokers: false,
-		initHandSize: 5,
-		maxHandSize: 7,
-	},
-};
+export const useOneCardGame = (settings: GameSettings) => {
+	const [gameState, dispatch] = useReducer<
+		React.Reducer<GameState, GameAction>
+	>(gameReducer, createGameState(settings));
 
-export const useOneCardGame = () => {
-	const [gameState, dispatch] = useReducer(gameReducer, initialState);
-
-	const initializeGame = useCallback((settings: GameState['settings']) => {
-		dispatch({ type: 'INITIALIZE_GAME', payload: settings });
+	const initializeGame = useCallback(() => {
+		dispatch({ type: 'START_GAME' });
 	}, []);
 
 	const applySpecialEffect = useCallback((effectCard: PokerCardPropsWithId) => {
