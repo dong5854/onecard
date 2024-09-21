@@ -1,5 +1,6 @@
 'use client';
 
+import { useSearchParams } from 'next/navigation';
 import PokerCard from '@/components/GameObject/PokerCard';
 import CardPlayHolder from '@/components/UI/board/CardPlayHolder';
 import OverlappingCards from '@/components/GameObject/OverlappingCards';
@@ -7,16 +8,29 @@ import { useOneCardGame } from '@/lib/hooks/useOneCardGame';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import styles from './SinglePlayerPage.module.css';
 import { isValidPlay } from '@/lib/utils/cardUtils';
+import { GameSettings, Mode } from '@/types/gameState';
 
 export default function SinglePlayerPage() {
+	const searchParams = useSearchParams();
+
+	const mode = searchParams.get('mode') as Mode;
+	const numberOfPlayers = parseInt(searchParams.get('players') || '0', 10);
+	const includeJokers = searchParams.get('jokers') === 'true';
+	const initHandSize = parseInt(searchParams.get('initHand') || '0', 10);
+	const maxHandSize = parseInt(searchParams.get('maxHand') || '0', 10);
+
+	const gameSettings: GameSettings = {
+		mode: mode || 'single',
+		numberOfPlayers: isNaN(numberOfPlayers) ? 2 : numberOfPlayers,
+		includeJokers: includeJokers,
+		initHandSize: isNaN(initHandSize) ? 5 : initHandSize,
+		maxHandSize: isNaN(maxHandSize) ? 15 : maxHandSize,
+	};
+
+	console.log(gameSettings);
+
 	const { gameState, initializeGame, playCard, drawCard, getCurrentPlayer } =
-		useOneCardGame({
-			mode: 'single',
-			numberOfPlayers: 4,
-			includeJokers: false,
-			initHandSize: 5,
-			maxHandSize: 15,
-		});
+		useOneCardGame(gameSettings);
 
 	const [draggingCard, setDraggingCard] = useState<number | null>(null);
 	const [isOverDropZone, setIsOverDropZone] = useState(false);
