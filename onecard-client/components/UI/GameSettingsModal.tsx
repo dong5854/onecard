@@ -10,10 +10,12 @@ interface GameSettings {
 
 interface GameSettingsModalProps {
 	onSubmit: (settings: GameSettings) => void;
+	onClose: () => void; // 모달 닫기 함수를 props로 추가
 }
 
 export default function GameSettingsModal({
 	onSubmit,
+	onClose, // onClose 함수 props로 받음
 }: GameSettingsModalProps) {
 	const [mode, setMode] = useState('easy');
 	const [numberOfPlayers, setNumberOfPlayers] = useState(4);
@@ -33,8 +35,17 @@ export default function GameSettingsModal({
 		onSubmit(settings);
 	};
 
+	const handleBackgroundClick = (e: React.MouseEvent) => {
+		if (e.target === e.currentTarget) {
+			onClose();
+		}
+	};
+
 	return (
-		<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+		<div
+			className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+			onClick={handleBackgroundClick}
+		>
 			<div className="bg-white p-6 rounded-lg shadow-lg w-96">
 				<h2 className="text-lg font-bold mb-4">Game Settings</h2>
 				<div className="form-control mb-4">

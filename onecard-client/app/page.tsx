@@ -27,6 +27,11 @@ export default function MainPage() {
 
 		router.push(`/game/single-player?${params.toString()}`);
 	};
+
+	const handleCloseModal = () => {
+		setIsModalOpen(false);
+	};
+
 	return (
 		<div className="flex flex-col justify-center items-center mb-40">
 			<GameTitle title="ONE CARD" subtitle="WEB GAME" />
@@ -36,7 +41,12 @@ export default function MainPage() {
 				onClick={() => setIsModalOpen(true)}
 			/>
 
-			{isModalOpen && <GameSettingsModal onSubmit={handleGameSettingsSubmit} />}
+			{isModalOpen && (
+				<GameSettingsModal
+					onSubmit={handleGameSettingsSubmit}
+					onClose={handleCloseModal}
+				/>
+			)}
 		</div>
 	);
 }
