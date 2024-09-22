@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import PixelRetroButton from './PixelRetroButton';
+import styles from './GameSettingModal.module.css';
 
 interface GameSettings {
 	mode: string;
@@ -43,10 +45,10 @@ export default function GameSettingsModal({
 
 	return (
 		<div
-			className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+			className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 ${styles.text}`}
 			onClick={handleBackgroundClick}
 		>
-			<div className="bg-white p-6 rounded-lg shadow-lg w-96">
+			<div className="bg-[rgba(39,67,42,1)] p-6 rounded-lg shadow-lg w-96">
 				<h2 className="text-lg font-bold mb-4">Game Settings</h2>
 				<div className="form-control mb-4">
 					<label className="label">Mode</label>
@@ -73,10 +75,10 @@ export default function GameSettingsModal({
 				</div>
 				<div className="form-control mb-4">
 					<label className="label cursor-pointer">
-						<span className="label-text">Include Jokers</span>
+						<span className="label-text text-[#E3F1A7]">Include Jokers</span>
 						<input
 							type="checkbox"
-							className="toggle toggle-primary"
+							className="toggle checked:border-[#2F4F4F] checked:bg-[#2F4F4F] checked:hover:bg-[#3A5234] checked:[--tglbg:#E3F1A7] unchecked:bg-gray-500 unchecked:border-gray-500 unchecked:[--tglbg:gray]"
 							checked={includeJokers}
 							onChange={() => setIncludeJokers(!includeJokers)}
 						/>
@@ -105,9 +107,11 @@ export default function GameSettingsModal({
 					/>
 				</div>
 				<div className="modal-action">
-					<button className="btn btn-primary" onClick={handleSubmit}>
-						Submit
-					</button>
+					<PixelRetroButton
+						className="max-w-32 max-h-10"
+						text="SUBMIT"
+						onClick={handleSubmit}
+					/>
 				</div>
 			</div>
 		</div>
