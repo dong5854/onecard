@@ -138,6 +138,7 @@ export const isValidPlay = (
 ): boolean => {
 	if (playedCard.isJoker) return true;
 	if (damage > 0) return isAbleToBlock(playedCard, topCard, damage);
+	if (topCard.isJoker) return true;
 	if (!playedCard.rank || !playedCard.suit || !topCard.rank || !topCard.suit)
 		return false;
 	return playedCard.rank === topCard.rank || playedCard.suit === topCard.suit;
