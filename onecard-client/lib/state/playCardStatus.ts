@@ -1,7 +1,7 @@
 import { GameState } from '@/types/gameState';
 import { checkWinner } from '@/lib/utils/cardUtils';
 
-export const playCard = (
+export const playCardStatus = (
 	state: GameState,
 	playerIndex: number,
 	cardIndex: number,
