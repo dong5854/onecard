@@ -102,7 +102,7 @@ export const isAbleToBlock = (
 	} else if (topCard.rank === 1) {
 		return playedCard.rank === 1;
 	}
-	return false;
+	return playedCard.isJoker;
 };
 
 export const attackValue = (card: PokerCardProps): number => {
