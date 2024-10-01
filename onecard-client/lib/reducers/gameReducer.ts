@@ -11,6 +11,7 @@ import {
 	turnSpecialEffect,
 } from '@/lib/utils/cardUtils';
 import { initializeGameState, startGame } from '@/lib/state/createGameState';
+import { playCard } from '@/lib/state/playCardStatus';
 
 export const gameReducer = (
 	state: GameState,
@@ -22,30 +23,7 @@ export const gameReducer = (
 
 		case 'PLAY_CARD':
 			const { playerIndex, cardIndex } = action.payload;
-			const player = state.players[playerIndex];
-			const playedCard = player.hand[cardIndex];
-
-			const updatedPlayersAfterPlayCard = state.players.map((p, index) =>
-				index === playerIndex
-					? { ...p, hand: p.hand.filter((_, i) => i !== cardIndex) }
-					: p,
-			);
-			const updatedDiscardPile = [playedCard, ...state.discardPile];
-			const winner = checkWinner(updatedPlayersAfterPlayCard);
-			if (winner) {
-				return {
-					...state,
-					players: updatedPlayersAfterPlayCard,
-					discardPile: updatedDiscardPile,
-					gameStatus: 'finished',
-					winner: winner,
-				};
-			}
-			return {
-				...state,
-				players: updatedPlayersAfterPlayCard,
-				discardPile: updatedDiscardPile,
-			};
+			return playCard(state, playerIndex, cardIndex);
 
 		case 'DRAW_CARD':
 			const { amount } = action.payload;
