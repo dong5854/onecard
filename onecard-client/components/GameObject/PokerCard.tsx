@@ -50,6 +50,7 @@ const PokerCard = memo(
 					y: e.clientY - rect.top,
 				};
 				cardRef.current.style.transition = 'none';
+				cardRef.current.style.zIndex = '2000';
 				isDraggingRef.current = true;
 				onDragStart && onDragStart();
 			},
@@ -77,6 +78,7 @@ const PokerCard = memo(
 			isDraggingRef.current = false;
 			cardRef.current.style.transition = 'transform 0.3s ease';
 			cardRef.current.style.transform = 'translate(0, 0)';
+			cardRef.current.style.zIndex = '';
 			onDragEnd && onDragEnd();
 		}, [onDragEnd]);
 

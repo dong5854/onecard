@@ -97,7 +97,7 @@ export default function SinglePlayerPage() {
 		<div className="w-full h-full flex items-center justify-center">
 			<div className="aspect-square w-full max-w-[150vh] max-h-[85vh] grid grid-cols-9 grid-rows-9 gap-0.5">
 				<div className="flex items-center justify-center col-span-2 row-span-2" />
-				<div className="relative flex items-center justify-center col-span-5 row-span-2">
+				<div className="relative z-10 flex items-center justify-center col-span-5 row-span-2">
 					<div className="absolute top-3 left-5">
 						<PlayerBadge
 							name={gameState.players[2].name}
@@ -121,7 +121,7 @@ export default function SinglePlayerPage() {
 					</OverlappingCards>
 				</div>
 				<div className="flex items-center justify-center col-span-2 row-span-2" />
-				<div className="relative flex items-center justify-center row-span-5 col-span-2">
+				<div className="relative z-10 flex items-center justify-center row-span-5 col-span-2">
 					<div className="absolute top-3 left-5">
 						<PlayerBadge
 							name={gameState.players[1].name}
@@ -145,7 +145,7 @@ export default function SinglePlayerPage() {
 					</OverlappingCards>
 				</div>
 				<div className="flex items-center justify-center text-xs col-span-5" />
-				<div className="relative flex items-center justify-center row-span-5 col-span-2">
+				<div className="relative z-10 flex items-center justify-center row-span-5 col-span-2">
 					<div className="absolute top-3 left-5">
 						<PlayerBadge
 							name={gameState.players[3].name}
@@ -169,7 +169,7 @@ export default function SinglePlayerPage() {
 					</OverlappingCards>
 				</div>
 				<div className="flex items-center justify-center text-xs row-span-3" />
-				<div className="flex items-center justify-center text-xs col-span-3 row-span-3">
+				<div className="relative z-0 flex items-center justify-center text-xs col-span-3 row-span-3">
 					<div
 						ref={dropZoneRef}
 						className={`relative ${isOverDropZone ? styles.dropZoneGlow : ''}`}
@@ -203,7 +203,7 @@ export default function SinglePlayerPage() {
 				</div>
 				<div className="flex items-center justify-center text-xs col-span-5" />
 				<div className="flex items-center justify-center col-span-2 row-span-2" />
-				<div className="relative flex items-center justify-center col-span-5 row-span-2">
+				<div className="relative z-10 flex items-center justify-center col-span-5 row-span-2">
 					<div className="absolute top-3 left-5">
 						<PlayerBadge
 							name={gameState.players[0].name}
