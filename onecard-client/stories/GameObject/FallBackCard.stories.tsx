@@ -6,12 +6,13 @@ const meta = {
 	title: 'GameObject/FallBackCard',
 	component: FallBackCard,
 	parameters: {
-		// Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
 		layout: 'centered',
+		backgrounds: {
+			default: 'board',
+			values: [{ name: 'board', value: '#0d1511' }],
+		},
 	},
-	// This component will have an automatically generated Autodocs entry: https://storybook.js.org/docs/writing-docs/autodocs
 	tags: ['autodocs'],
-	// More on argTypes: https://storybook.js.org/docs/api/argtypes
 	argTypes: {
 		rank: { control: 'number' }, // rank prop을 텍스트로 입력할 수 있게 함
 		suit: {
@@ -54,6 +55,15 @@ export const FiveOfHearts: Story = {
 	args: {
 		rank: 5,
 		suit: 'hearts',
+		isJoker: false,
+		isFlipped: false,
+	},
+};
+
+export const ClubNine: Story = {
+	args: {
+		rank: 9,
+		suit: 'clubs',
 		isJoker: false,
 		isFlipped: false,
 	},
