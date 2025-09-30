@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { BackgroundMusic } from './BackgroudMusic';
+import { BackgroundMusic } from '@/components/GameObject/BackgroudMusic';
 
 const meta = {
 	title: 'GameObject/BackgroundMusic',

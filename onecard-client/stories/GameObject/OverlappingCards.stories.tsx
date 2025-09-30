@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import PokerCard from '@/components/GameObject/PokerCard';
-import OverlappingCards from './OverlappingCards';
+import OverlappingCards from '@/components/GameObject/OverlappingCards';
 
 const meta = {
 	title: 'GameObject/OverlappingCards',

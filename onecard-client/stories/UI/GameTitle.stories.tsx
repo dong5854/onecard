@@ -1,22 +1,23 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import PixelRetroButton from './PixelRetroButton';
+import GameTitle from '@/components/UI/GameTitle';
 
 const meta = {
-	title: 'game/PixelRetroButton',
-	component: PixelRetroButton,
+	title: 'game/GameTitle',
+	component: GameTitle,
 	parameters: {
 		// Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
 		layout: 'centered',
 	},
 	// This component will have an automatically generated Autodocs entry: https://storybook.js.org/docs/writing-docs/autodocs
 	tags: ['autodocs'],
-} satisfies Meta<typeof PixelRetroButton>;
+} satisfies Meta<typeof GameTitle>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
 	args: {
-		text: 'Start Game',
+		title: 'One Card',
+		subtitle: 'web game',
 	},
 };

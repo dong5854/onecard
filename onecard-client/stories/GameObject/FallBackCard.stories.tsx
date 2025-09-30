@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
-import { FallBackCard } from './FallBackCard';
+import { FallBackCard } from '@/components/GameObject/FallBackCard';
 
 const meta = {
 	title: 'GameObject/FallBackCard',
