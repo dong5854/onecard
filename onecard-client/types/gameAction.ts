@@ -6,7 +6,6 @@ export type GameAction =
 	| { type: 'PLAY_CARD'; payload: { playerIndex: number; cardIndex: number } }
 	| { type: 'DRAW_CARD'; payload: { amount: number } }
 	| { type: 'NEXT_TURN' }
-	| { type: 'CHANGE_DIRECTION' }
 	| {
 			type: 'APPLY_SPECIAL_EFFECT';
 			payload: { effectCard: PokerCardPropsWithId };

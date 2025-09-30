@@ -48,10 +48,6 @@ export const useOneCardGame = (settings: GameSettings) => {
 		dispatch({ type: 'NEXT_TURN' });
 	}, [gameState.damage]);
 
-	const changeDirection = useCallback(() => {
-		dispatch({ type: 'CHANGE_DIRECTION' });
-	}, []);
-
 	const getCurrentPlayer = useCallback((): Player => {
 		return gameState.players[gameState.currentPlayerIndex];
 	}, [gameState.players, gameState.currentPlayerIndex]);
@@ -96,7 +92,6 @@ export const useOneCardGame = (settings: GameSettings) => {
 		initializeGame,
 		playCard,
 		drawCard,
-		changeDirection,
 		getCurrentPlayer,
 		getNextPlayerIndex,
 	};
