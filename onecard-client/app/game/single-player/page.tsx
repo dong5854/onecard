@@ -5,6 +5,7 @@ import PokerCard from '@/components/GameObject/PokerCard';
 import CardPlayHolder from '@/components/UI/board/CardPlayHolder';
 import OverlappingCards from '@/components/GameObject/OverlappingCards';
 import DamageCounter from '@/components/GameObject/DamageCounter';
+import GameOverPanel from '@/components/UI/GameOverPanel';
 import { useOneCardGame } from '@/lib/hooks/useOneCardGame';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import styles from './SinglePlayerPage.module.css';
@@ -53,13 +54,11 @@ export default function SinglePlayerPage() {
 	}
 
 	if (gameState.gameStatus === 'finished') {
-		// TODO: 디자인 다듬기
 		return (
-			<div>
-				<h1>Game Over!</h1>
-				<p>Winner: {gameState.winner?.name}</p>
-				<button onClick={initializeGame}>Play Again</button>
-			</div>
+			<GameOverPanel
+				winnerName={gameState.winner?.name ?? null}
+				onRestart={initializeGame}
+			/>
 		);
 	}
 
