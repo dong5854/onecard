@@ -6,6 +6,7 @@ import CardPlayHolder from '@/components/UI/board/CardPlayHolder';
 import OverlappingCards from '@/components/GameObject/OverlappingCards';
 import DamageCounter from '@/components/GameObject/DamageCounter';
 import GameOverPanel from '@/components/UI/GameOverPanel';
+import PlayerBadge from '@/components/UI/PlayerBadge';
 import { useOneCardGame } from '@/lib/hooks/useOneCardGame';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import styles from './SinglePlayerPage.module.css';
@@ -97,11 +98,12 @@ export default function SinglePlayerPage() {
 			<div className="aspect-square w-full max-w-[150vh] max-h-[85vh] grid grid-cols-9 grid-rows-9 gap-0.5">
 				<div className="flex items-center justify-center col-span-2 row-span-2" />
 				<div className="relative flex items-center justify-center col-span-5 row-span-2">
-					<span
-						className={`absolute top-3 left-5 ${gameState.currentPlayerIndex == 2 ? 'text-yellow-500' : 'text-gray-500'}`}
-					>
-						{gameState.players[2].name}
-					</span>
+					<div className="absolute top-3 left-5">
+						<PlayerBadge
+							name={gameState.players[2].name}
+							isActive={gameState.currentPlayerIndex === 2}
+						/>
+					</div>
 					<OverlappingCards>
 						{gameState.players[2].hand.map((card, index) => (
 							<PokerCard
@@ -120,11 +122,12 @@ export default function SinglePlayerPage() {
 				</div>
 				<div className="flex items-center justify-center col-span-2 row-span-2" />
 				<div className="relative flex items-center justify-center row-span-5 col-span-2">
-					<span
-						className={`absolute top-3 left-5 ${gameState.currentPlayerIndex == 1 ? 'text-yellow-500' : 'text-gray-500'}`}
-					>
-						{gameState.players[1].name}
-					</span>
+					<div className="absolute top-3 left-5">
+						<PlayerBadge
+							name={gameState.players[1].name}
+							isActive={gameState.currentPlayerIndex === 1}
+						/>
+					</div>
 					<OverlappingCards vertical={true}>
 						{gameState.players[1].hand.map((card, index) => (
 							<PokerCard
@@ -143,11 +146,12 @@ export default function SinglePlayerPage() {
 				</div>
 				<div className="flex items-center justify-center text-xs col-span-5" />
 				<div className="relative flex items-center justify-center row-span-5 col-span-2">
-					<span
-						className={`absolute top-3 left-5 ${gameState.currentPlayerIndex == 3 ? 'text-yellow-500' : 'text-gray-500'}`}
-					>
-						{gameState.players[3].name}
-					</span>
+					<div className="absolute top-3 left-5">
+						<PlayerBadge
+							name={gameState.players[3].name}
+							isActive={gameState.currentPlayerIndex === 3}
+						/>
+					</div>
 					<OverlappingCards vertical={true}>
 						{gameState.players[3].hand.map((card, index) => (
 							<PokerCard
@@ -200,11 +204,12 @@ export default function SinglePlayerPage() {
 				<div className="flex items-center justify-center text-xs col-span-5" />
 				<div className="flex items-center justify-center col-span-2 row-span-2" />
 				<div className="relative flex items-center justify-center col-span-5 row-span-2">
-					<span
-						className={`absolute top-3 left-5 ${gameState.currentPlayerIndex == 0 ? 'text-yellow-500' : 'text-gray-500'}`}
-					>
-						{gameState.players[0].name}
-					</span>
+					<div className="absolute top-3 left-5">
+						<PlayerBadge
+							name={gameState.players[0].name}
+							isActive={gameState.currentPlayerIndex === 0}
+						/>
+					</div>
 					<OverlappingCards>
 						{gameState.players[0].hand.map((card, index) => (
 							<PokerCard
