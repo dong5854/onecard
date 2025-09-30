@@ -25,7 +25,7 @@ const PokerCard = memo(
 
 		const getCardImage = useCallback(() => {
 			if (isFlipped) return '/cards/backs/back_4.png';
-			if (isJoker) return `/cards/Joker.png`;
+			if (isJoker) return `/cards/joker.png`;
 			return `/cards/${suit}/${suit}_card_${rank}.png`;
 		}, [isFlipped, isJoker, suit, rank]);
 
