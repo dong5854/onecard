@@ -1,27 +1,38 @@
-import React, { ReactNode } from 'react';
+import React, { CSSProperties, ReactNode } from 'react';
 import styles from './CardPlayHolder.module.css';
 
 interface CardPlayHolderProps {
-	width?: string;
-	height?: string;
+	width?: CSSProperties['width'];
+	height?: CSSProperties['height'];
 	children?: ReactNode;
+	className?: string;
+	isActive?: boolean;
+	label?: string;
 }
 
 export const CardPlayHolder = ({
-	width = '200px',
-	height = '100px',
+	width = '260px',
+	height = '180px',
 	children,
+	className,
+	isActive,
+	label,
 }: CardPlayHolderProps) => {
+	const containerClassName = [styles.container, className]
+		.filter(Boolean)
+		.join(' ');
+
 	return (
-		<div
-			className={styles.container}
-			style={{
-				width: width,
-				height: height,
-			}}
+		<section
+			className={containerClassName}
+			style={{ width, height }}
+			data-active={isActive ? 'true' : undefined}
+			aria-label={label ?? undefined}
+			role="group"
 		>
-			{children}
-		</div>
+			{label && <span className={styles.label}>{label}</span>}
+			<div className={styles.surface}>{children}</div>
+		</section>
 	);
 };
 

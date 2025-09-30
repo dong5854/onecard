@@ -171,7 +171,12 @@ export default function SinglePlayerPage() {
 						ref={dropZoneRef}
 						className={`relative ${isOverDropZone ? styles.dropZoneGlow : ''}`}
 					>
-						<CardPlayHolder width="200px" height="150px">
+						<CardPlayHolder
+							width="260px"
+							height="180px"
+							isActive={isOverDropZone}
+							label="Play Zone"
+						>
 							<PokerCard
 								key="deck-top"
 								isJoker={false}
