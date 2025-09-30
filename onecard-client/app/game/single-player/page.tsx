@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import PokerCard from '@/components/GameObject/PokerCard';
 import CardPlayHolder from '@/components/UI/board/CardPlayHolder';
 import OverlappingCards from '@/components/GameObject/OverlappingCards';
+import DamageCounter from '@/components/GameObject/DamageCounter';
 import { useOneCardGame } from '@/lib/hooks/useOneCardGame';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import styles from './SinglePlayerPage.module.css';
@@ -189,10 +190,8 @@ export default function SinglePlayerPage() {
 						</CardPlayHolder>
 					</div>
 				</div>
-				<div className="bg-gray-100 flex text-center items-center justify-center text-xl row-span-3">
-					Damage
-					<br />
-					{gameState.damage}
+				<div className="flex items-center justify-center row-span-3">
+					<DamageCounter value={gameState.damage} />
 				</div>
 				<div className="flex items-center justify-center text-xs col-span-5" />
 				<div className="flex items-center justify-center col-span-2 row-span-2" />
