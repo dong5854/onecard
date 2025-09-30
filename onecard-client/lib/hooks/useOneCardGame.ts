@@ -28,8 +28,8 @@ export const useOneCardGame = (settings: GameSettings) => {
 			if (isValidPlay(card, topCard, gameState.damage)) {
 				dispatch({ type: 'PLAY_CARD', payload: { playerIndex, cardIndex } });
 				applySpecialEffect(card);
+				dispatch({ type: 'NEXT_TURN' });
 			}
-			dispatch({ type: 'NEXT_TURN' });
 		},
 		[
 			applySpecialEffect,
