@@ -1,16 +1,26 @@
 import { useReducer, useEffect, useCallback } from 'react';
-import { gameReducer } from '../reducers/gameReducer';
 import { GameSettings, GameState } from '@/types/gameState';
 import { Player } from '@/types/gamePlayer';
 import { PokerCardPropsWithId } from '@/types/pokerCard';
 import { isValidPlay } from '@/lib/utils/cardUtils';
-import { createGameState } from '../state/createGameState';
 import { GameAction } from '@/types/gameAction';
+import {
+	createInitialState as createEngineInitialState,
+	step as engineStep,
+} from '@/lib/engine/gameEngine';
 
 export const useOneCardGame = (settings: GameSettings) => {
-	const [gameState, dispatch] = useReducer<
-		React.Reducer<GameState, GameAction>
-	>(gameReducer, createGameState(settings));
+	const reducer = useCallback(
+		(state: GameState, action: GameAction): GameState =>
+			engineStep(state, action).state,
+		[],
+	);
+
+	const [gameState, dispatch] = useReducer(
+		reducer,
+		settings,
+		createEngineInitialState,
+	);
 
 	const initializeGame = useCallback(() => {
 		dispatch({ type: 'START_GAME' });
@@ -39,7 +49,6 @@ export const useOneCardGame = (settings: GameSettings) => {
 		],
 	);
 
-	// 카드 뽑기
 	const drawCard = useCallback(() => {
 		const currentPlayer = gameState.players[gameState.currentPlayerIndex];
 		const defaultDrawAmount = gameState.damage > 0 ? gameState.damage : 1;
