@@ -1,14 +1,8 @@
 import { useState } from 'react';
 import PixelRetroButton from './PixelRetroButton';
 import styles from './GameSettingModal.module.css';
-
-interface GameSettings {
-	mode: string;
-	numberOfPlayers: number;
-	includeJokers: boolean;
-	initHandSize: number;
-	maxHandSize: number;
-}
+import { GameSettings, Mode } from '@/types/gameState';
+import { AIDifficulty } from '@/types/gamePlayer';
 
 interface GameSettingsModalProps {
 	onSubmit: (settings: GameSettings) => void;
@@ -19,7 +13,8 @@ export default function GameSettingsModal({
 	onSubmit,
 	onClose, // onClose 함수 props로 받음
 }: GameSettingsModalProps) {
-	const [mode, setMode] = useState('easy');
+	const [mode, setMode] = useState<Mode>('single');
+	const [difficulty, setDifficulty] = useState<AIDifficulty>('easy');
 	const [numberOfPlayers, setNumberOfPlayers] = useState(4);
 	const [includeJokers, setIncludeJokers] = useState(false);
 	const [initHandSize, setInitHandSize] = useState(5);
@@ -32,6 +27,7 @@ export default function GameSettingsModal({
 			includeJokers,
 			initHandSize,
 			maxHandSize,
+			difficulty,
 		};
 
 		onSubmit(settings);
@@ -55,7 +51,20 @@ export default function GameSettingsModal({
 					<select
 						className="select select-bordered"
 						value={mode}
-						onChange={e => setMode(e.target.value)}
+						onChange={e => setMode(e.target.value as Mode)}
+					>
+						<option value="single">Single</option>
+						<option value="multi" disabled>
+							Multiplayer (coming soon)
+						</option>
+					</select>
+				</div>
+				<div className="form-control mb-4">
+					<label className="label">Difficulty</label>
+					<select
+						className="select select-bordered"
+						value={difficulty}
+						onChange={e => setDifficulty(e.target.value as AIDifficulty)}
 					>
 						<option value="easy">Easy</option>
 						<option value="medium">Medium</option>

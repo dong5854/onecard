@@ -1,4 +1,4 @@
-import { Player } from './gamePlayer';
+import { AIDifficulty, Player } from './gamePlayer';
 import { PokerCardPropsWithId } from './pokerCard';
 
 // 게임 상태 및 설정 관련 정의
@@ -12,6 +12,7 @@ export interface GameSettings {
 	includeJokers: boolean;
 	initHandSize: number;
 	maxHandSize: number;
+	difficulty: AIDifficulty;
 }
 
 export interface GameState {

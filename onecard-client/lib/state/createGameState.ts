@@ -1,6 +1,6 @@
 import { GameSettings, GameState } from '@/types/gameState';
 import { createDeck, dealCards, shuffleDeck } from '@/lib/utils/cardUtils';
-import { Player } from '@/types/gamePlayer';
+import { AIDifficulty, Player } from '@/types/gamePlayer';
 import { PokerCardPropsWithId } from '@/types/pokerCard';
 import { createAIPlayer, createMyself } from './gamePlayers';
 
@@ -57,7 +57,10 @@ export const updateDeck = (
 
 function initializeSinglePlayGame(settings: GameSettings): GameState {
 	const deck = shuffleDeck(createDeck(settings.includeJokers));
-	const players = initializePlayerRoles(settings.numberOfPlayers);
+	const players = initializePlayerRoles(
+		settings.numberOfPlayers,
+		settings.difficulty,
+	);
 	const { updatedPlayers, updatedDeck } = dealCards(
 		players,
 		deck,
@@ -77,13 +80,16 @@ function initializeSinglePlayGame(settings: GameSettings): GameState {
 	};
 }
 
-function initializePlayerRoles(numberOfPlayers: number): Player[] {
+function initializePlayerRoles(
+	numberOfPlayers: number,
+	aiDifficulty: AIDifficulty,
+): Player[] {
 	const players: Player[] = [];
 	for (let i = 0; i < numberOfPlayers; i++) {
 		if (i === 0) {
 			players.push(createMyself(`player-${i}`, 'me', []));
 		} else {
-			players.push(createAIPlayer(`player-${i}`, `cpu-${i}`, [], 'easy'));
+			players.push(createAIPlayer(`player-${i}`, `cpu-${i}`, [], aiDifficulty));
 		}
 	}
 	return players;

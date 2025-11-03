@@ -5,13 +5,14 @@ import GameTitle from '@/components/UI/GameTitle';
 import PixelRetroButton from '@/components/UI/PixelRetroButton';
 import GameSettingsModal from '@/components/UI/GameSettingsModal';
 import { useRouter } from 'next/navigation';
+import { GameSettings } from '@/types/gameState';
 
 export default function MainPage() {
 	const [isModalOpen, setIsModalOpen] = useState(false);
-	const [gameSettings, setGameSettings] = useState(null);
+	const [gameSettings, setGameSettings] = useState<GameSettings | null>(null);
 	const router = useRouter();
 
-	const handleGameSettingsSubmit = (settings: any) => {
+	const handleGameSettingsSubmit = (settings: GameSettings) => {
 		setGameSettings(settings);
 		setIsModalOpen(false);
 
@@ -23,6 +24,7 @@ export default function MainPage() {
 			jokers: settings.includeJokers ? 'true' : 'false',
 			initHand: settings.initHandSize.toString(),
 			maxHand: settings.maxHandSize.toString(),
+			difficulty: settings.difficulty,
 		});
 
 		router.push(`/game/single-player?${params.toString()}`);

@@ -5,6 +5,7 @@ import GameOverPanel from '@/components/UI/GameOverPanel';
 import { useOneCardGame } from '@/lib/hooks/useOneCardGame';
 import { useEffect } from 'react';
 import { GameSettings, Mode } from '@/types/gameState';
+import { AIDifficulty } from '@/types/gamePlayer';
 import SinglePlayerBoard from '@/components/UI/board/SinglePlayerBoard';
 
 export default function SinglePlayerPage() {
@@ -15,6 +16,12 @@ export default function SinglePlayerPage() {
 	const includeJokers = searchParams.get('jokers') === 'true';
 	const initHandSize = parseInt(searchParams.get('initHand') || '0', 10);
 	const maxHandSize = parseInt(searchParams.get('maxHand') || '0', 10);
+	const difficultyParam = searchParams.get('difficulty');
+	const difficulty: AIDifficulty = ['easy', 'medium', 'hard'].includes(
+		difficultyParam ?? '',
+	)
+		? (difficultyParam as AIDifficulty)
+		: 'easy';
 
 	const gameSettings: GameSettings = {
 		mode: mode || 'single',
@@ -22,6 +29,7 @@ export default function SinglePlayerPage() {
 		includeJokers: includeJokers,
 		initHandSize: isNaN(initHandSize) ? 5 : initHandSize,
 		maxHandSize: isNaN(maxHandSize) ? 15 : maxHandSize,
+		difficulty,
 	};
 
 	const { gameState, initializeGame, playCard, drawCard } =
