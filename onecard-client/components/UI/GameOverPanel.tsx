@@ -54,7 +54,9 @@ const GameOverPanel: React.FC<GameOverPanelProps> = ({
 	);
 
 	if (variant === 'inline') {
-		return <div className={`${styles.inlineRoot} ${className ?? ''}`}>{panel}</div>;
+		return (
+			<div className={`${styles.inlineRoot} ${className ?? ''}`}>{panel}</div>
+		);
 	}
 
 	return <div className={`${styles.overlay} ${className ?? ''}`}>{panel}</div>;
