@@ -41,12 +41,29 @@ export const useOneCardGame = (settings: GameSettings) => {
 
 	// 카드 뽑기
 	const drawCard = useCallback(() => {
+		const currentPlayer = gameState.players[gameState.currentPlayerIndex];
+		const defaultDrawAmount = gameState.damage > 0 ? gameState.damage : 1;
+		const availableSlots =
+			gameState.settings.maxHandSize - (currentPlayer?.hand.length ?? 0);
+
+		const drawAmount = Math.min(defaultDrawAmount, availableSlots);
+		if (drawAmount <= 0) {
+			dispatch({ type: 'NEXT_TURN' });
+			return;
+		}
+
 		dispatch({
 			type: 'DRAW_CARD',
-			payload: { amount: gameState.damage > 0 ? gameState.damage : 1 },
+			payload: { amount: drawAmount },
 		});
 		dispatch({ type: 'NEXT_TURN' });
-	}, [gameState.damage]);
+	}, [
+		dispatch,
+		gameState.currentPlayerIndex,
+		gameState.damage,
+		gameState.players,
+		gameState.settings.maxHandSize,
+	]);
 
 	const getCurrentPlayer = useCallback((): Player => {
 		return gameState.players[gameState.currentPlayerIndex];
