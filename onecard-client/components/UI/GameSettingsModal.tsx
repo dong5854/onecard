@@ -3,6 +3,7 @@ import PixelRetroButton from './PixelRetroButton';
 import styles from './GameSettingModal.module.css';
 import { GameSettings, Mode } from '@/types/gameState';
 import { AIDifficulty } from '@/types/gamePlayer';
+import PixelSelect from './PixelSelect';
 
 interface GameSettingsModalProps {
 	onSubmit: (settings: GameSettings) => void;
@@ -48,28 +49,32 @@ export default function GameSettingsModal({
 				<h2 className="text-lg font-bold mb-4">Game Settings</h2>
 				<div className="form-control mb-4">
 					<label className="label">Mode</label>
-					<select
-						className="select select-bordered"
+					<PixelSelect
 						value={mode}
-						onChange={e => setMode(e.target.value as Mode)}
-					>
-						<option value="single">Single</option>
-						<option value="multi" disabled>
-							Multiplayer (coming soon)
-						</option>
-					</select>
+						onChange={setMode}
+						options={[
+							{ value: 'single', label: 'Single' },
+							{
+								value: 'multi',
+								label: 'Multiplayer (coming soon)',
+								disabled: true,
+							},
+						]}
+						ariaLabel="Select game mode"
+					/>
 				</div>
 				<div className="form-control mb-4">
 					<label className="label">Difficulty</label>
-					<select
-						className="select select-bordered"
+					<PixelSelect
 						value={difficulty}
-						onChange={e => setDifficulty(e.target.value as AIDifficulty)}
-					>
-						<option value="easy">Easy</option>
-						<option value="medium">Medium</option>
-						<option value="hard">Hard</option>
-					</select>
+						onChange={setDifficulty}
+						options={[
+							{ value: 'easy', label: 'Easy' },
+							{ value: 'medium', label: 'Medium' },
+							{ value: 'hard', label: 'Hard' },
+						]}
+						ariaLabel="Select AI difficulty"
+					/>
 				</div>
 				<div className="form-control mb-4">
 					<label className="label">Number of Players</label>
