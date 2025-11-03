@@ -142,6 +142,12 @@ export function SinglePlayerBoard({
 		setIsOverDropZone(false);
 	}, [draggingCard, isMyTurn, isOverDropZone, onPlayCard, selfIndex]);
 
+	const handleDeckClick = useCallback(() => {
+		if (isMyTurn) {
+			onDrawCard();
+		}
+	}, [isMyTurn, onDrawCard]);
+
 	const renderPlayerSlot = (
 		position: SlotPosition,
 		assignment?: PlayerAssignment,
@@ -228,7 +234,7 @@ export function SinglePlayerBoard({
 								isJoker={false}
 								isFlipped={true}
 								draggable={false}
-								onClick={onDrawCard}
+								onClick={handleDeckClick}
 							/>
 							{openedCard && (
 								<PokerCard
