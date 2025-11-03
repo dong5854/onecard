@@ -152,31 +152,43 @@ export function SinglePlayerBoard({
 			<div className={descriptor.wrapperClassName}>
 				{assignment ? (
 					<>
-						<div className={descriptor.badgeClassName}>
+						<div
+							className={descriptor.badgeClassName}
+							style={{
+								zIndex: 20,
+								transform: descriptor.vertical
+									? undefined
+									: 'translateY(-50px)',
+							}}
+						>
 							<PlayerBadge
 								name={assignment.player.name}
 								isActive={currentPlayerIndex === assignment.index}
 							/>
 						</div>
-						<OverlappingCards vertical={descriptor.vertical}>
-							{assignment.player.hand.map((card, cardIndex) => (
-								<PokerCard
-									key={card.id}
-									rank={card.rank}
-									isJoker={card.isJoker}
-									isFlipped={isSelfSlot ? false : (card.isFlipped ?? true)}
-									draggable={isSelfSlot}
-									suit={card.suit}
-									onDragStart={
-										isSelfSlot
-											? () => handleCardDragStart(cardIndex)
-											: undefined
-									}
-									onDrag={isSelfSlot ? handleCardDrag : undefined}
-									onDragEnd={isSelfSlot ? handleCardDragEnd : undefined}
-								/>
-							))}
-						</OverlappingCards>
+						<div
+							className={descriptor.vertical ? 'mt-16 ml-[6.5rem]' : undefined}
+						>
+							<OverlappingCards vertical={descriptor.vertical}>
+								{assignment.player.hand.map((card, cardIndex) => (
+									<PokerCard
+										key={card.id}
+										rank={card.rank}
+										isJoker={card.isJoker}
+										isFlipped={isSelfSlot ? false : (card.isFlipped ?? true)}
+										draggable={isSelfSlot}
+										suit={card.suit}
+										onDragStart={
+											isSelfSlot
+												? () => handleCardDragStart(cardIndex)
+												: undefined
+										}
+										onDrag={isSelfSlot ? handleCardDrag : undefined}
+										onDragEnd={isSelfSlot ? handleCardDragEnd : undefined}
+									/>
+								))}
+							</OverlappingCards>
+						</div>
 					</>
 				) : null}
 			</div>
