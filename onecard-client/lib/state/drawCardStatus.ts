@@ -3,14 +3,26 @@ import { PokerCardPropsWithId } from '@/types/pokerCard';
 import { refillDeck } from '@/lib/utils/cardUtils';
 import { Player } from '@/types/gamePlayer';
 
+interface DrawResult {
+	updatedPlayer: Player;
+	remainingDeck: PokerCardPropsWithId[];
+	discardPile: PokerCardPropsWithId[];
+	drawnCard: PokerCardPropsWithId | null;
+}
+
 export const drawCardStatus = (state: GameState, amount: number): GameState => {
 	let updatedState = { ...state };
 	for (let i = 0; i < amount; i++) {
-		const { updatedPlayer, remainingDeck } = drawCard(updatedState);
-		const { newDeck, newDiscardPile } = handleEmptyDeck(
-			remainingDeck,
-			updatedState.discardPile,
-		);
+		const { updatedPlayer, remainingDeck, discardPile, drawnCard } =
+			drawCard(updatedState);
+		if (!drawnCard) {
+			return {
+				...updatedState,
+				deck: remainingDeck,
+				discardPile,
+				damage: 0,
+			};
+		}
 		updatedState = {
 			...updatedState,
 			players: updatePlayers(
@@ -18,8 +30,8 @@ export const drawCardStatus = (state: GameState, amount: number): GameState => {
 				updatedState.currentPlayerIndex,
 				updatedPlayer,
 			),
-			deck: newDeck,
-			discardPile: newDiscardPile,
+			deck: remainingDeck,
+			discardPile,
 		};
 	}
 	return {
@@ -28,9 +40,27 @@ export const drawCardStatus = (state: GameState, amount: number): GameState => {
 	};
 };
 
-const drawCard = (state: GameState) => {
+const drawCard = (state: GameState): DrawResult => {
 	const currentPlayer = state.players[state.currentPlayerIndex];
-	const [drawnCard, ...remainingDeck] = state.deck;
+	let deck = state.deck;
+	let discardPile = state.discardPile;
+
+	if (deck.length === 0) {
+		const refilled = refillDeck(deck, discardPile);
+		deck = refilled.newDeck;
+		discardPile = refilled.newDiscardPile;
+	}
+
+	if (deck.length === 0) {
+		return {
+			updatedPlayer: currentPlayer,
+			remainingDeck: deck,
+			discardPile,
+			drawnCard: null,
+		};
+	}
+
+	const [drawnCard, ...remainingDeck] = deck;
 
 	const updatedPlayer = {
 		...currentPlayer,
@@ -40,17 +70,9 @@ const drawCard = (state: GameState) => {
 	return {
 		updatedPlayer,
 		remainingDeck,
+		discardPile,
+		drawnCard,
 	};
-};
-
-const handleEmptyDeck = (
-	remainingDeck: PokerCardPropsWithId[],
-	discardPile: PokerCardPropsWithId[],
-) => {
-	if (remainingDeck.length === 0) {
-		return refillDeck(remainingDeck, discardPile);
-	}
-	return { newDeck: remainingDeck, newDiscardPile: discardPile };
 };
 
 const updatePlayers = (
