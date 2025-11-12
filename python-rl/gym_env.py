@@ -297,9 +297,9 @@ class OneCardEnv(gym.Env):
             self.settings.update(options)
         payload = {"settings": self.settings}
         state = self._post_json("/reset", payload)["state"]
-        observation = self._encode_state(state)
-        self.state_cache = state
-        return observation, {}
+        collapsed_state, obs = self._resolve_to_agent_turn(state)
+        self.state_cache = collapsed_state
+        return obs, {}
 
     def step(self, action: int) -> Tuple[np.ndarray, float, bool, bool, Dict[str, Any]]:
         """하나의 시간 스텝을 진행한다.
@@ -314,15 +314,13 @@ class OneCardEnv(gym.Env):
             raise RuntimeError("reset() must be called before step().")
 
         action_payload, was_valid = self._decode_action(action, self.state_cache)
-        result = self._post_json("/step", {"action": action_payload})
+        step_result = self._post_json("/step", {"action": action_payload})
 
-        next_state = result["state"]
-        observation = self._encode_state(next_state)
-        reward = self._compute_reward(self.state_cache, next_state, was_valid)
-        done = bool(result["done"])
-        info = result.get("info", {})
-
-        self.state_cache = next_state
+        collapsed_state, observation = self._resolve_to_agent_turn(step_result["state"])
+        reward = self._compute_reward(self.state_cache, collapsed_state, was_valid)
+        done = bool(step_result["done"]) or collapsed_state["gameStatus"] == "finished"
+        info = step_result.get("info", {})
+        self.state_cache = collapsed_state
         return observation, reward, done, False, info
 
     def render(self) -> None:
@@ -333,7 +331,7 @@ class OneCardEnv(gym.Env):
         players = self.state_cache["players"]
         print("--- ONE CARD STATE ---")
         for idx, player in enumerate(players):
-            marker = "(You)" if idx == 0 else "(AI)"
+            marker = "(You)" if idx == 0 else "(Enemy)"
             hand_size = len(player["hand"])
             print(f"Player {idx} {marker}: hand={hand_size}")
         top = self.state_cache["discardPile"][0]
@@ -365,6 +363,25 @@ class OneCardEnv(gym.Env):
         """관측 인코더를 사용해 상태를 벡터로 변환한다."""
         return self.encoder.encode(state)
 
+    def _resolve_to_agent_turn(self, state: Dict[str, Any]) -> Tuple[Dict[str, Any], np.ndarray]:
+        """AI 턴을 자동으로 진행시켜 다시 에이전트 순서로 만든다."""
+
+        collapsed_state = state
+        toggled = False
+        while (
+            collapsed_state["gameStatus"] == "playing"
+            and collapsed_state["players"][collapsed_state["currentPlayerIndex"]]["isAI"]
+        ):
+            ai_action = {"type": "NEXT_TURN"}
+            collapsed_state = self._post_json("/step", {"action": ai_action})["state"]
+            toggled = True
+
+        observation = self._encode_state(collapsed_state)
+        if toggled and collapsed_state["gameStatus"] == "finished":
+            observation = self._encode_state(collapsed_state)
+
+        return collapsed_state, observation
+
     def _decode_action(
         self,
         action: int,
@@ -379,14 +396,15 @@ class OneCardEnv(gym.Env):
         Returns:
             엔진 액션 payload와 유효성 플래그.
         """
+        action_index = int(action)
         hand = state["players"][0]["hand"]
-        if action == self.max_hand_size:
+        if action_index == self.max_hand_size:
             return {"type": "DRAW_CARD", "amount": 1}, True
-        if 0 <= action < len(hand):
+        if 0 <= action_index < len(hand):
             return {
                 "type": "PLAY_CARD",
                 "playerIndex": 0,
-                "cardIndex": action,
+                "cardIndex": action_index,
             }, True
         return {"type": "DRAW_CARD", "amount": 1}, False
 
