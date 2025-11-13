@@ -1,4 +1,4 @@
-import { PokerCardProps, PokerCardPropsWithId } from './pokerCard';
+import { PokerCardProps, PokerCardPropsWithId } from '@/types/pokerCard';
 
 export interface Player {
 	readonly id: string;

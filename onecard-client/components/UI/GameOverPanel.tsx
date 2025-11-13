@@ -1,6 +1,6 @@
 import React from 'react';
-import PixelRetroButton from './PixelRetroButton';
-import styles from './GameOverPanel.module.css';
+import PixelRetroButton from '@/components/UI/PixelRetroButton';
+import styles from '@/components/UI/GameOverPanel.module.css';
 
 interface GameOverPanelProps {
 	winnerName?: string | null;

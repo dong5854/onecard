@@ -1,5 +1,5 @@
 import React, { CSSProperties, ReactNode } from 'react';
-import styles from './CardPlayHolder.module.css';
+import styles from '@/components/UI/board/CardPlayHolder.module.css';
 
 interface CardPlayHolderProps {
 	width?: CSSProperties['width'];

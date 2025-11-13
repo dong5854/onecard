@@ -1,5 +1,5 @@
-import { AIDifficulty, Player } from './gamePlayer';
-import { PokerCardPropsWithId } from './pokerCard';
+import { AIDifficulty, Player } from '@/types/gamePlayer';
+import { PokerCardPropsWithId } from '@/types/pokerCard';
 
 // 게임 상태 및 설정 관련 정의
 export type Direction = 'clockwise' | 'counterclockwise';

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import styles from './BackgroundMusic.module.css';
+import styles from '@/components/GameObject/BackgroundMusic.module.css';
 import { FaVolumeUp, FaVolumeMute } from 'react-icons/fa';
 
 interface BackgroundMusicProps {

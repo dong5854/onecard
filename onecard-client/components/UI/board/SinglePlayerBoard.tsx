@@ -9,7 +9,7 @@ import DamageCounter from '@/components/GameObject/DamageCounter';
 import { Player } from '@/types/gamePlayer';
 import { PokerCardPropsWithId } from '@/types/pokerCard';
 import { isValidPlay } from '@/lib/utils/cardUtils';
-import styles from './SinglePlayerBoard.module.css';
+import styles from '@/components/UI/board/SinglePlayerBoard.module.css';
 
 type OpponentPosition = 'top' | 'left' | 'right';
 type SlotPosition = OpponentPosition | 'bottom';

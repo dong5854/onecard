@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import PixelRetroButton from './PixelRetroButton';
-import styles from './GameSettingModal.module.css';
+import PixelRetroButton from '@/components/UI/PixelRetroButton';
+import styles from '@/components/UI/GameSettingModal.module.css';
 import { GameSettings, Mode } from '@/types/gameState';
 import { AIDifficulty } from '@/types/gamePlayer';
-import PixelSelect from './PixelSelect';
+import PixelSelect from '@/components/UI/PixelSelect';
 
 interface GameSettingsModalProps {
 	onSubmit: (settings: GameSettings) => void;

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import styles from './PixelRetroButton.module.css';
+import styles from '@/components/UI/PixelRetroButton.module.css';
 
 interface PixelRetroButtonProps {
 	text: string;

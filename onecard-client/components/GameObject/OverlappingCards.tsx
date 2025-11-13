@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import styles from './OverlappingCards.module.css';
+import styles from '@/components/GameObject/OverlappingCards.module.css';
 
 interface OverlappingCardsProps {
 	children: ReactElement[];

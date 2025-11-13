@@ -1,5 +1,4 @@
-import { GameSettings } from './gameState';
-import { PokerCardPropsWithId } from './pokerCard';
+import { PokerCardPropsWithId } from '@/types/pokerCard';
 
 export type GameAction =
 	| { type: 'START_GAME' }

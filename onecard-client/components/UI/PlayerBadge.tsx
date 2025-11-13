@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './PlayerBadge.module.css';
+import styles from '@/components/UI/PlayerBadge.module.css';
 
 interface PlayerBadgeProps {
 	name: string;

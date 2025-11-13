@@ -7,7 +7,7 @@ import {
 	isValidSuit,
 	PokerCardProps,
 } from '@/types/pokerCard';
-import styles from './Pokercard.module.css';
+import styles from '@/components/GameObject/Pokercard.module.css';
 
 interface FallBackCardProps extends PokerCardProps {
 	onMouseDown?: (e: React.MouseEvent<HTMLElement>) => void;

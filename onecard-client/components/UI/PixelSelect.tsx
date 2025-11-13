@@ -8,7 +8,7 @@ import {
 	useRef,
 	useState,
 } from 'react';
-import styles from './PixelSelect.module.css';
+import styles from '@/components/UI/PixelSelect.module.css';
 
 interface PixelSelectOption<T extends string> {
 	value: T;

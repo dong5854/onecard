@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './GameTitle.module.css';
+import styles from '@/components/UI/GameTitle.module.css';
 
 interface GameTitleProps {
 	title: string;

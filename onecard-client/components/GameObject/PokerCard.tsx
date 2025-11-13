@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useCallback, useEffect, useRef, useState, memo } from 'react';
-import FallBackCard from './FallBackCard';
+import FallBackCard from '@/components/GameObject/FallBackCard';
 import { PokerCardProps } from '@/types/pokerCard';
-import styles from './Pokercard.module.css';
+import styles from '@/components/GameObject/Pokercard.module.css';
 
 const PokerCard = memo(
 	({

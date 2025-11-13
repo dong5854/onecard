@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './DamageCounter.module.css';
+import styles from '@/components/GameObject/DamageCounter.module.css';
 
 interface DamageCounterProps {
 	value: number;

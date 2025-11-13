@@ -2,7 +2,7 @@ import { GameSettings, GameState } from '@/types/gameState';
 import { createDeck, dealCards, shuffleDeck } from '@/lib/utils/cardUtils';
 import { AIDifficulty, Player } from '@/types/gamePlayer';
 import { PokerCardPropsWithId } from '@/types/pokerCard';
-import { createAIPlayer, createMyself } from './gamePlayers';
+import { createAIPlayer, createMyself } from '@/lib/state/gamePlayers';
 
 export const createGameState = (settings: GameSettings): GameState => {
 	return {
