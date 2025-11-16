@@ -13,7 +13,10 @@ import { GameService } from '@/modules/game/game.service';
 import type { GameResource, GameSummary } from '@/modules/game/game.service';
 import type { EngineStepResult } from '@/modules/game/domain/engine/gameEngine';
 import { CreateGameDto } from '@/modules/game/dto/create-game.dto';
-import { ApplyGameActionDto } from '@/modules/game/dto/game-action.dto';
+import {
+  ApplyGameActionDto,
+  GameActionType,
+} from '@/modules/game/dto/game-action.dto';
 
 @ApiTags('games')
 @Controller('games')
@@ -60,8 +63,77 @@ export class GamesController {
   @Patch(':gameId')
   @ApiOperation({
     summary: '플레이어 액션을 적용하여 게임 상태를 갱신합니다.',
+    description:
+      'GameActionDto 기반으로 다양한 액션을 한 엔드포인트에서 처리합니다. 대표 예시는 다음과 같습니다.\n' +
+      '- `START_GAME`: `{ "action": { "type": "START_GAME" } }`\n' +
+      '- `PLAY_CARD`: `{ "action": { "type": "PLAY_CARD", "playerIndex": 0, "cardIndex": 1 } }`\n' +
+      '- `DRAW_CARD`: `{ "action": { "type": "DRAW_CARD", "amount": 2 } }`\n' +
+      '- `APPLY_SPECIAL_EFFECT`: `{ "action": { "type": "APPLY_SPECIAL_EFFECT", "effectCard": { "id": "card-1", "isJoker": false, "isFlipped": true, "rank": 1, "suit": "hearts" } } }`\n' +
+      '- `NEXT_TURN`: `{ "action": { "type": "NEXT_TURN" } }`\n' +
+      '- `END_GAME`: `{ "action": { "type": "END_GAME", "winnerIndex": 0 } }`',
   })
-  @ApiBody({ type: ApplyGameActionDto })
+  @ApiBody({
+    type: ApplyGameActionDto,
+    schema: {
+      oneOf: [
+        {
+          description: '게임 시작',
+          example: { action: { type: GameActionType.START_GAME } },
+        },
+        {
+          description: '카드 플레이',
+          example: {
+            action: {
+              type: GameActionType.PLAY_CARD,
+              playerIndex: 0,
+              cardIndex: 1,
+            },
+          },
+        },
+        {
+          description: '카드 드로우',
+          example: {
+            action: {
+              type: GameActionType.DRAW_CARD,
+              amount: 2,
+            },
+          },
+        },
+        {
+          description: '특수 효과 적용',
+          example: {
+            action: {
+              type: GameActionType.APPLY_SPECIAL_EFFECT,
+              effectCard: {
+                id: 'card-1',
+                isJoker: false,
+                isFlipped: true,
+                rank: 1,
+                suit: 'hearts',
+              },
+            },
+          },
+        },
+        {
+          description: '턴 넘기기',
+          example: {
+            action: {
+              type: GameActionType.NEXT_TURN,
+            },
+          },
+        },
+        {
+          description: '게임 종료',
+          example: {
+            action: {
+              type: GameActionType.END_GAME,
+              winnerIndex: 0,
+            },
+          },
+        },
+      ],
+    },
+  })
   public applyAction(
     @Param('gameId', ParseUUIDPipe) gameId: string,
     @Body() body: ApplyGameActionDto,

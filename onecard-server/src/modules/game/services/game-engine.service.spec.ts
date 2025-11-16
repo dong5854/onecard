@@ -13,6 +13,7 @@ import type * as GameEngineModule from '@/modules/game/domain/engine/gameEngine'
 import {
   applySpecialEffectAction,
   createStartedState as createStartedEngineState,
+  createWaitingState as createWaitingEngineState,
   drawCardAction,
   endGameAction,
   nextTurnAction,
@@ -27,6 +28,7 @@ jest.mock('@/modules/game/domain/engine/gameEngine', () => {
   );
   return {
     ...actual,
+    createWaitingState: jest.fn(),
     createStartedState: jest.fn(),
     step: jest.fn(),
     startGameAction: jest.fn(),
@@ -35,9 +37,14 @@ jest.mock('@/modules/game/domain/engine/gameEngine', () => {
     nextTurnAction: jest.fn(),
     applySpecialEffectAction: jest.fn(),
     endGameAction: jest.fn(),
+    initializeGameState: jest.fn(),
   };
 });
 
+const mockedCreateWaitingState =
+  createWaitingEngineState as jest.MockedFunction<
+    typeof createWaitingEngineState
+  >;
 const mockedCreateStartedState =
   createStartedEngineState as jest.MockedFunction<
     typeof createStartedEngineState
@@ -86,6 +93,14 @@ describe('GameEngineService', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  it('delegates createWaitingState to the engine helpers', () => {
+    const waitingState = { ...gameState, gameStatus: 'waiting' };
+    mockedCreateWaitingState.mockReturnValueOnce(waitingState);
+
+    expect(service.createWaitingState(settings)).toBe(waitingState);
+    expect(mockedCreateWaitingState).toHaveBeenCalledWith(settings);
   });
 
   it('delegates createStartedState to the engine helpers', () => {

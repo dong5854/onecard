@@ -20,6 +20,9 @@ export interface EngineStepResult {
 export const createInitialState = (settings: GameSettings): GameState =>
   createGameState(settings);
 
+export const createWaitingState = (settings: GameSettings): GameState =>
+  initializeGameState(settings);
+
 export const createStartedState = (settings: GameSettings): GameState =>
   startGame(initializeGameState(settings));
 

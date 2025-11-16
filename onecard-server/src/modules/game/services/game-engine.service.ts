@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import {
   applySpecialEffectAction,
   createStartedState as createStartedEngineState,
+  createWaitingState as createWaitingEngineState,
   drawCardAction,
   endGameAction,
   nextTurnAction,
@@ -25,6 +26,10 @@ import { EngineStepResult } from '@/modules/game/domain/engine/gameEngine';
 
 @Injectable()
 export class GameEngineService {
+  public createWaitingState(settings: GameSettings): GameState {
+    return createWaitingEngineState(settings);
+  }
+
   public createStartedState(settings: GameSettings): GameState {
     return createStartedEngineState(settings);
   }

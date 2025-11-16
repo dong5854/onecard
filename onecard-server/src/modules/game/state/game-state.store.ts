@@ -28,7 +28,7 @@ export class GameStateStore {
   public create(settings?: Partial<GameSettings>): GameSessionRecord {
     const mergedSettings = this.mergeWithDefaults(settings);
     const id = randomUUID();
-    const state = this.gameEngine.createStartedState(mergedSettings);
+    const state = this.gameEngine.createWaitingState(mergedSettings);
     const timestamp = new Date();
     const record: GameSessionRecord = {
       id,

@@ -13,7 +13,10 @@ import {
   GameStateStore,
 } from '@/modules/game/state/game-state.store';
 import { GameEngineService } from '@/modules/game/services/game-engine.service';
-import { GameActionDto } from '@/modules/game/dto/game-action.dto';
+import {
+  GameActionDto,
+  GameActionType,
+} from '@/modules/game/dto/game-action.dto';
 import { GameAiService } from '@/modules/game/services/game-ai.service';
 
 export interface GameResource {
@@ -69,15 +72,26 @@ export class GameService {
       throw new BadRequestException('Action payload is required');
     }
 
+    const record = this.findGameOrThrow(gameId);
+    if (
+      record.state.gameStatus === 'waiting' &&
+      actionPayload.type !== GameActionType.START_GAME
+    ) {
+      throw new BadRequestException('게임이 아직 시작되지 않았습니다.');
+    }
+
     const action = this.gameEngine.buildAction(actionPayload);
-    const currentState: GameState = this.findGameOrThrow(gameId).state;
-    const result = this.gameEngine.step(currentState, action);
+    const result = this.gameEngine.step(record.state, action);
     this.gameStateStore.updateState(gameId, result.state);
     return result;
   }
 
   public executeAiTurn(gameId: string): StepResult {
-    const currentState: GameState = this.findGameOrThrow(gameId).state;
+    const record = this.findGameOrThrow(gameId);
+    const currentState: GameState = record.state;
+    if (currentState.gameStatus !== 'playing') {
+      throw new BadRequestException('게임이 아직 시작되지 않았습니다.');
+    }
     if (!this.gameAiService.isAiTurn(currentState)) {
       throw new BadRequestException('현재 차례는 AI가 아닙니다.');
     }

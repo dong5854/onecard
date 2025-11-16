@@ -29,7 +29,7 @@ const createState = (overrides: Partial<GameState> = {}): GameState => ({
   discardPile: [],
   direction: 'clockwise',
   damage: 0,
-  gameStatus: 'playing',
+  gameStatus: 'waiting',
   settings: baseSettings,
   ...overrides,
 });
@@ -185,8 +185,45 @@ describe('GameService', () => {
     );
   });
 
-  it('applies an action and persists the resulting state', () => {
+  it('prevents non-start actions before the game begins', () => {
     const record = createRecord();
+    store.find.mockReturnValue(record);
+
+    const dto: GameActionDto = {
+      type: GameActionType.PLAY_CARD,
+      playerIndex: 0,
+      cardIndex: 1,
+    };
+
+    expect(() => service.applyAction(record.id, dto)).toThrow(
+      BadRequestException,
+    );
+    expect(engine.buildAction).not.toHaveBeenCalled();
+  });
+
+  it('allows START_GAME to transition from waiting to playing', () => {
+    const record = createRecord();
+    const builtAction = { type: 'START_GAME' } as GameAction;
+    const stepResult = {
+      state: createState({ gameStatus: 'playing' }),
+    } as EngineStepResult;
+
+    store.find.mockReturnValue(record);
+    engine.buildAction.mockReturnValue(builtAction);
+    engine.step.mockReturnValue(stepResult);
+
+    const dto = { type: GameActionType.START_GAME } as GameActionDto;
+    const result = service.applyAction(record.id, dto);
+
+    expect(engine.buildAction).toHaveBeenCalledWith(dto);
+    expect(store.updateState).toHaveBeenCalledWith(record.id, stepResult.state);
+    expect(result).toBe(stepResult);
+  });
+
+  it('applies an action and persists the resulting state', () => {
+    const record = createRecord({
+      state: createState({ gameStatus: 'playing' }),
+    });
     const builtAction = { type: 'NEXT_TURN' } as GameAction;
     const stepResult = {
       state: createState({ currentPlayerIndex: 1 }),
@@ -206,7 +243,9 @@ describe('GameService', () => {
   });
 
   it('rejects AI execution when it is not the AI turn', () => {
-    const record = createRecord();
+    const record = createRecord({
+      state: createState({ gameStatus: 'playing' }),
+    });
     store.find.mockReturnValue(record);
     aiService.isAiTurn.mockReturnValue(false);
 
@@ -214,7 +253,9 @@ describe('GameService', () => {
   });
 
   it('rejects AI execution when there is no action to perform', () => {
-    const record = createRecord();
+    const record = createRecord({
+      state: createState({ gameStatus: 'playing' }),
+    });
     store.find.mockReturnValue(record);
     aiService.isAiTurn.mockReturnValue(true);
     aiService.playWhileAiTurn.mockReturnValue(null);
@@ -223,7 +264,9 @@ describe('GameService', () => {
   });
 
   it('updates the state when the AI turn succeeds', () => {
-    const record = createRecord();
+    const record = createRecord({
+      state: createState({ gameStatus: 'playing' }),
+    });
     const aiResult = {
       state: createState({ currentPlayerIndex: 1 }),
     } as EngineStepResult;
