@@ -22,9 +22,9 @@ interface AiTurnResult {
 export class GameAiService {
   private readonly maxConsecutiveTurns = 32;
 
-  constructor(private readonly gameEngine: GameEngineService) {}
+  public constructor(private readonly gameEngine: GameEngineService) {}
 
-  playWhileAiTurn(state: GameState): EngineStepResult | null {
+  public playWhileAiTurn(state: GameState): EngineStepResult | null {
     if (state.settings.mode !== 'single' || !this.isAiTurn(state)) {
       return null;
     }
@@ -64,13 +64,13 @@ export class GameAiService {
   }
 
   private executeTurn(state: GameState): AiTurnResult | null {
-    const player = state.players[state.currentPlayerIndex];
-    if (!player || !player.isAI) {
+    const player = state.players.at(state.currentPlayerIndex);
+    if (!player?.isAI) {
       return null;
     }
 
     let currentState = state;
-    let lastResult: EngineStepResult | null = null;
+    let lastResult: EngineStepResult | undefined;
     const actions: GameAction[] = [];
 
     const topCard = currentState.discardPile[0];
@@ -102,14 +102,15 @@ export class GameAiService {
     } else {
       const drawOutcome = this.applyAction(
         currentState,
-        drawCardAction(Math.max(1, currentState.damage || 0)),
+        drawCardAction(Math.max(1, currentState.damage)),
       );
       currentState = drawOutcome.state;
       lastResult = drawOutcome.result;
       this.pushAction(actions, drawOutcome.result);
 
-      const refreshedPlayer =
-        currentState.players[currentState.currentPlayerIndex];
+      const refreshedPlayer = currentState.players.at(
+        currentState.currentPlayerIndex,
+      );
       if (refreshedPlayer) {
         const refreshedTopCard = currentState.discardPile[0];
         playableIndex = this.findPlayableCardIndex(
@@ -141,10 +142,6 @@ export class GameAiService {
       }
     }
 
-    if (!lastResult) {
-      return null;
-    }
-
     if (currentState.gameStatus !== 'finished') {
       const nextOutcome = this.applyAction(currentState, nextTurnAction());
       currentState = nextOutcome.state;
@@ -159,7 +156,10 @@ export class GameAiService {
     };
   }
 
-  private applyAction(state: GameState, action: GameAction) {
+  private applyAction(
+    state: GameState,
+    action: GameAction,
+  ): { state: GameState; result: EngineStepResult } {
     const result = this.gameEngine.step(state, action);
     return {
       state: result.state,
@@ -167,7 +167,7 @@ export class GameAiService {
     };
   }
 
-  private pushAction(actions: GameAction[], result: EngineStepResult) {
+  private pushAction(actions: GameAction[], result: EngineStepResult): void {
     if (result.info?.action) {
       actions.push(result.info.action as GameAction);
     }
@@ -192,8 +192,11 @@ export class GameAiService {
     return card.rank !== undefined && specialRanks.has(card.rank);
   }
 
-  isAiTurn(state: GameState): boolean {
-    const player = state.players[state.currentPlayerIndex];
-    return Boolean(player?.isAI);
+  public isAiTurn(state: GameState): boolean {
+    const player = state.players.at(state.currentPlayerIndex);
+    if (!player) {
+      return false;
+    }
+    return player.isAI;
   }
 }

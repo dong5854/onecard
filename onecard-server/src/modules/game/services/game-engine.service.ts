@@ -14,22 +14,26 @@ import {
   GameActionDto,
   GameActionType,
 } from '@/modules/game/dto/game-action.dto';
-import { PokerCardPropsWithId } from '@/modules/game/domain/types/pokerCard';
+import {
+  PokerCardPropsWithId,
+  isValidRank,
+  isValidSuit,
+} from '@/modules/game/domain/types/pokerCard';
 import { GameSettings, GameState } from '@/modules/game/domain/types/gameState';
 import { GameAction } from '@/modules/game/domain/types/gameAction';
 import { EngineStepResult } from '@/modules/game/domain/engine/gameEngine';
 
 @Injectable()
 export class GameEngineService {
-  createStartedState(settings: GameSettings): GameState {
+  public createStartedState(settings: GameSettings): GameState {
     return createStartedEngineState(settings);
   }
 
-  step(state: GameState, action: GameAction): EngineStepResult {
+  public step(state: GameState, action: GameAction): EngineStepResult {
     return step(state, action);
   }
 
-  buildAction(payload: GameActionDto): GameAction {
+  public buildAction(payload: GameActionDto): GameAction {
     switch (payload.type) {
       case GameActionType.START_GAME:
         return startGameAction();
@@ -68,8 +72,25 @@ export class GameEngineService {
   }
 
   private toEffectCard(effectCard: EffectCardDto): PokerCardPropsWithId {
-    return {
-      ...effectCard,
-    } as PokerCardPropsWithId;
+    const transformed: PokerCardPropsWithId = {
+      id: effectCard.id,
+      isJoker: effectCard.isJoker,
+      isFlipped: effectCard.isFlipped,
+    };
+
+    if (
+      typeof effectCard.rank !== 'undefined' &&
+      isValidRank(effectCard.rank)
+    ) {
+      transformed.rank = effectCard.rank;
+    }
+    if (
+      typeof effectCard.suit !== 'undefined' &&
+      isValidSuit(effectCard.suit)
+    ) {
+      transformed.suit = effectCard.suit;
+    }
+
+    return transformed;
   }
 }

@@ -1,4 +1,4 @@
-import { GameState } from '@/modules/game/domain/types/gameState';
+import type { GameState } from '@/modules/game/domain/types/gameState';
 import { getNextPlayerIndex } from '@/modules/game/domain/utils/cardUtils';
 
 export const nextTurnStatus = (state: GameState): GameState => {

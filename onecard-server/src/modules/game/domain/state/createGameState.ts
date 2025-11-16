@@ -1,11 +1,17 @@
-import { GameSettings, GameState } from '@/modules/game/domain/types/gameState';
+import type {
+  GameSettings,
+  GameState,
+} from '@/modules/game/domain/types/gameState';
 import {
   createDeck,
   dealCards,
   shuffleDeck,
 } from '@/modules/game/domain/utils/cardUtils';
-import { AIDifficulty, Player } from '@/modules/game/domain/types/gamePlayer';
-import { PokerCardPropsWithId } from '@/modules/game/domain/types/pokerCard';
+import type {
+  AIDifficulty,
+  Player,
+} from '@/modules/game/domain/types/gamePlayer';
+import type { PokerCardPropsWithId } from '@/modules/game/domain/types/pokerCard';
 import {
   createAIPlayer,
   createMyself,
@@ -34,10 +40,15 @@ export const initializeGameState = (settings: GameSettings): GameState => {
 };
 
 export const startGame = (state: GameState): GameState => {
-  const discardPile = [state.deck.pop()!];
+  const deck = [...state.deck];
+  const topCard = deck.pop();
+  if (!topCard) {
+    throw new Error('Cannot start a game without cards in the deck.');
+  }
   return {
     ...state,
-    discardPile,
+    deck,
+    discardPile: [topCard],
     gameStatus: 'playing',
   };
 };
@@ -93,10 +104,18 @@ function initializePlayerRoles(
 ): Player[] {
   const players: Player[] = [];
   for (let i = 0; i < numberOfPlayers; i++) {
+    const playerIndex = i.toString();
     if (i === 0) {
-      players.push(createMyself(`player-${i}`, 'me', []));
+      players.push(createMyself(`player-${playerIndex}`, 'me', []));
     } else {
-      players.push(createAIPlayer(`player-${i}`, `cpu-${i}`, [], aiDifficulty));
+      players.push(
+        createAIPlayer(
+          `player-${playerIndex}`,
+          `cpu-${playerIndex}`,
+          [],
+          aiDifficulty,
+        ),
+      );
     }
   }
   return players;

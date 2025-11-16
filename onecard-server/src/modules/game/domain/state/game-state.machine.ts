@@ -1,5 +1,5 @@
-import { GameState } from '@/modules/game/domain/types/gameState';
-import { GameAction } from '@/modules/game/domain/types/gameAction';
+import type { GameState } from '@/modules/game/domain/types/gameState';
+import type { GameAction } from '@/modules/game/domain/types/gameAction';
 
 import {
   initializeGameState,

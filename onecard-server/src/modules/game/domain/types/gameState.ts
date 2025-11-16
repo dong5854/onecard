@@ -1,5 +1,8 @@
-import { AIDifficulty, Player } from '@/modules/game/domain/types/gamePlayer';
-import { PokerCardPropsWithId } from '@/modules/game/domain/types/pokerCard';
+import type {
+  AIDifficulty,
+  Player,
+} from '@/modules/game/domain/types/gamePlayer';
+import type { PokerCardPropsWithId } from '@/modules/game/domain/types/pokerCard';
 
 // 게임 상태 및 설정 관련 정의
 export type Direction = 'clockwise' | 'counterclockwise';

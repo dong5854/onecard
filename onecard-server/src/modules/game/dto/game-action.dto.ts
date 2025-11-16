@@ -21,56 +21,56 @@ export enum GameActionType {
 
 export class EffectCardDto {
   @IsString()
-  id!: string;
+  public id!: string;
 
   @IsBoolean()
-  isJoker!: boolean;
+  public isJoker!: boolean;
 
   @IsBoolean()
-  isFlipped!: boolean;
+  public isFlipped!: boolean;
 
   @IsOptional()
   @IsString()
-  rank?: string;
+  public rank?: string;
 
   @IsOptional()
   @IsString()
-  suit?: string;
+  public suit?: string;
 }
 
 export class GameActionDto {
   @IsEnum(GameActionType)
-  type!: GameActionType;
+  public type!: GameActionType;
 
   @IsOptional()
   @IsInt()
   @Min(0)
-  playerIndex?: number;
+  public playerIndex?: number;
 
   @IsOptional()
   @IsInt()
   @Min(0)
-  cardIndex?: number;
+  public cardIndex?: number;
 
   @IsOptional()
   @IsInt()
   @Min(1)
-  amount?: number;
+  public amount?: number;
 
   @IsOptional()
   @ValidateNested()
   @Type(() => EffectCardDto)
-  effectCard?: EffectCardDto;
+  public effectCard?: EffectCardDto;
 
   @IsOptional()
   @IsInt()
   @Min(0)
-  winnerIndex?: number;
+  public winnerIndex?: number;
 }
 
-export class StepGameDto {
+export class ApplyGameActionDto {
   @IsDefined()
   @ValidateNested()
   @Type(() => GameActionDto)
-  action!: GameActionDto;
+  public action!: GameActionDto;
 }

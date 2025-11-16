@@ -1,12 +1,15 @@
-import { GameSettings, GameState } from '@/modules/game/domain/types/gameState';
-import { GameAction } from '@/modules/game/domain/types/gameAction';
+import type {
+  GameSettings,
+  GameState,
+} from '@/modules/game/domain/types/gameState';
+import type { GameAction } from '@/modules/game/domain/types/gameAction';
 import {
   createGameState,
   initializeGameState,
   startGame,
 } from '@/modules/game/domain/state/createGameState';
 import { transitionGameState } from '@/modules/game/domain/state/game-state.machine';
-import { PokerCardPropsWithId } from '@/modules/game/domain/types/pokerCard';
+import type { PokerCardPropsWithId } from '@/modules/game/domain/types/pokerCard';
 
 export interface EngineStepResult {
   state: GameState;

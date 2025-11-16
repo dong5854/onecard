@@ -1,6 +1,9 @@
-import { Player } from '@/modules/game/domain/types/gamePlayer';
-import { Direction, GameState } from '@/modules/game/domain/types/gameState';
-import {
+import type { Player } from '@/modules/game/domain/types/gamePlayer';
+import type {
+  Direction,
+  GameState,
+} from '@/modules/game/domain/types/gameState';
+import type {
   PokerCardProps,
   PokerCardPropsWithId,
   RankValue,
@@ -145,7 +148,7 @@ export const isValidPlay = (
 
 export const checkWinner = (players: Player[]): Player | null => {
   const winner = players.find((player) => player.hand.length === 0);
-  return winner || null;
+  return winner ?? null;
 };
 
 export const getNextPlayerIndex = (state: GameState): number => {

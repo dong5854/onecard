@@ -1,13 +1,17 @@
 import { GameAiService } from '@/modules/game/services/game-ai.service';
 import { GameEngineService } from '@/modules/game/services/game-engine.service';
-import { GameSettings, GameState } from '@/modules/game/domain/types/gameState';
-import { Player } from '@/modules/game/domain/types/gamePlayer';
-import {
+import type {
+  GameSettings,
+  GameState,
+} from '@/modules/game/domain/types/gameState';
+import type { Player } from '@/modules/game/domain/types/gamePlayer';
+import type {
   PokerCardPropsWithId,
   RankValue,
   SuitsValue,
 } from '@/modules/game/domain/types/pokerCard';
-import { GameAction } from '@/modules/game/domain/types/gameAction';
+import type { GameAction } from '@/modules/game/domain/types/gameAction';
+import type { EngineStepResult } from '@/modules/game/domain/engine/gameEngine';
 
 const baseSettings: GameSettings = {
   mode: 'single',
@@ -56,6 +60,24 @@ const createState = (overrides: Partial<GameState> = {}): GameState => ({
   settings: baseSettings,
   ...overrides,
 });
+
+const ensureResult = (
+  result: ReturnType<GameAiService['playWhileAiTurn']>,
+): EngineStepResult => {
+  if (!result) {
+    throw new Error('Expected GameAiService to return an EngineStepResult.');
+  }
+  return result;
+};
+
+const extractAiActions = (result: EngineStepResult): GameAction[] => {
+  const info = result.info;
+  if (!info) {
+    return [];
+  }
+  const aiActions = info.aiActions;
+  return Array.isArray(aiActions) ? (aiActions as GameAction[]) : [];
+};
 
 describe('GameAiService', () => {
   let service: GameAiService;
@@ -117,21 +139,19 @@ describe('GameAiService', () => {
       discardPile: [createCard('top', 8, 'hearts')],
     });
 
-    const result = service.playWhileAiTurn(state);
-    expect(result).not.toBeNull();
-
-    const actions = (result!.info?.aiActions as GameAction[]) ?? [];
+    const result = ensureResult(service.playWhileAiTurn(state));
+    const actions = extractAiActions(result);
     expect(actions.map((action) => action.type)).toEqual([
       'PLAY_CARD',
       'NEXT_TURN',
     ]);
 
-    const aiPlayer = result!.state.players[1];
+    const aiPlayer = result.state.players[1];
     expect(aiPlayer.hand).toHaveLength(1);
     expect(aiPlayer.hand[0].id).toBe(spareCard.id);
-    expect(result!.state.discardPile[0].id).toBe(playableCard.id);
-    expect(result!.state.currentPlayerIndex).toBe(0);
-    expect(result!.state.gameStatus).toBe('playing');
+    expect(result.state.discardPile[0].id).toBe(playableCard.id);
+    expect(result.state.currentPlayerIndex).toBe(0);
+    expect(result.state.gameStatus).toBe('playing');
   });
 
   it('finishes the game when the AI plays its last card', () => {
@@ -156,14 +176,12 @@ describe('GameAiService', () => {
       discardPile: [createCard('top', 8, 'hearts')],
     });
 
-    const result = service.playWhileAiTurn(state);
-    expect(result).not.toBeNull();
-
-    const actions = (result!.info?.aiActions as GameAction[]) ?? [];
+    const result = ensureResult(service.playWhileAiTurn(state));
+    const actions = extractAiActions(result);
     expect(actions.map((action) => action.type)).toEqual(['PLAY_CARD']);
-    expect(result!.done).toBe(true);
-    expect(result!.state.gameStatus).toBe('finished');
-    expect(result!.state.winner?.id).toBe('cpu');
+    expect(result.done).toBe(true);
+    expect(result.state.gameStatus).toBe('finished');
+    expect(result.state.winner?.id).toBe('cpu');
   });
 
   it('draws cards when blocked, then plays once a card becomes available', () => {
@@ -193,22 +211,20 @@ describe('GameAiService', () => {
       damage: 2,
     });
 
-    const result = service.playWhileAiTurn(state);
-    expect(result).not.toBeNull();
-
-    const actions = (result!.info?.aiActions as GameAction[]) ?? [];
+    const result = ensureResult(service.playWhileAiTurn(state));
+    const actions = extractAiActions(result);
     expect(actions.map((action) => action.type)).toEqual([
       'DRAW_CARD',
       'PLAY_CARD',
       'NEXT_TURN',
     ]);
 
-    const aiPlayer = result!.state.players[1];
+    const aiPlayer = result.state.players[1];
     expect(aiPlayer.hand).toHaveLength(2);
-    expect(result!.state.deck).toHaveLength(0);
-    expect(result!.state.damage).toBe(0);
-    expect(result!.state.discardPile[0].id).toBe(drawnPlayableCard.id);
-    expect(result!.state.currentPlayerIndex).toBe(0);
-    expect(result!.state.gameStatus).toBe('playing');
+    expect(result.state.deck).toHaveLength(0);
+    expect(result.state.damage).toBe(0);
+    expect(result.state.discardPile[0].id).toBe(drawnPlayableCard.id);
+    expect(result.state.currentPlayerIndex).toBe(0);
+    expect(result.state.gameStatus).toBe('playing');
   });
 });

@@ -1,9 +1,9 @@
-import {
+import type {
   AIDifficulty,
   AIPlayer,
   Player,
 } from '@/modules/game/domain/types/gamePlayer';
-import {
+import type {
   PokerCardProps,
   PokerCardPropsWithId,
 } from '@/modules/game/domain/types/pokerCard';
@@ -45,15 +45,20 @@ export function cardToPlay(
   damage: number,
   difficulty: AIDifficulty,
 ): PokerCardPropsWithId {
+  const playableCard = hand.find((card) => isValidPlay(card, topCard, damage));
+  if (!playableCard) {
+    throw new Error('No playable card was found for the provided hand.');
+  }
+
   switch (difficulty) {
     case 'easy':
-      return hand.find((card) => isValidPlay(card, topCard, damage))!;
+      return playableCard;
     case 'medium':
       // TODO: 중간 난이도 로직 추가
-      return hand.find((card) => isValidPlay(card, topCard, damage))!;
+      return playableCard;
     case 'hard':
       // TODO: 어려움 난이도 로직 추가
-      return hand.find((card) => isValidPlay(card, topCard, damage))!;
+      return playableCard;
     default:
       throw new Error('Invalid difficulty');
   }

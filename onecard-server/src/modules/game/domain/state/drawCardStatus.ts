@@ -1,7 +1,7 @@
-import { GameState } from '@/modules/game/domain/types/gameState';
-import { PokerCardPropsWithId } from '@/modules/game/domain/types/pokerCard';
+import type { GameState } from '@/modules/game/domain/types/gameState';
+import type { PokerCardPropsWithId } from '@/modules/game/domain/types/pokerCard';
 import { refillDeck } from '@/modules/game/domain/utils/cardUtils';
-import { Player } from '@/modules/game/domain/types/gamePlayer';
+import type { Player } from '@/modules/game/domain/types/gamePlayer';
 
 interface DrawResult {
   updatedPlayer: Player;
@@ -79,7 +79,7 @@ const updatePlayers = (
   players: Player[],
   currentPlayerIndex: number,
   updatedPlayer: Player,
-) => {
+): Player[] => {
   return players.map((p, index) =>
     index === currentPlayerIndex ? updatedPlayer : p,
   );

@@ -5,7 +5,7 @@ NestJS 기반으로 구현한 원카드 게임 API 서버입니다. React 클라
 ## 주요 특징
 - **모듈러 아키텍처**: `AppModule` → `GameModule` 계층 구조, `GameStateStore`/`GameEngineService`/`GameAiService`로 책임 분리.
 - **도메인 캡슐화**: 카드 생성/셔플·상태 전이·행동 정의 등을 `src/modules/game/domain` 하위에 모아 React 잔재 제거.
-- **AI 턴 API**: `/game/ai/step` 엔드포인트를 통해 여러 AI 플레이어의 연속 턴을 서버에서 처리하고 결과를 클라이언트에 전달.
+- **RESTful 세션 API**: `/games` 리소스 중심 설계로 다중 게임 세션을 생성/조회/삭제할 수 있으며, 액션 PATCH 및 `/games/{id}/ai-turns` 서브 리소스로 AI 턴을 실행.
 - **DTO + ValidationPipe**: `class-validator`/`class-transformer` 기반 DTO로 입력을 검증하고 Nest 표준 파이프라인에 연결.
 
 ## 디렉터리 구조
@@ -49,18 +49,21 @@ yarn start:prod
 ## API 개요
 | 메서드 | 경로 | 설명 |
 | --- | --- | --- |
-| `GET /game/state` | 현재 게임 상태 조회 |
-| `POST /game/reset` | 설정(Optional)을 받아 새 게임 상태 생성 |
-| `POST /game/step` | DTO(`StepGameDto`) 기반 플레이어 액션 실행 |
-| `POST /game/ai/step` | 현재 턴이 AI일 때 서버에서 자동 행동 실행 |
+| `GET /games` | 게임 세션 목록 조회 |
+| `POST /games` | 설정(Optional)을 받아 새 게임 세션 생성 |
+| `GET /games/{gameId}` | 특정 게임 세션 상태 조회 |
+| `PATCH /games/{gameId}` | DTO(`ApplyGameActionDto`) 기반 플레이어 액션 적용 |
+| `POST /games/{gameId}/ai-turns` | 현재 턴이 AI일 때 서버에서 자동 행동 실행 |
+| `DELETE /games/{gameId}` | 게임 세션 삭제 |
 
 ### DTO 하이라이트
 - `GameSettingsDto`: 모드, 참가자 수, 조커 포함 여부, 난이도 등 옵션을 검증.
 - `GameActionDto`: `START_GAME`, `PLAY_CARD`, `DRAW_CARD`, `APPLY_SPECIAL_EFFECT`, `END_GAME` 등 액션 타입과 필요한 필드를 검증.
+- `ApplyGameActionDto`: PATCH 요청 본문에서 `GameActionDto`를 래핑해 검증.
 
 ## 개발 메모
 - 도메인 엔진은 순수 함수(`transitionGameState`, `createGameState`, `cardUtils` 등)로 유지해 테스트와 재사용이 쉽습니다.
-- `GameStateStore`는 싱글톤 인메모리 저장소이며, 멀티 룸/멀티 세션이 필요하면 이 계층을 별도 persistence 레이어로 교체하면 됩니다.
+- `GameStateStore`는 인메모리 다중 세션 저장소이며, 멀티 룸/멀티 세션이 필요하면 이 계층을 별도 persistence 레이어로 교체하면 됩니다.
 - AI 전략은 `GameAiService`와 `domain/state/gamePlayers.ts`에서 난이도별로 확장 가능합니다.
 
 ## TODO / 향후 작업

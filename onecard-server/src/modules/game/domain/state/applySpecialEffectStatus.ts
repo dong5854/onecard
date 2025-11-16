@@ -1,10 +1,10 @@
-import { GameState } from '@/modules/game/domain/types/gameState';
+import type { GameState } from '@/modules/game/domain/types/gameState';
 import {
   attackValue,
   changeDirection,
   turnSpecialEffect,
 } from '@/modules/game/domain/utils/cardUtils';
-import { PokerCardProps } from '@/modules/game/domain/types/pokerCard';
+import type { PokerCardProps } from '@/modules/game/domain/types/pokerCard';
 
 export const applySpecialEffectStatus = (
   state: GameState,

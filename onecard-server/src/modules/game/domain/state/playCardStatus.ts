@@ -1,4 +1,4 @@
-import { GameState } from '@/modules/game/domain/types/gameState';
+import type { GameState } from '@/modules/game/domain/types/gameState';
 import { checkWinner } from '@/modules/game/domain/utils/cardUtils';
 
 export const playCardStatus = (

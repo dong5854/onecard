@@ -1,4 +1,4 @@
-import { PokerCardPropsWithId } from '@/modules/game/domain/types/pokerCard';
+import type { PokerCardPropsWithId } from '@/modules/game/domain/types/pokerCard';
 
 export type GameAction =
   | { type: 'START_GAME' }

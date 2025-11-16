@@ -1,45 +1,83 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { GameSettings, GameState } from '@/modules/game/domain/types/gameState';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import type {
+  GameSettings,
+  GameState,
+} from '@/modules/game/domain/types/gameState';
 import { EngineStepResult } from '@/modules/game/domain/engine/gameEngine';
-import { GameStateStore } from '@/modules/game/state/game-state.store';
+import {
+  GameSessionRecord,
+  GameStateStore,
+} from '@/modules/game/state/game-state.store';
 import { GameEngineService } from '@/modules/game/services/game-engine.service';
 import { GameActionDto } from '@/modules/game/dto/game-action.dto';
 import { GameAiService } from '@/modules/game/services/game-ai.service';
 
-export type StateResponse = { state: GameState };
+export interface GameResource {
+  id: string;
+  state: GameState;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface GameSummary {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  gameStatus: GameState['gameStatus'];
+  currentPlayerIndex: number;
+}
+
 type StepResult = EngineStepResult;
 
 @Injectable()
 export class GameService {
-  constructor(
+  public constructor(
     private readonly gameStateStore: GameStateStore,
     private readonly gameEngine: GameEngineService,
     private readonly gameAiService: GameAiService,
   ) {}
 
-  getState(): StateResponse {
-    return { state: this.gameStateStore.snapshot };
+  public listGames(): GameSummary[] {
+    return this.gameStateStore.list().map((record) => ({
+      id: record.id,
+      createdAt: record.createdAt.toISOString(),
+      updatedAt: record.updatedAt.toISOString(),
+      gameStatus: record.state.gameStatus,
+      currentPlayerIndex: record.state.currentPlayerIndex,
+    }));
   }
 
-  resetState(settings?: Partial<GameSettings>): StateResponse {
-    const state = this.gameStateStore.reset(settings);
-    return { state };
+  public createGame(settings?: Partial<GameSettings>): GameResource {
+    const record = this.gameStateStore.create(settings);
+    return this.toResource(record);
   }
 
-  step(actionPayload?: GameActionDto): StepResult {
+  public getGame(gameId: string): GameResource {
+    const record = this.findGameOrThrow(gameId);
+    return this.toResource(record);
+  }
+
+  public applyAction(
+    gameId: string,
+    actionPayload?: GameActionDto,
+  ): StepResult {
     if (!actionPayload) {
       throw new BadRequestException('Action payload is required');
     }
 
     const action = this.gameEngine.buildAction(actionPayload);
-    const currentState: GameState = this.gameStateStore.snapshot;
+    const currentState: GameState = this.findGameOrThrow(gameId).state;
     const result = this.gameEngine.step(currentState, action);
-    this.gameStateStore.update(result.state);
+    this.gameStateStore.updateState(gameId, result.state);
     return result;
   }
 
-  executeAiTurn(): StepResult {
-    const currentState: GameState = this.gameStateStore.snapshot;
+  public executeAiTurn(gameId: string): StepResult {
+    const currentState: GameState = this.findGameOrThrow(gameId).state;
     if (!this.gameAiService.isAiTurn(currentState)) {
       throw new BadRequestException('현재 차례는 AI가 아닙니다.');
     }
@@ -50,7 +88,31 @@ export class GameService {
       throw new BadRequestException('AI가 수행할 수 있는 행동이 없습니다.');
     }
 
-    this.gameStateStore.update(aiResult.state);
+    this.gameStateStore.updateState(gameId, aiResult.state);
     return aiResult;
+  }
+
+  public deleteGame(gameId: string): void {
+    const deleted = this.gameStateStore.delete(gameId);
+    if (!deleted) {
+      throw new NotFoundException(`Game ${gameId} not found`);
+    }
+  }
+
+  private findGameOrThrow(gameId: string): GameSessionRecord {
+    const record = this.gameStateStore.find(gameId);
+    if (!record) {
+      throw new NotFoundException(`Game ${gameId} not found`);
+    }
+    return record;
+  }
+
+  private toResource(record: GameSessionRecord): GameResource {
+    return {
+      id: record.id,
+      state: record.state,
+      createdAt: record.createdAt.toISOString(),
+      updatedAt: record.updatedAt.toISOString(),
+    };
   }
 }

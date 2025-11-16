@@ -32,15 +32,15 @@ export const colors = {
 export type RankValue = keyof typeof ranks;
 export type SuitsValue = keyof typeof suits;
 
-export const isValidRank = (rank: any): rank is RankValue => {
-  return rank in ranks;
+export const isValidRank = (rank: unknown): rank is RankValue => {
+  return typeof rank === 'number' && rank in ranks;
 };
 
-export const isValidSuit = (suit: any): suit is SuitsValue => {
-  return suit in suits;
+export const isValidSuit = (suit: unknown): suit is SuitsValue => {
+  return typeof suit === 'string' && suit in suits;
 };
 
-export type PokerCardProps = {
+export interface PokerCardProps {
   isJoker: boolean;
   isFlipped: boolean;
   rank?: RankValue;
@@ -50,6 +50,6 @@ export type PokerCardProps = {
   onDrag?: (clientX: number, clientY: number) => void;
   onDragEnd?: () => void;
   onClick?: () => void;
-};
+}
 
 export type PokerCardPropsWithId = PokerCardProps & { id: string };

@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { randomUUID } from 'crypto';
 import type {
   GameSettings,
   GameState,
@@ -6,35 +7,74 @@ import type {
 import { GAME_DEFAULT_SETTINGS } from '@/modules/game/constants/game.constants';
 import { GameEngineService } from '@/modules/game/services/game-engine.service';
 
+export interface GameSessionRecord {
+  id: string;
+  settings: GameSettings;
+  state: GameState;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 @Injectable()
 export class GameStateStore {
-  private state: GameState;
+  private readonly sessions = new Map<string, GameSessionRecord>();
 
-  constructor(
+  public constructor(
     @Inject(GAME_DEFAULT_SETTINGS)
     private readonly defaultSettings: GameSettings,
     private readonly gameEngine: GameEngineService,
-  ) {
-    this.state = this.gameEngine.createStartedState({
-      ...this.defaultSettings,
-    });
+  ) {}
+
+  public create(settings?: Partial<GameSettings>): GameSessionRecord {
+    const mergedSettings = this.mergeWithDefaults(settings);
+    const id = randomUUID();
+    const state = this.gameEngine.createStartedState(mergedSettings);
+    const timestamp = new Date();
+    const record: GameSessionRecord = {
+      id,
+      settings: mergedSettings,
+      state,
+      createdAt: timestamp,
+      updatedAt: timestamp,
+    };
+    this.sessions.set(id, record);
+    return record;
   }
 
-  get snapshot(): GameState {
-    return this.state;
+  public list(): GameSessionRecord[] {
+    return Array.from(this.sessions.values());
   }
 
-  reset(settings?: Partial<GameSettings>): GameState {
-    const mergedSettings: GameSettings = {
+  public find(gameId: string): GameSessionRecord | undefined {
+    return this.sessions.get(gameId);
+  }
+
+  public updateState(
+    gameId: string,
+    state: GameState,
+  ): GameSessionRecord | null {
+    const record = this.sessions.get(gameId);
+    if (!record) {
+      return null;
+    }
+    const updatedRecord: GameSessionRecord = {
+      ...record,
+      state,
+      updatedAt: new Date(),
+    };
+    this.sessions.set(gameId, updatedRecord);
+    return updatedRecord;
+  }
+
+  public delete(gameId: string): boolean {
+    return this.sessions.delete(gameId);
+  }
+
+  private mergeWithDefaults(settings?: Partial<GameSettings>): GameSettings {
+    return {
       ...this.defaultSettings,
       ...this.removeUndefined(settings),
     };
-    this.state = this.gameEngine.createStartedState(mergedSettings);
-    return this.state;
-  }
-
-  update(state: GameState): void {
-    this.state = state;
   }
 
   private removeUndefined(
@@ -44,15 +84,17 @@ export class GameStateStore {
       return {};
     }
 
-    return Object.entries(settings).reduce<Partial<GameSettings>>(
-      (acc, [key, value]) => {
-        if (value !== undefined) {
-          (acc as Record<string, GameSettings[keyof GameSettings]>)[key] =
-            value;
-        }
+    return (Object.keys(settings) as (keyof GameSettings)[]).reduce<
+      Partial<GameSettings>
+    >((acc, key) => {
+      const value = settings[key];
+      if (value === undefined) {
         return acc;
-      },
-      {},
-    );
+      }
+      return {
+        ...acc,
+        [key]: value,
+      };
+    }, {});
   }
 }

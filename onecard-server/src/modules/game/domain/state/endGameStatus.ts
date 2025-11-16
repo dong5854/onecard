@@ -1,4 +1,4 @@
-import { GameState } from '@/modules/game/domain/types/gameState';
+import type { GameState } from '@/modules/game/domain/types/gameState';
 
 export const endGameStatus = (
   state: GameState,

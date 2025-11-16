@@ -1,4 +1,4 @@
-import { GameSettings } from '@/modules/game/domain/types/gameState';
+import type { GameSettings } from '@/modules/game/domain/types/gameState';
 
 export const GAME_DEFAULT_SETTINGS = Symbol('GAME_DEFAULT_SETTINGS');
 

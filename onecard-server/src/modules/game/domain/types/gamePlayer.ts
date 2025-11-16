@@ -1,4 +1,4 @@
-import { PokerCardPropsWithId } from '@/modules/game/domain/types/pokerCard';
+import type { PokerCardPropsWithId } from '@/modules/game/domain/types/pokerCard';
 
 export interface Player {
   readonly id: string;
