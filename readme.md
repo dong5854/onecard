@@ -10,6 +10,21 @@
 - [폴더 구조 요약](#폴더-구조-요약)
 - [향후 개선 아이디어](#향후-개선-아이디어)
 
+## 로컬 개발
+1. **서버 기동**  
+   ```bash
+   cd onecard-server
+   PORT=3001 yarn start:dev
+   ```
+   `PORT`는 Next.js 클라이언트와 겹치지 않는 값(예: 3001)으로 지정합니다.
+2. **클라이언트 기동**  
+   ```bash
+   cd onecard-client
+   cp .env.example .env.local # 필요 시 ONECARD_SERVER_URL 수정
+   npm run dev
+   ```
+   `app/api/games` Route Handler가 `.env.local`의 `ONECARD_SERVER_URL`을 사용해 Nest 서버에 프록시하며, 브라우저는 `/api/*` 상대 경로로만 통신합니다.
+
 ## 게임 플레이 흐름
 1. **게임 설정**
    - 플레이어 수 (2~4명)와 초기/최대 손패를 지정합니다.

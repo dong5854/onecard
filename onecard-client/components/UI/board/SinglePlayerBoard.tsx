@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import OverlappingCards from '@/components/GameObject/OverlappingCards';
 import PlayerBadge from '@/components/UI/PlayerBadge';
 import CardPlayHolder from '@/components/UI/board/CardPlayHolder';
@@ -70,6 +70,10 @@ interface SinglePlayerBoardProps {
 	onDrawCard: () => void;
 	onPlayCard: (playerIndex: number, cardIndex: number) => void;
 	selfIndex?: number;
+	aiPlayIndicator?: {
+		playerName: string | null;
+		sequence: number;
+	} | null;
 }
 
 export function SinglePlayerBoard({
@@ -80,10 +84,25 @@ export function SinglePlayerBoard({
 	onDrawCard,
 	onPlayCard,
 	selfIndex = 0,
+	aiPlayIndicator,
 }: SinglePlayerBoardProps) {
 	const [draggingCard, setDraggingCard] = useState<number | null>(null);
 	const [isOverDropZone, setIsOverDropZone] = useState(false);
 	const dropZoneRef = useRef<HTMLDivElement>(null);
+	const [showAiPlayFlash, setShowAiPlayFlash] = useState(false);
+	const [aiPlayPlayerName, setAiPlayPlayerName] = useState<string | null>(null);
+
+	useEffect(() => {
+		if (!aiPlayIndicator) {
+			return;
+		}
+		setAiPlayPlayerName(aiPlayIndicator.playerName ?? 'AI');
+		setShowAiPlayFlash(true);
+		const timeout = setTimeout(() => {
+			setShowAiPlayFlash(false);
+		}, 1000);
+		return () => clearTimeout(timeout);
+	}, [aiPlayIndicator?.sequence]);
 
 	const opponentsWithIndex = useMemo<PlayerAssignment[]>(() => {
 		return players
@@ -154,6 +173,7 @@ export function SinglePlayerBoard({
 	) => {
 		const descriptor = slotDescriptors[position];
 		const isSelfSlot = assignment?.index === selfIndex;
+
 		return (
 			<div className={descriptor.wrapperClassName}>
 				{assignment ? (
@@ -221,8 +241,15 @@ export function SinglePlayerBoard({
 				<div className="relative z-0 flex items-center justify-center text-xs col-span-3 row-span-3">
 					<div
 						ref={dropZoneRef}
-						className={`relative ${isOverDropZone ? styles.dropZoneGlow : ''}`}
+						className={`relative ${
+							isOverDropZone ? styles.dropZoneGlow : ''
+						} ${showAiPlayFlash ? styles.aiPlayFlash : ''}`}
 					>
+						{showAiPlayFlash && (
+							<div className="absolute -top-8 left-1/2 -translate-x-1/2 text-xs text-yellow-200 animate-pulse tracking-wide pointer-events-none select-none">
+								{`${aiPlayPlayerName ?? 'AI'} played`}
+							</div>
+						)}
 						<CardPlayHolder
 							width="260px"
 							height="180px"

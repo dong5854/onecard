@@ -276,7 +276,9 @@ describe('GameService', () => {
 
     const result = service.executeAiTurn(record.id);
 
-    expect(aiService.playWhileAiTurn).toHaveBeenCalledWith(record.state);
+    expect(aiService.playWhileAiTurn).toHaveBeenCalledWith(record.state, {
+      gameId: record.id,
+    });
     expect(store.updateState).toHaveBeenCalledWith(record.id, aiResult.state);
     expect(result).toBe(aiResult);
   });

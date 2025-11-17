@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import type { GameState } from '@/modules/game/domain/types/gameState';
 import type { GameAction } from '@/modules/game/domain/types/gameAction';
 import type { PokerCardPropsWithId } from '@/modules/game/domain/types/pokerCard';
+import type { Player } from '@/modules/game/domain/types/gamePlayer';
 import { GameEngineService } from '@/modules/game/services/game-engine.service';
 import {
   applySpecialEffectAction,
@@ -18,52 +19,42 @@ interface AiTurnResult {
   result: EngineStepResult;
 }
 
+interface AiTurnContext {
+  gameId?: string;
+}
+
 @Injectable()
 export class GameAiService {
-  private readonly maxConsecutiveTurns = 32;
+  private readonly logger = new Logger(GameAiService.name);
 
   public constructor(private readonly gameEngine: GameEngineService) {}
 
-  public playWhileAiTurn(state: GameState): EngineStepResult | null {
+  public playWhileAiTurn(
+    state: GameState,
+    context?: AiTurnContext,
+  ): EngineStepResult | null {
     if (state.settings.mode !== 'single' || !this.isAiTurn(state)) {
       return null;
     }
 
-    const executedActions: GameAction[] = [];
-    let currentState = state;
-    let lastResult: EngineStepResult | null = null;
-    let turns = 0;
-
-    while (
-      this.isAiTurn(currentState) &&
-      currentState.gameStatus !== 'finished' &&
-      turns < this.maxConsecutiveTurns
-    ) {
-      const turnResult = this.executeTurn(currentState);
-      if (!turnResult) {
-        break;
-      }
-
-      executedActions.push(...turnResult.actions);
-      currentState = turnResult.state;
-      lastResult = turnResult.result;
-      turns += 1;
-    }
-
-    if (!lastResult || executedActions.length === 0) {
+    const turnResult = this.executeTurn(state, context);
+    if (!turnResult) {
       return null;
     }
 
     return {
-      state: currentState,
-      done: currentState.gameStatus === 'finished',
+      state: turnResult.state,
+      done: turnResult.state.gameStatus === 'finished',
       info: {
-        aiActions: executedActions,
+        aiActions: turnResult.actions,
       },
     };
   }
 
-  private executeTurn(state: GameState): AiTurnResult | null {
+  private executeTurn(
+    state: GameState,
+    context?: AiTurnContext,
+  ): AiTurnResult | null {
     const player = state.players.at(state.currentPlayerIndex);
     if (!player?.isAI) {
       return null;
@@ -85,6 +76,7 @@ export class GameAiService {
       const playOutcome = this.applyAction(
         currentState,
         playCardAction(currentState.currentPlayerIndex, playableIndex),
+        context,
       );
       currentState = playOutcome.state;
       lastResult = playOutcome.result;
@@ -94,6 +86,7 @@ export class GameAiService {
         const effectOutcome = this.applyAction(
           currentState,
           applySpecialEffectAction(cardToPlay),
+          context,
         );
         currentState = effectOutcome.state;
         lastResult = effectOutcome.result;
@@ -103,6 +96,7 @@ export class GameAiService {
       const drawOutcome = this.applyAction(
         currentState,
         drawCardAction(Math.max(1, currentState.damage)),
+        context,
       );
       currentState = drawOutcome.state;
       lastResult = drawOutcome.result;
@@ -124,6 +118,7 @@ export class GameAiService {
           const playOutcome = this.applyAction(
             currentState,
             playCardAction(currentState.currentPlayerIndex, playableIndex),
+            context,
           );
           currentState = playOutcome.state;
           lastResult = playOutcome.result;
@@ -133,6 +128,7 @@ export class GameAiService {
             const effectOutcome = this.applyAction(
               currentState,
               applySpecialEffectAction(cardToPlay),
+              context,
             );
             currentState = effectOutcome.state;
             lastResult = effectOutcome.result;
@@ -143,7 +139,11 @@ export class GameAiService {
     }
 
     if (currentState.gameStatus !== 'finished') {
-      const nextOutcome = this.applyAction(currentState, nextTurnAction());
+      const nextOutcome = this.applyAction(
+        currentState,
+        nextTurnAction(),
+        context,
+      );
       currentState = nextOutcome.state;
       lastResult = nextOutcome.result;
       this.pushAction(actions, nextOutcome.result);
@@ -159,7 +159,13 @@ export class GameAiService {
   private applyAction(
     state: GameState,
     action: GameAction,
+    context?: AiTurnContext,
   ): { state: GameState; result: EngineStepResult } {
+    this.logAiAction(
+      action,
+      state.players.at(state.currentPlayerIndex),
+      context,
+    );
     const result = this.gameEngine.step(state, action);
     return {
       state: result.state,
@@ -171,6 +177,25 @@ export class GameAiService {
     if (result.info?.action) {
       actions.push(result.info.action as GameAction);
     }
+  }
+
+  private logAiAction(
+    action: GameAction,
+    actor: Player | undefined,
+    context?: AiTurnContext,
+  ): void {
+    if (!actor?.isAI) {
+      return;
+    }
+    const metadata = {
+      event: 'ai-action',
+      gameId: context?.gameId ?? null,
+      playerId: actor.id,
+      playerName: actor.name,
+      actionType: action.type,
+      payload: action.payload ?? null,
+    };
+    this.logger.log(`[AI] ${JSON.stringify(metadata)}`);
   }
 
   private findPlayableCardIndex(

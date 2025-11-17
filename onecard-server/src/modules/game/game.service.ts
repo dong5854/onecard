@@ -96,8 +96,10 @@ export class GameService {
       throw new BadRequestException('현재 차례는 AI가 아닙니다.');
     }
 
-    const aiResult: StepResult | null =
-      this.gameAiService.playWhileAiTurn(currentState);
+    const aiResult: StepResult | null = this.gameAiService.playWhileAiTurn(
+      currentState,
+      { gameId },
+    );
     if (!aiResult) {
       throw new BadRequestException('AI가 수행할 수 있는 행동이 없습니다.');
     }
