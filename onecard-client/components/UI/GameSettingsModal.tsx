@@ -1,4 +1,7 @@
-import { useState } from 'react';
+'use client';
+
+import { useCallback, useEffect, useState } from 'react';
+import type { ChangeEvent, MouseEvent } from 'react';
 import PixelRetroButton from '@/components/UI/PixelRetroButton';
 import styles from '@/components/UI/GameSettingModal.module.css';
 import { GameSettings, Mode } from '@/types/gameState';
@@ -7,12 +10,35 @@ import PixelSelect from '@/components/UI/PixelSelect';
 
 interface GameSettingsModalProps {
 	onSubmit: (settings: GameSettings) => void;
-	onClose: () => void; // 모달 닫기 함수를 props로 추가
+	onClose: () => void;
 }
+
+type NumericRange = {
+	min: number;
+	max: number;
+};
+
+const clampToRange = (value: number, range: NumericRange): number => {
+	if (value < range.min) return range.min;
+	if (value > range.max) return range.max;
+	return value;
+};
+
+const sanitizeNumericInput = (
+	rawValue: string,
+	range: NumericRange,
+	fallback: number,
+): number => {
+	const parsedValue = Number.parseInt(rawValue, 10);
+	if (Number.isNaN(parsedValue)) {
+		return fallback;
+	}
+	return clampToRange(parsedValue, range);
+};
 
 export default function GameSettingsModal({
 	onSubmit,
-	onClose, // onClose 함수 props로 받음
+	onClose,
 }: GameSettingsModalProps) {
 	const [mode, setMode] = useState<Mode>('single');
 	const [difficulty, setDifficulty] = useState<AIDifficulty>('easy');
@@ -21,7 +47,42 @@ export default function GameSettingsModal({
 	const [initHandSize, setInitHandSize] = useState(5);
 	const [maxHandSize, setMaxHandSize] = useState(15);
 
-	const handleSubmit = () => {
+	useEffect(() => {
+		setMaxHandSize(prev => (prev < initHandSize ? initHandSize : prev));
+	}, [initHandSize]);
+
+	const handleNumberOfPlayersChange = useCallback(
+		(event: ChangeEvent<HTMLInputElement>) => {
+			const { value } = event.target;
+			setNumberOfPlayers(prev =>
+				sanitizeNumericInput(value, { min: 2, max: 4 }, prev),
+			);
+		},
+		[],
+	);
+
+	const handleInitHandSizeChange = useCallback(
+		(event: ChangeEvent<HTMLInputElement>) => {
+			const { value } = event.target;
+			setInitHandSize(prev =>
+				sanitizeNumericInput(value, { min: 1, max: 10 }, prev),
+			);
+		},
+		[],
+	);
+
+	const handleMaxHandSizeChange = useCallback(
+		(event: ChangeEvent<HTMLInputElement>) => {
+			const { value } = event.target;
+			const range: NumericRange = { min: Math.max(5, initHandSize), max: 20 };
+			setMaxHandSize(prev =>
+				sanitizeNumericInput(value, range, Math.max(prev, range.min)),
+			);
+		},
+		[initHandSize],
+	);
+
+	const handleSubmit = useCallback(() => {
 		const settings: GameSettings = {
 			mode,
 			numberOfPlayers,
@@ -32,13 +93,24 @@ export default function GameSettingsModal({
 		};
 
 		onSubmit(settings);
-	};
+	}, [
+		difficulty,
+		includeJokers,
+		initHandSize,
+		maxHandSize,
+		mode,
+		numberOfPlayers,
+		onSubmit,
+	]);
 
-	const handleBackgroundClick = (e: React.MouseEvent) => {
-		if (e.target === e.currentTarget) {
-			onClose();
-		}
-	};
+	const handleBackgroundClick = useCallback(
+		(event: MouseEvent<HTMLDivElement>) => {
+			if (event.target === event.currentTarget) {
+				onClose();
+			}
+		},
+		[onClose],
+	);
 
 	return (
 		<div
@@ -82,9 +154,10 @@ export default function GameSettingsModal({
 						type="number"
 						className="input input-bordered"
 						value={numberOfPlayers}
-						onChange={e => setNumberOfPlayers(parseInt(e.target.value, 10))}
+						onChange={handleNumberOfPlayersChange}
 						min="2"
 						max="4"
+						aria-label="Select number of players"
 					/>
 				</div>
 				<div className="form-control mb-4">
@@ -94,7 +167,7 @@ export default function GameSettingsModal({
 							type="checkbox"
 							className="toggle checked:border-[#2F4F4F] checked:bg-[#2F4F4F] checked:hover:bg-[#3A5234] checked:[--tglbg:#E3F1A7] unchecked:bg-gray-500 unchecked:border-gray-500 unchecked:[--tglbg:gray]"
 							checked={includeJokers}
-							onChange={() => setIncludeJokers(!includeJokers)}
+							onChange={() => setIncludeJokers(prev => !prev)}
 						/>
 					</label>
 				</div>
@@ -104,9 +177,10 @@ export default function GameSettingsModal({
 						type="number"
 						className="input input-bordered"
 						value={initHandSize}
-						onChange={e => setInitHandSize(parseInt(e.target.value, 10))}
+						onChange={handleInitHandSizeChange}
 						min="1"
 						max="10"
+						aria-label="Set initial hand size"
 					/>
 				</div>
 				<div className="form-control mb-4">
@@ -115,9 +189,10 @@ export default function GameSettingsModal({
 						type="number"
 						className="input input-bordered"
 						value={maxHandSize}
-						onChange={e => setMaxHandSize(parseInt(e.target.value, 10))}
+						onChange={handleMaxHandSizeChange}
 						min="5"
 						max="20"
+						aria-label="Set maximum hand size"
 					/>
 				</div>
 				<div className="modal-action">

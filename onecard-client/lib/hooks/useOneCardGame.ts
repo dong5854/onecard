@@ -12,8 +12,8 @@ import {
 	RemoteGameAction,
 } from '@/lib/api/gameSessions';
 
-const AI_TURN_DELAY_MS = 1200;
-const AI_CHAIN_EXTRA_DELAY_MS = 1500;
+const AI_TURN_DELAY_MS = 500;
+const AI_CHAIN_EXTRA_DELAY_MS = 600;
 
 interface AiPlayIndicator {
 	cardId: string | null;
@@ -275,7 +275,7 @@ export const useOneCardGame = (settings: GameSettings) => {
 					await wait(AI_CHAIN_EXTRA_DELAY_MS);
 				}
 				aiTurnInFlightRef.current = false;
-				if (!mountedRef.current || cancelled) {
+				if (!mountedRef.current) {
 					return;
 				}
 				setAiTurnInProgress(false);

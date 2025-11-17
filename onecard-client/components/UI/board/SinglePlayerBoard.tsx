@@ -94,15 +94,19 @@ export function SinglePlayerBoard({
 
 	useEffect(() => {
 		if (!aiPlayIndicator) {
+			setShowAiPlayFlash(false);
+			setAiPlayPlayerName(null);
 			return;
 		}
+
 		setAiPlayPlayerName(aiPlayIndicator.playerName ?? 'AI');
 		setShowAiPlayFlash(true);
 		const timeout = setTimeout(() => {
 			setShowAiPlayFlash(false);
 		}, 1000);
+
 		return () => clearTimeout(timeout);
-	}, [aiPlayIndicator?.sequence]);
+	}, [aiPlayIndicator]);
 
 	const opponentsWithIndex = useMemo<PlayerAssignment[]>(() => {
 		return players

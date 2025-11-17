@@ -193,7 +193,7 @@ export class GameAiService {
       playerId: actor.id,
       playerName: actor.name,
       actionType: action.type,
-      payload: action.payload ?? null,
+      payload: 'payload' in action ? action.payload : null,
     };
     this.logger.log(`[AI] ${JSON.stringify(metadata)}`);
   }

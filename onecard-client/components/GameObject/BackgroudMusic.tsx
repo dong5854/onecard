@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styles from '@/components/GameObject/BackgroundMusic.module.css';
 import { FaVolumeUp, FaVolumeMute } from 'react-icons/fa';
 
@@ -16,30 +16,36 @@ export const BackgroundMusic = ({
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 	const [isPlaying, setIsPlaying] = useState(false);
 
-	const togglePlayPause = () => {
-		if (audioRef.current) {
-			if (isPlaying) {
-				audioRef.current.pause();
-			} else {
-				audioRef.current.play().catch(error => {
-					console.error('Failed to play audio:', error);
-					setIsPlaying(false);
-					return;
-				});
-			}
-			setIsPlaying(!isPlaying);
+	const togglePlayPause = useCallback(() => {
+		const audio = audioRef.current;
+		if (!audio) {
+			return;
 		}
-	};
+
+		if (isPlaying) {
+			audio.pause();
+			setIsPlaying(false);
+			return;
+		}
+
+		audio
+			.play()
+			.then(() => setIsPlaying(true))
+			.catch(error => {
+				console.error('Failed to play audio:', error);
+				setIsPlaying(false);
+			});
+	}, [isPlaying]);
 
 	useEffect(() => {
-		audioRef.current = new Audio(url);
-		audioRef.current.loop = true;
+		const audio = new Audio(url);
+		audio.loop = true;
+		audioRef.current = audio;
+		setIsPlaying(false);
 
 		return () => {
-			if (audioRef.current) {
-				audioRef.current.pause();
-				audioRef.current = null;
-			}
+			audio.pause();
+			audioRef.current = null;
 		};
 	}, [url]);
 

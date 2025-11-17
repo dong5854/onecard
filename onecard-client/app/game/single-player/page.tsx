@@ -8,10 +8,14 @@ import { GameSettings, Mode } from '@/types/gameState';
 import { AIDifficulty } from '@/types/gamePlayer';
 import SinglePlayerBoard from '@/components/UI/board/SinglePlayerBoard';
 
+const isValidMode = (value: string | null): value is Mode => {
+	return value === 'single' || value === 'multi';
+};
+
 export default function SinglePlayerPage() {
 	const searchParams = useSearchParams();
 
-	const modeParam = searchParams.get('mode') as Mode | null;
+	const modeParam = searchParams.get('mode');
 	const playersParam = searchParams.get('players');
 	const jokersParam = searchParams.get('jokers');
 	const initHandParam = searchParams.get('initHand');
@@ -29,8 +33,10 @@ export default function SinglePlayerPage() {
 			? (difficultyParam as AIDifficulty)
 			: 'easy';
 
+		const mode: Mode = isValidMode(modeParam) ? modeParam : 'single';
+
 		return {
-			mode: modeParam ?? 'single',
+			mode,
 			numberOfPlayers: Number.isNaN(parsedPlayers) ? 2 : parsedPlayers,
 			includeJokers,
 			initHandSize: Number.isNaN(parsedInitHand) ? 5 : parsedInitHand,
