@@ -203,7 +203,7 @@ class OneCardEnv(gym.Env):
 
     def __init__(
         self,
-        endpoint: str = "http://localhost:4000",
+        endpoint: str = "http://localhost:3000",
         settings: Optional[Dict[str, Any]] = None,
         session: Optional[requests.Session] = None,
     ) -> None:
@@ -276,6 +276,7 @@ class OneCardEnv(gym.Env):
         self.action_space = gym.spaces.Discrete(self.max_hand_size + 1)
 
         self.state_cache: Optional[Dict[str, Any]] = None
+        self.game_id: Optional[str] = None
 
     def reset(
         self,
@@ -295,11 +296,16 @@ class OneCardEnv(gym.Env):
         super().reset(seed=seed)
         if options:
             self.settings.update(options)
-        payload = {"settings": self.settings}
-        state = self._post_json("/reset", payload)["state"]
+        self._cleanup_session()
+        resource = self._request("post", "/games", json={"settings": self.settings})
+        self.game_id = resource["id"]
+        state = resource["state"]
+        if state.get("gameStatus") == "waiting":
+            start_result = self._apply_action({"type": "START_GAME"})
+            state = start_result["state"]
         collapsed_state, obs = self._resolve_to_agent_turn(state)
         self.state_cache = collapsed_state
-        return obs, {}
+        return obs, {"gameId": self.game_id}
 
     def step(self, action: int) -> Tuple[np.ndarray, float, bool, bool, Dict[str, Any]]:
         """하나의 시간 스텝을 진행한다.
@@ -310,16 +316,27 @@ class OneCardEnv(gym.Env):
         Returns:
             관측 벡터, 보상, 종료 여부, 잘림 여부, 부가 정보.
         """
-        if self.state_cache is None:
+        if self.state_cache is None or not self.game_id:
             raise RuntimeError("reset() must be called before step().")
 
         action_payload, was_valid = self._decode_action(action, self.state_cache)
-        step_result = self._post_json("/step", {"action": action_payload})
+        step_result = self._apply_action(action_payload)
+        post_action_state = step_result["state"]
 
-        collapsed_state, observation = self._resolve_to_agent_turn(step_result["state"])
+        if post_action_state["gameStatus"] == "playing":
+            turn_result = self._apply_action({"type": "NEXT_TURN"})
+            post_action_state = turn_result["state"]
+            merged_info = {
+                **step_result.get("info", {}),
+                "afterTurn": turn_result.get("info", {}),
+            }
+        else:
+            merged_info = step_result.get("info", {})
+
+        collapsed_state, observation = self._resolve_to_agent_turn(post_action_state)
         reward = self._compute_reward(self.state_cache, collapsed_state, was_valid)
         done = bool(step_result["done"]) or collapsed_state["gameStatus"] == "finished"
-        info = step_result.get("info", {})
+        info = {**merged_info, "gameId": self.game_id}
         self.state_cache = collapsed_state
         return observation, reward, done, False, info
 
@@ -342,44 +359,51 @@ class OneCardEnv(gym.Env):
 
     def close(self) -> None:
         """환경 종료 시 네트워크 리소스를 해제한다."""
+        self._cleanup_session()
         self.http.close()
         super().close()
 
-    def _post_json(self, path: str, payload: Dict[str, Any]) -> Dict[str, Any]:
-        """엔진 브리지에 POST 요청을 보내고 응답 JSON을 반환한다.
+    def _request(
+        self, method: str, path: str, *, json: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """API 서버에 HTTP 요청을 보내고 응답 JSON을 반환한다.
 
         Args:
-            path: 요청을 보낼 엔드포인트 경로.
-            payload: JSON으로 직렬화할 데이터.
+            method: HTTP 메서드.
+            path: 엔드포인트 경로.
+            json: JSON 본문.
 
         Returns:
             서버의 응답 JSON 딕셔너리.
         """
-        response = self.http.post(f"{self.endpoint}{path}", json=payload, timeout=10)
+        url = f"{self.endpoint}{path}"
+        response = self.http.request(method.upper(), url, json=json, timeout=10)
         response.raise_for_status()
-        return response.json()
+        if not response.content:
+            return {}
+        try:
+            return response.json()
+        except ValueError:
+            return {}
 
     def _encode_state(self, state: Dict[str, Any]) -> np.ndarray:
         """관측 인코더를 사용해 상태를 벡터로 변환한다."""
         return self.encoder.encode(state)
 
-    def _resolve_to_agent_turn(self, state: Dict[str, Any]) -> Tuple[Dict[str, Any], np.ndarray]:
-        """AI 턴을 자동으로 진행시켜 다시 에이전트 순서로 만든다."""
+    def _resolve_to_agent_turn(
+        self, state: Dict[str, Any]
+    ) -> Tuple[Dict[str, Any], np.ndarray]:
+        """AI 턴을 서버에서 처리해 에이전트 순서가 올 때까지 대기한다."""
 
         collapsed_state = state
-        toggled = False
         while (
             collapsed_state["gameStatus"] == "playing"
-            and collapsed_state["players"][collapsed_state["currentPlayerIndex"]]["isAI"]
+            and self._is_ai_turn(collapsed_state)
         ):
-            ai_action = {"type": "NEXT_TURN"}
-            collapsed_state = self._post_json("/step", {"action": ai_action})["state"]
-            toggled = True
+            ai_result = self._execute_ai_turn()
+            collapsed_state = ai_result["state"]
 
         observation = self._encode_state(collapsed_state)
-        if toggled and collapsed_state["gameStatus"] == "finished":
-            observation = self._encode_state(collapsed_state)
-
         return collapsed_state, observation
 
     def _decode_action(
@@ -424,3 +448,37 @@ class OneCardEnv(gym.Env):
         rank = card.get("rank", "?")
         suit = card.get("suit", "?")
         return f"{rank} of {suit}"
+
+    def _apply_action(self, action: Dict[str, Any]) -> Dict[str, Any]:
+        """PATCH /games/{id}로 액션을 전달한다."""
+        if not self.game_id:
+            raise RuntimeError("Game session is not initialized.")
+        return self._request(
+            "patch",
+            f"/games/{self.game_id}",
+            json={"action": action},
+        )
+
+    def _execute_ai_turn(self) -> Dict[str, Any]:
+        """POST /games/{id}/ai-turns 엔드포인트를 호출한다."""
+        if not self.game_id:
+            raise RuntimeError("Game session is not initialized.")
+        return self._request("post", f"/games/{self.game_id}/ai-turns")
+
+    def _cleanup_session(self) -> None:
+        """기존 게임 세션을 정리한다."""
+        if self.game_id:
+            try:
+                self._request("delete", f"/games/{self.game_id}")
+            except requests.HTTPError:
+                pass
+        self.game_id = None
+        self.state_cache = None
+
+    def _is_ai_turn(self, state: Dict[str, Any]) -> bool:
+        """현재 턴 플레이어가 AI인지 여부를 반환한다."""
+        idx = state.get("currentPlayerIndex", 0)
+        players = state.get("players", [])
+        if idx < 0 or idx >= len(players):
+            return False
+        return bool(players[idx].get("isAI"))
