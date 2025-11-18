@@ -17,6 +17,7 @@ import {
 } from '@/modules/game/dto/game-action.dto';
 import {
   PokerCardPropsWithId,
+  RankValue,
   isValidRank,
   isValidSuit,
 } from '@/modules/game/domain/types/pokerCard';
@@ -83,11 +84,9 @@ export class GameEngineService {
       isFlipped: effectCard.isFlipped,
     };
 
-    if (
-      typeof effectCard.rank !== 'undefined' &&
-      isValidRank(effectCard.rank)
-    ) {
-      transformed.rank = effectCard.rank;
+    const normalizedRank = this.normalizeRank(effectCard.rank);
+    if (typeof normalizedRank !== 'undefined') {
+      transformed.rank = normalizedRank;
     }
     if (
       typeof effectCard.suit !== 'undefined' &&
@@ -97,5 +96,20 @@ export class GameEngineService {
     }
 
     return transformed;
+  }
+
+  private normalizeRank(rank: unknown): RankValue | undefined {
+    if (typeof rank === 'number' && isValidRank(rank)) {
+      return rank;
+    }
+
+    if (typeof rank === 'string') {
+      const parsedRank = Number.parseInt(rank, 10);
+      if (Number.isInteger(parsedRank) && isValidRank(parsedRank)) {
+        return parsedRank;
+      }
+    }
+
+    return undefined;
   }
 }

@@ -225,6 +225,42 @@ describe('GameEngineService', () => {
     });
   });
 
+  it('preserves numeric rank values even when provided as strings', () => {
+    const effectAction = {
+      type: 'APPLY_SPECIAL_EFFECT',
+      payload: {
+        effectCard: {
+          id: 'card-id',
+          isJoker: false,
+          isFlipped: true,
+          rank: 1,
+          suit: 'hearts',
+        } as PokerCardPropsWithId,
+      },
+    } as GameAction;
+    mockedApplySpecialEffectAction.mockReturnValueOnce(effectAction);
+
+    const dto: GameActionDto = {
+      type: GameActionType.APPLY_SPECIAL_EFFECT,
+      effectCard: {
+        id: 'card-id',
+        isJoker: false,
+        isFlipped: true,
+        rank: '1',
+        suit: 'hearts',
+      },
+    };
+
+    expect(service.buildAction(dto)).toBe(effectAction);
+    expect(mockedApplySpecialEffectAction).toHaveBeenCalledWith({
+      id: 'card-id',
+      isJoker: false,
+      isFlipped: true,
+      rank: 1,
+      suit: 'hearts',
+    });
+  });
+
   it('builds an end game action using default winner index', () => {
     const endAction = {
       type: 'END_GAME',
