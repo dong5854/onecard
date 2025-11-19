@@ -28,7 +28,7 @@ cd python-rl
 python train.py \
   --endpoint http://localhost:3000 \
   --timesteps 300000 \
-  --players 2 \
+  --players 4 \
   --difficulty easy \
   --model-path checkpoints/ppo-onecard.zip
 ```
@@ -43,12 +43,32 @@ python train.py \
 python inference.py \
   --endpoint http://localhost:3000 \
   --model-path checkpoints/ppo-onecard.zip \
-  --players 2 \
+  --players 4 \
   --difficulty easy \
   --deterministic
 ```
 
 터미널에 각 step의 보상과 현재 게임 보드가 출력됩니다. `--deterministic` 플래그를 빼면 정책의 확률 분포에 따라 행동을 샘플링합니다.
+
+## ONNX 내보내기 (Nest 연동)
+
+Nest 백엔드에서 `onnxruntime-node`로 추론하려면 학습된 모델을 ONNX로 변환합니다.
+
+```bash
+python export_onnx.py \
+  --model-path checkpoints/ppo-onecard.zip \
+  --output-path exports/ppo-onecard.onnx \
+  --endpoint http://localhost:3000 \
+  --players 4 \
+  --difficulty easy \
+  --max-hand-size 15 \
+  --init-hand-size 5
+```
+
+- 같은 설정(플레이어 수, 난이도, 조커 포함 여부 등)으로 학습된 모델만 내보내야 관측 차원이 일치합니다.
+- 스크립트는 ONNX 파일과 함께 `<파일명>.json` 메타데이터를 생성합니다. 이 JSON에는 `observation_dim`, `action_dim`, `settings`가 들어 있으며, Nest에서 관측 벡터를 구성할 때 참고할 수 있습니다.
+- Node 측에서는 `onnxruntime-node`로 모델을 로드하고, `ObservationEncoder`와 동일한 전처리를 TypeScript로 구현해 `action_logits`를 argmax하거나 softmax로 정책을 구성하면 됩니다.
+- ONNX 산출물은 기본적으로 `exports/` 아래 저장하도록 설명되어 있으며, 이 디렉터리는 `.gitignore`에 추가해 깃에는 포함되지 않습니다.
 
 ## 환경 작동 방식
 
