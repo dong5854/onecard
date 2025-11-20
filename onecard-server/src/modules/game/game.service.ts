@@ -18,6 +18,7 @@ import {
   GameActionType,
 } from '@/modules/game/dto/game-action.dto';
 import { GameAiService } from '@/modules/game/services/game-ai.service';
+import { isValidPlay } from '@/modules/game/domain/utils/cardUtils';
 
 export interface GameResource {
   id: string;
@@ -80,6 +81,10 @@ export class GameService {
       throw new BadRequestException('게임이 아직 시작되지 않았습니다.');
     }
 
+    if (actionPayload.type === GameActionType.PLAY_CARD) {
+      this.assertPlayableCard(record.state, actionPayload);
+    }
+
     const action = this.gameEngine.buildAction(actionPayload);
     const result = this.gameEngine.step(record.state, action);
     this.gameStateStore.updateState(gameId, result.state);
@@ -130,5 +135,33 @@ export class GameService {
       createdAt: record.createdAt.toISOString(),
       updatedAt: record.updatedAt.toISOString(),
     };
+  }
+
+  private assertPlayableCard(
+    state: GameState,
+    payload: GameActionDto,
+  ): void {
+    const playerIndex = payload.playerIndex ?? -1;
+    const cardIndex = payload.cardIndex ?? -1;
+
+    if (playerIndex < 0 || playerIndex >= state.players.length) {
+      throw new BadRequestException('잘못된 playerIndex 입니다.');
+    }
+
+    const hand = state.players[playerIndex].hand;
+    if (cardIndex < 0 || cardIndex >= hand.length) {
+      throw new BadRequestException('잘못된 cardIndex 입니다.');
+    }
+
+    if (state.discardPile.length === 0) {
+      throw new BadRequestException('discardPile 이 비어 있습니다. 게임 상태를 확인하세요.');
+    }
+
+    const playedCard = hand[cardIndex];
+    const topCard = state.discardPile[0];
+    const damage = state.damage;
+    if (!isValidPlay(playedCard, topCard, damage)) {
+      throw new BadRequestException('규칙에 맞지 않는 카드입니다.');
+    }
   }
 }
