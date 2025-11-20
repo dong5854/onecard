@@ -48,7 +48,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--difficulty",
         choices=["easy", "medium", "hard"],
-        default="easy",
+        default="medium",
         help="difficulty passed to the backend",
     )
     parser.add_argument(

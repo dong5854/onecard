@@ -29,7 +29,7 @@ python train.py \
   --endpoint http://localhost:3000 \
   --timesteps 300000 \
   --players 4 \
-  --difficulty easy \
+  --difficulty medium \
   --model-path checkpoints/ppo-onecard.zip
 ```
 
@@ -46,7 +46,7 @@ cd python-rl
 python train_all_cases.py \
   --endpoint http://localhost:3000 \
   --timesteps 300000 \
-  --difficulty easy \
+  --difficulty medium \
   --output-dir models \
   --checkpoint-dir checkpoints
 ```
@@ -61,7 +61,7 @@ python inference.py \
   --endpoint http://localhost:3000 \
   --model-path checkpoints/ppo-onecard.zip \
   --players 4 \
-  --difficulty easy \
+  --difficulty medium \
   --deterministic
 ```
 
@@ -77,7 +77,7 @@ python export_onnx.py \
   --output-path exports/ppo-onecard.onnx \
   --endpoint http://localhost:3000 \
   --players 4 \
-  --difficulty easy \
+  --difficulty medium \
   --max-hand-size 15 \
   --init-hand-size 5
 ```
@@ -97,7 +97,7 @@ python export_onnx.py \
   --models-dir models \
   --onnx-dir onnx_exports \
   --endpoint http://localhost:3000 \
-  --difficulty easy
+  --difficulty medium
 ```
 
 각 조합에 대해 `ppo-onecard_p{플레이어}_joker{on|off}.onnx`와 `.onnx.json` 메타데이터가 생성됩니다.

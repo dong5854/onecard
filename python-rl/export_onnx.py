@@ -141,7 +141,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--difficulty",
         choices=["easy", "medium", "hard"],
-        default="easy",
+        default="medium",
         help="서버 AI 난이도",
     )
     parser.add_argument(
