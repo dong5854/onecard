@@ -59,13 +59,15 @@ python train_all_cases.py \
 ```bash
 python inference.py \
   --endpoint http://localhost:3000 \
-  --model-path checkpoints/ppo-onecard.zip \
   --players 4 \
+  --include-jokers \
   --difficulty medium \
   --deterministic
 ```
 
-터미널에 각 step의 보상과 현재 게임 보드가 출력됩니다. `--deterministic` 플래그를 빼면 정책의 확률 분포에 따라 행동을 샘플링합니다.
+- `--model-path`를 생략하면 `models/ppo-onecard_p{플레이어}_joker{on|off}.zip`을 자동으로 찾습니다.
+- `train_all_cases.py`가 만든 모델명 규칙과 동일하므로, 플레이어 수·조커 설정을 명령줄에서 그대로 맞추면 됩니다.
+- 터미널에 각 step의 보상과 현재 게임 보드가 출력됩니다. `--deterministic` 플래그를 빼면 정책의 확률 분포에 따라 행동을 샘플링합니다.
 
 ## ONNX 내보내기 (Nest 연동)
 

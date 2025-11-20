@@ -1,6 +1,9 @@
 """학습된 모델로 ONE CARD 환경을 플레이하는 스크립트."""
 
+from __future__ import annotations
+
 import argparse
+from pathlib import Path
 from typing import Dict
 
 from stable_baselines3 import PPO
@@ -19,8 +22,24 @@ def build_settings_from_args(args: argparse.Namespace) -> Dict[str, object]:
     }
 
 
+def case_suffix(players: int, include_jokers: bool) -> str:
+    return f"p{players}_joker{'on' if include_jokers else 'off'}"
+
+
+def resolve_model_path(args: argparse.Namespace) -> Path:
+    if args.model_path:
+        return Path(args.model_path)
+    suffix = case_suffix(args.players, args.include_jokers)
+    candidate = Path(args.models_dir) / f"ppo-onecard_{suffix}.zip"
+    if not candidate.exists():
+        raise FileNotFoundError(
+            f"모델 파일을 찾을 수 없습니다: {candidate}. '--model-path'를 직접 지정하거나 해당 조합을 학습하세요."
+        )
+    return candidate
+
+
 def run_episode(
-    model_path: str,
+    model_path: Path,
     endpoint: str,
     settings: Dict[str, object],
     deterministic: bool,
@@ -51,8 +70,12 @@ def main() -> None:
     )
     parser.add_argument(
         "--model-path",
-        default="ppo-onecard.zip",
-        help="경로: 학습된 모델 파일",
+        help="경로: 학습된 모델 파일 (미지정 시 --models-dir에서 자동 탐색)",
+    )
+    parser.add_argument(
+        "--models-dir",
+        default="models",
+        help="자동 탐색 시 모델(.zip)을 찾을 기본 폴더",
     )
     parser.add_argument(
         "--endpoint",
@@ -73,7 +96,7 @@ def main() -> None:
     parser.add_argument(
         "--difficulty",
         choices=["easy", "medium", "hard"],
-        default="easy",
+        default="medium",
         help="서버 AI 난이도",
     )
     parser.add_argument(
@@ -95,8 +118,9 @@ def main() -> None:
     )
     args = parser.parse_args()
 
+    model_path = resolve_model_path(args)
     settings = build_settings_from_args(args)
-    run_episode(args.model_path, args.endpoint, settings, args.deterministic)
+    run_episode(model_path, args.endpoint, settings, args.deterministic)
 
 
 if __name__ == "__main__":
