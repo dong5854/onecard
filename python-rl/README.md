@@ -37,6 +37,23 @@ python train.py \
 - 설정을 바꾸면 관측 공간/행동 공간이 달라지므로, 동일한 설정으로 학습·추론을 진행해야 합니다.
 - 체크포인트는 `--checkpoint-dir`(기본 `checkpoints`)에 10k step마다 저장됩니다.
 
+### 전체 조합 일괄 학습
+
+플레이어 수 2~4와 조커 포함 여부(on/off) 총 6가지 설정을 한 번에 학습하려면 `train_all_cases.py`를 사용하세요. 각 조합은 `models/ppo-onecard_p{플레이어}_joker{on|off}.zip` 형식으로 저장됩니다.
+
+```bash
+cd python-rl
+python train_all_cases.py \
+  --endpoint http://localhost:3000 \
+  --timesteps 300000 \
+  --difficulty easy \
+  --output-dir models \
+  --checkpoint-dir checkpoints
+```
+
+- `--timesteps`, `--difficulty`, `--max-hand-size` 등은 내부적으로 `train.py`에 그대로 전달됩니다.
+- `models` 디렉터리는 자동으로 생성되며, 추후 ONNX 내보내기에서도 동일한 경로를 사용합니다.
+
 ## 추론 실행
 
 ```bash
@@ -69,6 +86,21 @@ python export_onnx.py \
 - 스크립트는 ONNX 파일과 함께 `<파일명>.json` 메타데이터를 생성합니다. 이 JSON에는 `observation_dim`, `action_dim`, `settings`가 들어 있으며, Nest에서 관측 벡터를 구성할 때 참고할 수 있습니다.
 - Node 측에서는 `onnxruntime-node`로 모델을 로드하고, `ObservationEncoder`와 동일한 전처리를 TypeScript로 구현해 `action_logits`를 argmax하거나 softmax로 정책을 구성하면 됩니다.
 - ONNX 산출물은 기본적으로 `exports/` 아래 저장하도록 설명되어 있으며, 이 디렉터리는 `.gitignore`에 추가해 깃에는 포함되지 않습니다.
+
+### 전체 조합 일괄 내보내기
+
+`train_all_cases.py`로 생성된 모든 모델을 한 번에 ONNX로 변환하려면 `--all-cases` 옵션을 사용합니다. 모델 ZIP은 `--models-dir`에서 찾고, ONNX 결과는 `--onnx-dir`에 저장합니다.
+
+```bash
+python export_onnx.py \
+  --all-cases \
+  --models-dir models \
+  --onnx-dir onnx_exports \
+  --endpoint http://localhost:3000 \
+  --difficulty easy
+```
+
+각 조합에 대해 `ppo-onecard_p{플레이어}_joker{on|off}.onnx`와 `.onnx.json` 메타데이터가 생성됩니다.
 
 ## 환경 작동 방식
 
