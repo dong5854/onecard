@@ -17,6 +17,7 @@ build/
 
 ### python ###
 __pycache__
+python-rl/exports/
 
 ### STS ###
 .apt_generated
