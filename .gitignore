@@ -18,6 +18,7 @@ build/
 ### python ###
 __pycache__
 python-rl/exports/
+python-rl/onnx_exports/
 
 ### STS ###
 .apt_generated
