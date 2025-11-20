@@ -30,11 +30,45 @@ def default_reward(
         reward += 0.05 * float(prev_size - next_size)
         reward -= 0.01
     if not action_was_valid:
-        reward -= 0.1
+        reward -= 0.5  # 티켓 하나 날린 느낌으로 강한 패널티
     if next_state["gameStatus"] == "finished":
         winner = next_state.get("winner")
         reward += 1.0 if winner and winner.get("isSelf") else -1.0
     return reward
+
+
+def _is_able_to_block(
+    played_card: Dict[str, Any], top_card: Dict[str, Any],
+) -> bool:
+    # Damage 상황에서 막기 허용 규칙을 서버와 동일하게 맞춘다.
+    if top_card.get("rank") == 2:
+        return played_card.get("rank") == 2 or (
+            played_card.get("suit") == top_card.get("suit")
+            and played_card.get("rank") == 1
+        )
+    if top_card.get("rank") == 1:
+        return played_card.get("rank") == 1
+    return bool(played_card.get("isJoker"))
+
+
+def is_valid_play(
+    played_card: Dict[str, Any], top_card: Dict[str, Any], damage: float
+) -> bool:
+    # 서버 cardUtils.isValidPlay 규칙을 그대로 재현한다.
+    if played_card.get("isJoker"):
+        return True
+    if damage > 0:
+        return _is_able_to_block(played_card, top_card)
+    if top_card.get("isJoker"):
+        return True
+    if played_card.get("rank") is None or played_card.get("suit") is None:
+        return False
+    if top_card.get("rank") is None or top_card.get("suit") is None:
+        return False
+    return (
+        played_card.get("rank") == top_card.get("rank")
+        or played_card.get("suit") == top_card.get("suit")
+    )
 
 
 @dataclass(frozen=True)
@@ -389,6 +423,32 @@ class OneCardEnv(gym.Env):
     def _encode_state(self, state: Dict[str, Any]) -> np.ndarray:
         """관측 인코더를 사용해 상태를 벡터로 변환한다."""
         return self.encoder.encode(state)
+
+    def action_mask(self) -> np.ndarray:
+        """현재 상태에서 선택 가능한 행동(카드)만 True로 표시한 마스크를 반환한다."""
+        mask = np.zeros(self.max_hand_size + 1, dtype=bool)
+        if self.state_cache is None:
+            mask[:] = True
+            return mask
+
+        hand = self.state_cache["players"][0]["hand"]
+        mask[self.max_hand_size] = True  # 드로우는 항상 허용
+
+        if not self.state_cache.get("discardPile"):
+            mask[: len(hand)] = True
+            mask[len(hand) : self.max_hand_size] = False
+            return mask
+
+        top_card = self.state_cache["discardPile"][0]
+        damage = float(self.state_cache.get("damage", 0))
+
+        for idx in range(self.max_hand_size):
+            if idx >= len(hand):
+                mask[idx] = False
+                continue
+            mask[idx] = is_valid_play(hand[idx], top_card, damage)
+
+        return mask
 
     def _resolve_to_agent_turn(
         self, state: Dict[str, Any]

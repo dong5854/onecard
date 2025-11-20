@@ -36,6 +36,7 @@ python train.py \
 - `--players`, `--difficulty`, `--include-jokers`, `--max-hand-size`, `--init-hand-size` 옵션으로 서버에 전달될 게임 설정을 제어합니다.
 - 설정을 바꾸면 관측 공간/행동 공간이 달라지므로, 동일한 설정으로 학습·추론을 진행해야 합니다.
 - 체크포인트는 `--checkpoint-dir`(기본 `checkpoints`)에 10k step마다 저장됩니다.
+- `sb3-contrib`의 `MaskablePPO` + `ActionMasker`로 규칙상 낼 수 없는 카드는 정책이 뽑지 않도록 마스킹합니다. 그래도 범위 밖 인덱스를 주면 보상에서 -0.5 패널티가 적용됩니다.
 
 ### 전체 조합 일괄 학습
 
@@ -84,7 +85,7 @@ python export_onnx.py \
   --init-hand-size 5
 ```
 
-- 같은 설정(플레이어 수, 난이도, 조커 포함 여부 등)으로 학습된 모델만 내보내야 관측 차원이 일치합니다.
+- 같은 설정(플레이어 수, 난이도, 조커 포함 여부 등)으로 학습된 모델만 내보내야 관측 차원이 일치합니다. 불법 플레이는 서버에서 거절되고, RL 보상도 -0.5로 크게 깎이도록 설정했으니 규칙을 준수하는 정책이 더 빠르게 학습됩니다.
 - 스크립트는 ONNX 파일과 함께 `<파일명>.json` 메타데이터를 생성합니다. 이 JSON에는 `observation_dim`, `action_dim`, `settings`가 들어 있으며, Nest에서 관측 벡터를 구성할 때 참고할 수 있습니다.
 - Node 측에서는 `onnxruntime-node`로 모델을 로드하고, `ObservationEncoder`와 동일한 전처리를 TypeScript로 구현해 `action_logits`를 argmax하거나 softmax로 정책을 구성하면 됩니다.
 - ONNX 산출물은 기본적으로 `exports/` 아래 저장하도록 설명되어 있으며, 이 디렉터리는 `.gitignore`에 추가해 깃에는 포함되지 않습니다.

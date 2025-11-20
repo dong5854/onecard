@@ -6,7 +6,8 @@ import argparse
 from pathlib import Path
 from typing import Dict
 
-from stable_baselines3 import PPO
+from sb3_contrib.common.wrappers import ActionMasker
+from sb3_contrib.ppo_mask import MaskablePPO
 
 from gym_env import OneCardEnv
 
@@ -44,8 +45,8 @@ def run_episode(
     settings: Dict[str, object],
     deterministic: bool,
 ) -> None:
-    env = OneCardEnv(endpoint=endpoint, settings=settings)
-    model = PPO.load(model_path, env=env)
+    env = ActionMasker(OneCardEnv(endpoint=endpoint, settings=settings), mask_fn)
+    model = MaskablePPO.load(model_path, env=env)
 
     obs, _ = env.reset()
     done, truncated = False, False
@@ -121,6 +122,12 @@ def main() -> None:
     model_path = resolve_model_path(args)
     settings = build_settings_from_args(args)
     run_episode(model_path, args.endpoint, settings, args.deterministic)
+
+
+def mask_fn(env):
+    if not isinstance(env, OneCardEnv):
+        raise TypeError("ActionMasker expected OneCardEnv")
+    return env.action_mask()
 
 
 if __name__ == "__main__":

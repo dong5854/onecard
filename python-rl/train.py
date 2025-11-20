@@ -5,7 +5,8 @@ import os
 from typing import Dict, Optional
 
 import gymnasium as gym
-from stable_baselines3 import PPO
+from sb3_contrib.common.wrappers import ActionMasker
+from sb3_contrib.ppo_mask import MaskablePPO
 from stable_baselines3.common.callbacks import CheckpointCallback
 from stable_baselines3.common.vec_env import DummyVecEnv
 
@@ -14,6 +15,12 @@ from gym_env import OneCardEnv
 
 def make_env(endpoint: str, settings: Optional[Dict[str, object]]) -> gym.Env:
     return OneCardEnv(endpoint=endpoint, settings=settings)
+
+
+def mask_fn(env: gym.Env):  # type: ignore[override]
+    if not isinstance(env, OneCardEnv):
+        raise TypeError("ActionMasker expected OneCardEnv")
+    return env.action_mask()
 
 
 def build_settings_from_args(args: argparse.Namespace) -> Dict[str, object]:
@@ -59,7 +66,7 @@ def main() -> None:
     parser.add_argument(
         "--difficulty",
         choices=["easy", "medium", "hard"],
-        default="easy",
+        default="medium",
         help="AI difficulty level served by backend",
     )
     parser.add_argument(
@@ -82,7 +89,7 @@ def main() -> None:
     args = parser.parse_args()
 
     settings = build_settings_from_args(args)
-    env = DummyVecEnv([lambda: make_env(args.endpoint, settings)])
+    env = DummyVecEnv([lambda: ActionMasker(make_env(args.endpoint, settings), mask_fn)])
 
     os.makedirs(args.checkpoint_dir, exist_ok=True)
     checkpoint_callback = CheckpointCallback(
@@ -91,7 +98,7 @@ def main() -> None:
         name_prefix="ppo",
     )
 
-    model = PPO("MlpPolicy", env, verbose=1)
+    model = MaskablePPO("MlpPolicy", env, verbose=1)
     model.learn(total_timesteps=args.timesteps, callback=checkpoint_callback)
     model.save(args.model_path)
     env.close()

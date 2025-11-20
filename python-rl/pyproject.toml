@@ -10,4 +10,5 @@ dependencies = [
     "onnxscript>=0.5.6",
     "requests>=2.32.5",
     "stable-baselines3[extra]>=2.7.0",
+    "sb3-contrib>=2.7.0",
 ]

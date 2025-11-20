@@ -10,7 +10,8 @@ from typing import Dict, Tuple
 
 import gymnasium as gym
 import torch
-from stable_baselines3 import PPO
+from sb3_contrib.common.wrappers import ActionMasker
+from sb3_contrib.ppo_mask import MaskablePPO
 from stable_baselines3.common.policies import ActorCriticPolicy
 
 from gym_env import OneCardEnv
@@ -68,14 +69,22 @@ def export_model_to_onnx(
         maxHandSize=max_hand_size,
         initHandSize=init_hand_size,
     )
-    env = OneCardEnv(endpoint=endpoint, settings=export_settings.to_dict())
+
+    def mask_fn(env: gym.Env):
+        if not isinstance(env, OneCardEnv):
+            raise TypeError("ActionMasker expected OneCardEnv")
+        return env.action_mask()
+
+    env = ActionMasker(
+        OneCardEnv(endpoint=endpoint, settings=export_settings.to_dict()), mask_fn
+    )
     try:
         obs_space = env.observation_space
         if not isinstance(obs_space, gym.spaces.Box):
             raise TypeError("Observation space must be Box to compute observation_dim.")
         observation_dim = obs_space.shape[0]
 
-        model = PPO.load(model_path, env=env)
+        model = MaskablePPO.load(model_path, env=env)
         model.policy.eval()
 
         wrapper = PolicyExporter(model.policy)
