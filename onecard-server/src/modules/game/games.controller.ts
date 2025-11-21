@@ -143,10 +143,10 @@ export class GamesController {
 
   @Post(':gameId/ai-turns')
   @ApiOperation({ summary: 'AI 턴을 실행합니다.' })
-  public executeAiTurn(
+  public async executeAiTurn(
     @Param('gameId', ParseUUIDPipe) gameId: string,
-  ): EngineStepResult {
-    return this.gameService.executeAiTurn(gameId);
+  ): Promise<EngineStepResult> {
+    return await this.gameService.executeAiTurn(gameId);
   }
 
   @Delete(':gameId')

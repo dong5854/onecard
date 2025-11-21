@@ -91,7 +91,7 @@ export class GameService {
     return result;
   }
 
-  public executeAiTurn(gameId: string): StepResult {
+  public async executeAiTurn(gameId: string): Promise<StepResult> {
     const record = this.findGameOrThrow(gameId);
     const currentState: GameState = record.state;
     if (currentState.gameStatus !== 'playing') {
@@ -101,10 +101,8 @@ export class GameService {
       throw new BadRequestException('현재 차례는 AI가 아닙니다.');
     }
 
-    const aiResult: StepResult | null = this.gameAiService.playWhileAiTurn(
-      currentState,
-      { gameId },
-    );
+    const aiResult: StepResult | null =
+      await this.gameAiService.playWhileAiTurn(currentState, { gameId });
     if (!aiResult) {
       throw new BadRequestException('AI가 수행할 수 있는 행동이 없습니다.');
     }
@@ -137,10 +135,7 @@ export class GameService {
     };
   }
 
-  private assertPlayableCard(
-    state: GameState,
-    payload: GameActionDto,
-  ): void {
+  private assertPlayableCard(state: GameState, payload: GameActionDto): void {
     const playerIndex = payload.playerIndex ?? -1;
     const cardIndex = payload.cardIndex ?? -1;
 
@@ -154,7 +149,9 @@ export class GameService {
     }
 
     if (state.discardPile.length === 0) {
-      throw new BadRequestException('discardPile 이 비어 있습니다. 게임 상태를 확인하세요.');
+      throw new BadRequestException(
+        'discardPile 이 비어 있습니다. 게임 상태를 확인하세요.',
+      );
     }
 
     const playedCard = hand[cardIndex];

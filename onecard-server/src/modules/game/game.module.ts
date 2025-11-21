@@ -8,13 +8,16 @@ import {
   GAME_DEFAULT_SETTINGS,
 } from '@/modules/game/constants/game.constants';
 import { GameAiService } from '@/modules/game/services/game-ai.service';
+import { OnnxPolicyService } from '@/modules/game/inference/onnx-policy.service';
+import { OnnxPolicyController } from '@/modules/game/inference/onnx-policy.controller';
 
 @Module({
-  controllers: [GamesController],
+  controllers: [GamesController, OnnxPolicyController],
   providers: [
     GameService,
     GameEngineService,
     GameAiService,
+    OnnxPolicyService,
     GameStateStore,
     {
       provide: GAME_DEFAULT_SETTINGS,

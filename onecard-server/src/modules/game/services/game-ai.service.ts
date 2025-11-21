@@ -1,4 +1,9 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import type { GameState } from '@/modules/game/domain/types/gameState';
 import type { GameAction } from '@/modules/game/domain/types/gameAction';
 import type { PokerCardPropsWithId } from '@/modules/game/domain/types/pokerCard';
@@ -12,6 +17,7 @@ import {
   EngineStepResult,
 } from '@/modules/game/domain/engine/gameEngine';
 import { isValidPlay } from '@/modules/game/domain/utils/cardUtils';
+import { OnnxPolicyService } from '@/modules/game/inference/onnx-policy.service';
 
 interface AiTurnResult {
   state: GameState;
@@ -27,14 +33,21 @@ interface AiTurnContext {
 export class GameAiService {
   private readonly logger = new Logger(GameAiService.name);
 
-  public constructor(private readonly gameEngine: GameEngineService) {}
+  public constructor(
+    private readonly gameEngine: GameEngineService,
+    private readonly onnxPolicyService: OnnxPolicyService,
+  ) {}
 
-  public playWhileAiTurn(
+  public async playWhileAiTurn(
     state: GameState,
     context?: AiTurnContext,
-  ): EngineStepResult | null {
+  ): Promise<EngineStepResult | null> {
     if (state.settings.mode !== 'single' || !this.isAiTurn(state)) {
       return null;
+    }
+
+    if (state.settings.difficulty === 'medium') {
+      return this.playWithOnnx(state, context);
     }
 
     const turnResult = this.executeTurn(state, context);
@@ -215,6 +228,64 @@ export class GameAiService {
     }
     const specialRanks = new Set([1, 2, 11, 12, 13]);
     return card.rank !== undefined && specialRanks.has(card.rank);
+  }
+
+  private async playWithOnnx(
+    state: GameState,
+    context?: AiTurnContext,
+  ): Promise<EngineStepResult | null> {
+    try {
+      const prediction = await this.onnxPolicyService.predictAction(state);
+      const { payload, actionIndex } = prediction;
+      const isDraw = payload.type === 'DRAW_CARD';
+      const amount = isDraw ? (payload.amount ?? 1) : 1;
+      const playerIndex = isDraw ? 0 : (payload.playerIndex ?? 0);
+      const cardIndex = isDraw ? 0 : (payload.cardIndex ?? 0);
+
+      const gameAction: GameAction = isDraw
+        ? drawCardAction(amount)
+        : playCardAction(playerIndex, cardIndex);
+
+      this.logger.log(
+        `[AI][ONNX] actionIndex=${String(actionIndex)} payload=${JSON.stringify(payload)}`,
+      );
+
+      const result = this.gameEngine.step(state, gameAction);
+      return {
+        state: result.state,
+        done: result.state.gameStatus === 'finished',
+        info: { aiActions: [gameAction], source: 'onnx' },
+      };
+    } catch (error: unknown) {
+      this.logger.error(
+        `[AI][ONNX] fallback to rule-based due to: ${this.describeOnnxError(error)}`,
+      );
+      const fallback = this.executeTurn(state, context);
+      return fallback
+        ? {
+            state: fallback.state,
+            done: fallback.state.gameStatus === 'finished',
+            info: {
+              aiActions: fallback.actions,
+              source: 'fallback',
+              reason: this.describeOnnxError(error),
+            },
+          }
+        : null;
+    }
+  }
+
+  private describeOnnxError(error: unknown): string {
+    if (
+      error instanceof BadRequestException ||
+      error instanceof NotFoundException
+    ) {
+      return `${error.name}: ${error.message}`;
+    }
+    if (error instanceof Error) {
+      return `${error.name}: ${error.message}`;
+    }
+    return String(error);
   }
 
   public isAiTurn(state: GameState): boolean {

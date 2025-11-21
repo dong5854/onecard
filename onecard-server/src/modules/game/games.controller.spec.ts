@@ -116,8 +116,33 @@ describe('GamesController', () => {
     expect(gameService.applyAction).toHaveBeenCalledWith('game-1', action);
   });
 
-  it('should execute ai turn for a game', () => {
-    controller.executeAiTurn('game-1');
+  it('should execute ai turn for a game', async () => {
+    const stepResult: EngineStepResult = {
+      state: {
+        players: [],
+        currentPlayerIndex: 0,
+        deck: [],
+        discardPile: [],
+        direction: 'clockwise',
+        damage: 0,
+        gameStatus: 'playing',
+        settings: {
+          mode: 'single',
+          numberOfPlayers: 2,
+          includeJokers: false,
+          initHandSize: 5,
+          maxHandSize: 15,
+          difficulty: 'medium',
+        },
+      },
+      done: false,
+    };
+    const execMock = gameService.executeAiTurn as jest.Mock<
+      Promise<EngineStepResult>,
+      [string]
+    >;
+    execMock.mockReturnValue(Promise.resolve(stepResult));
+    await controller.executeAiTurn('game-1');
     expect(gameService.executeAiTurn).toHaveBeenCalledWith('game-1');
   });
 

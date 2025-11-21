@@ -15,10 +15,13 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-### python ###
+### python-rl ###
 __pycache__
 python-rl/exports/
 python-rl/onnx_exports/
+onecard-server/assets/onnx/*
+!onecard-server/assets/onnx/.gitkeep
+
 
 ### STS ###
 .apt_generated
