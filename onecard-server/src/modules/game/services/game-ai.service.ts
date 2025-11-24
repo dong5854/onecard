@@ -235,14 +235,18 @@ export class GameAiService {
     context?: AiTurnContext,
   ): Promise<EngineStepResult | null> {
     try {
-      const prediction = await this.onnxPolicyService.predictAction(state);
+      let currentState = state;
+      const actions: GameAction[] = [];
+      let lastResult: EngineStepResult | undefined;
+
+      const prediction = await this.onnxPolicyService.predictAction(currentState);
       const { payload, actionIndex } = prediction;
       const isDraw = payload.type === 'DRAW_CARD';
       const amount = isDraw ? (payload.amount ?? 1) : 1;
       const playerIndex = isDraw ? 0 : (payload.playerIndex ?? 0);
       const cardIndex = isDraw ? 0 : (payload.cardIndex ?? 0);
 
-      const gameAction: GameAction = isDraw
+      const firstAction: GameAction = isDraw
         ? drawCardAction(amount)
         : playCardAction(playerIndex, cardIndex);
 
@@ -250,11 +254,77 @@ export class GameAiService {
         `[AI][ONNX] actionIndex=${String(actionIndex)} payload=${JSON.stringify(payload)}`,
       );
 
-      const result = this.gameEngine.step(state, gameAction);
+      const firstOutcome = this.applyAction(currentState, firstAction, context);
+      currentState = firstOutcome.state;
+      lastResult = firstOutcome.result;
+      this.pushAction(actions, firstOutcome.result);
+
+      if (!isDraw) {
+        const player = state.players[state.currentPlayerIndex];
+        const cardToPlay = player.hand[cardIndex];
+        if (cardToPlay && this.hasSpecialEffect(cardToPlay)) {
+          const effectOutcome = this.applyAction(
+            currentState,
+            applySpecialEffectAction(cardToPlay),
+            context,
+          );
+          currentState = effectOutcome.state;
+          lastResult = effectOutcome.result;
+          this.pushAction(actions, effectOutcome.result);
+        }
+      }
+
+      if (isDraw && currentState.gameStatus !== 'finished') {
+        try {
+          const secondPrediction =
+            await this.onnxPolicyService.predictAction(currentState);
+          const { payload: p2 } = secondPrediction;
+          
+          if (p2.type === 'PLAY_CARD') {
+             const p2PlayerIdx = p2.playerIndex ?? 0;
+             const p2CardIdx = p2.cardIndex ?? 0;
+             
+             const p2Player = currentState.players[currentState.currentPlayerIndex];
+             if (p2Player && p2Player.hand[p2CardIdx]) {
+                const secondAction = playCardAction(p2PlayerIdx, p2CardIdx);
+                const secondOutcome = this.applyAction(currentState, secondAction, context);
+                currentState = secondOutcome.state;
+                lastResult = secondOutcome.result;
+                this.pushAction(actions, secondOutcome.result);
+
+                const cardPlayed = p2Player.hand[p2CardIdx];
+                if (this.hasSpecialEffect(cardPlayed)) {
+                   const effectOutcome = this.applyAction(
+                      currentState,
+                      applySpecialEffectAction(cardPlayed),
+                      context,
+                    );
+                    currentState = effectOutcome.state;
+                    lastResult = effectOutcome.result;
+                    this.pushAction(actions, effectOutcome.result);
+                }
+             }
+          }
+        } catch (e) {
+           this.logger.warn(`[AI][ONNX] Second prediction failed: ${String(e)}`);
+        }
+      }
+
+      if (currentState.gameStatus !== 'finished') {
+        const nextOutcome = this.applyAction(
+          currentState,
+          nextTurnAction(),
+          context,
+        );
+        currentState = nextOutcome.state;
+        lastResult = nextOutcome.result;
+        this.pushAction(actions, nextOutcome.result);
+      }
+
       return {
-        state: result.state,
-        done: result.state.gameStatus === 'finished',
-        info: { aiActions: [gameAction], source: 'onnx' },
+        state: currentState,
+        done: currentState.gameStatus === 'finished',
+        info: { aiActions: actions, source: 'onnx' },
       };
     } catch (error: unknown) {
       this.logger.error(
