@@ -9,13 +9,12 @@ export const buildActionMask = (
   const mask: boolean[] = Array.from({ length: maxHandSize + 1 }, () => false);
 
   const hand: PokerCardPropsWithId[] = state.players[0]?.hand ?? [];
-  // 드로우는 항상 허용
-  mask[maxHandSize] = true;
 
   if (!state.discardPile.length) {
     for (let i = 0; i < hand.length && i < maxHandSize; i++) {
       mask[i] = true;
     }
+    mask[maxHandSize] = hand.length < maxHandSize;
     return mask;
   }
 
@@ -29,6 +28,9 @@ export const buildActionMask = (
     }
     mask[i] = isValidPlay(hand[i], topCard, damage);
   }
+
+  // 드로우는 손패가 maxHandSize에 도달하지 않았을 때만 허용
+  mask[maxHandSize] = hand.length < maxHandSize;
 
   return mask;
 };

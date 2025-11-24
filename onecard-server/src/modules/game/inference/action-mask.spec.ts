@@ -56,13 +56,47 @@ describe('action-mask', () => {
     winner: undefined,
   };
 
-  it('masks invalid plays and keeps draw true', () => {
+  it('masks invalid plays and allows draw when hand is not full', () => {
     const mask = buildActionMask(baseState, 15);
     expect(mask[0]).toBe(true); // same rank
     expect(mask[1]).toBe(true); // same rank
-    expect(mask[15]).toBe(true); // draw
+    expect(mask[15]).toBe(true); // draw allowed because hand not full
     // beyond hand size should be false
     expect(mask[2]).toBe(false);
+  });
+
+  it('allows draw when no playable card exists', () => {
+    const stateNoPlay = {
+      ...baseState,
+      discardPile: [card({ id: 'top', rank: 7, suit: 'spades' })],
+      players: [
+        {
+          ...baseState.players[0],
+          hand: [card({ id: 'h1', rank: 3, suit: 'hearts' })],
+        },
+        baseState.players[1],
+      ],
+    };
+    const mask = buildActionMask(stateNoPlay, 15);
+    expect(mask[0]).toBe(false);
+    expect(mask[15]).toBe(true);
+  });
+
+  it('blocks draw when hand is full', () => {
+    const fullHandState = {
+      ...baseState,
+      players: [
+        {
+          ...baseState.players[0],
+          hand: Array.from({ length: 15 }, (_, idx) =>
+            card({ id: `h${idx}`, rank: 3, suit: 'hearts' }),
+          ),
+        },
+        baseState.players[1],
+      ],
+    };
+    const mask = buildActionMask(fullHandState, 15);
+    expect(mask[15]).toBe(false);
   });
 
   it('applies mask to logits and selects argmax', () => {

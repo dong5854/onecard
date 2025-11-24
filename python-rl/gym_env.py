@@ -432,7 +432,7 @@ class OneCardEnv(gym.Env):
             return mask
 
         hand = self.state_cache["players"][0]["hand"]
-        mask[self.max_hand_size] = True  # 드로우는 항상 허용
+        mask[self.max_hand_size] = len(hand) < self.max_hand_size  # 손패가 꽉 찼으면 드로우 불가
 
         if not self.state_cache.get("discardPile"):
             mask[: len(hand)] = True
