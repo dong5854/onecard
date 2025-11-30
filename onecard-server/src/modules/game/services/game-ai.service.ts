@@ -8,6 +8,7 @@ import type { GameState } from '@/modules/game/domain/types/gameState';
 import type { GameAction } from '@/modules/game/domain/types/gameAction';
 import type { PokerCardPropsWithId } from '@/modules/game/domain/types/pokerCard';
 import type { Player } from '@/modules/game/domain/types/gamePlayer';
+import { findPlayableCardBruteForce } from '@/modules/game/domain/state/gamePlayers';
 import { GameEngineService } from '@/modules/game/services/game-engine.service';
 import {
   applySpecialEffectAction,
@@ -78,14 +79,16 @@ export class GameAiService {
     const actions: GameAction[] = [];
 
     const topCard = currentState.discardPile[0];
-    let playableIndex = this.findPlayableCardIndex(
+    const cardToPlayResult = findPlayableCardBruteForce(
       player.hand,
       topCard,
       currentState.damage,
     );
 
-    if (playableIndex >= 0) {
-      const cardToPlay = player.hand[playableIndex];
+    if (cardToPlayResult) {
+      const playableIndex = player.hand.findIndex(
+        (c) => c.id === cardToPlayResult.id,
+      );
       const playOutcome = this.applyAction(
         currentState,
         playCardAction(currentState.currentPlayerIndex, playableIndex),
@@ -95,10 +98,10 @@ export class GameAiService {
       lastResult = playOutcome.result;
       this.pushAction(actions, playOutcome.result);
 
-      if (this.hasSpecialEffect(cardToPlay)) {
+      if (this.hasSpecialEffect(cardToPlayResult)) {
         const effectOutcome = this.applyAction(
           currentState,
-          applySpecialEffectAction(cardToPlay),
+          applySpecialEffectAction(cardToPlayResult),
           context,
         );
         currentState = effectOutcome.state;
@@ -120,14 +123,16 @@ export class GameAiService {
       );
       if (refreshedPlayer) {
         const refreshedTopCard = currentState.discardPile[0];
-        playableIndex = this.findPlayableCardIndex(
+        const refreshedCardToPlayResult = findPlayableCardBruteForce(
           refreshedPlayer.hand,
           refreshedTopCard,
           currentState.damage,
         );
 
-        if (playableIndex >= 0) {
-          const cardToPlay = refreshedPlayer.hand[playableIndex];
+        if (refreshedCardToPlayResult) {
+          const playableIndex = refreshedPlayer.hand.findIndex(
+            (c) => c.id === refreshedCardToPlayResult.id,
+          );
           const playOutcome = this.applyAction(
             currentState,
             playCardAction(currentState.currentPlayerIndex, playableIndex),
@@ -137,10 +142,10 @@ export class GameAiService {
           lastResult = playOutcome.result;
           this.pushAction(actions, playOutcome.result);
 
-          if (this.hasSpecialEffect(cardToPlay)) {
+          if (this.hasSpecialEffect(refreshedCardToPlayResult)) {
             const effectOutcome = this.applyAction(
               currentState,
-              applySpecialEffectAction(cardToPlay),
+              applySpecialEffectAction(refreshedCardToPlayResult),
               context,
             );
             currentState = effectOutcome.state;

@@ -5,7 +5,7 @@ import type {
   GameSettings,
   GameState,
 } from '@/modules/game/domain/types/gameState';
-import type { Player } from '@/modules/game/domain/types/gamePlayer';
+import type { AIPlayer, Player } from '@/modules/game/domain/types/gamePlayer';
 import type {
   PokerCardPropsWithId,
   RankValue,
@@ -39,14 +39,15 @@ const createCard = (
   ...extras,
 });
 
-const createPlayer = (overrides: Partial<Player> = {}): Player => ({
+const createPlayer = (overrides: Partial<AIPlayer> = {}): Player => ({
   id: 'player-id',
   name: 'Player',
   hand: [],
   isSelf: false,
   isAI: true,
+  difficulty: 'easy',
   ...overrides,
-});
+} as Player);
 
 const createState = (overrides: Partial<GameState> = {}): GameState => ({
   players: [
@@ -260,7 +261,10 @@ describe('GameAiService', () => {
         OnnxPolicyService['predictAction']
       >;
     expect(predictMock.mock.calls.length).toBeGreaterThan(0);
-    expect(extractAiActions(result).map((a) => a.type)).toEqual(['DRAW_CARD']);
+    expect(extractAiActions(result).map((a) => a.type)).toEqual([
+      'DRAW_CARD',
+      'NEXT_TURN',
+    ]);
     expect(result.info?.source).toBe('onnx');
   });
 
@@ -274,6 +278,7 @@ describe('GameAiService', () => {
           id: 'cpu',
           name: 'CPU',
           isAI: true,
+          difficulty: 'medium',
           hand: [playableCard],
         }),
       ],
