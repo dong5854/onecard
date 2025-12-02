@@ -416,7 +416,17 @@ class OneCardEnv(gym.Env):
         """
         url = f"{self.endpoint}{path}"
         response = self.http.request(method.upper(), url, json=json, timeout=10)
-        response.raise_for_status()
+        try:
+            response.raise_for_status()
+        except requests.HTTPError as exc:
+            content = response.text
+            status = response.status_code
+            # 서버 에러 내용을 로그로 남겨 디버깅 용이하게 한다.
+            print(
+                f"[HTTP ERROR] {method.upper()} {url} status={status} body={content}",
+                flush=True,
+            )
+            raise exc
         if not response.content:
             return {}
         try:
@@ -490,14 +500,38 @@ class OneCardEnv(gym.Env):
         draw_amount = max(1, int(damage))
         available_space = max(self.max_hand_size - len(hand), 0)
         actual_draw = min(draw_amount, available_space) if available_space > 0 else draw_amount
+        mask = self.action_mask()
+        top_card = (state.get("discardPile") or [None])[0]
+
         if action_index == self.max_hand_size:
             return {"type": "DRAW_CARD", "amount": actual_draw}, available_space > 0
         if 0 <= action_index < len(hand):
-            return {
-                "type": "PLAY_CARD",
-                "playerIndex": 0,
-                "cardIndex": action_index,
-            }, True
+            is_play_valid = False
+            if top_card is None:
+                is_play_valid = True
+            else:
+                is_play_valid = is_valid_play(hand[action_index], top_card, damage)
+
+            if is_play_valid:
+                return {
+                    "type": "PLAY_CARD",
+                    "playerIndex": 0,
+                    "cardIndex": action_index,
+                }, True
+
+            # 선택 카드가 규칙상 불가하면, 마스크 기준 첫 번째 유효 카드로 대체
+            for idx, allowed in enumerate(mask[: len(hand)]):
+                if allowed:
+                    return {
+                        "type": "PLAY_CARD",
+                        "playerIndex": 0,
+                        "cardIndex": idx,
+                    }, False
+
+            # 플레이 가능한 카드가 없으면 드로우로 대체(드로우가 막혀 있어도 시도)
+            return {"type": "DRAW_CARD", "amount": actual_draw}, False
+
+        # 범위 밖 인덱스면 드로우로 대체
         return {"type": "DRAW_CARD", "amount": actual_draw}, False
 
     def _compute_reward(
@@ -521,11 +555,46 @@ class OneCardEnv(gym.Env):
         """PATCH /games/{id}로 액션을 전달한다."""
         if not self.game_id:
             raise RuntimeError("Game session is not initialized.")
-        return self._request(
-            "patch",
-            f"/games/{self.game_id}",
-            json={"action": action},
-        )
+        try:
+            return self._request(
+                "patch",
+                f"/games/{self.game_id}",
+                json={"action": action},
+            )
+        except requests.HTTPError:
+            # 실패한 액션과 상태를 간략히 로깅
+            state = self.state_cache or {}
+            current_idx = state.get("currentPlayerIndex")
+            players = state.get("players", [])
+            top = (state.get("discardPile") or [None])[0]
+            damage = state.get("damage")
+            hand_sizes = [len(p.get("hand", [])) for p in players]
+            chosen_card = None
+            mask_val = None
+            try:
+                # 현재 상태 기준 마스크와 선택 카드 정보
+                mask = self.action_mask()
+                if action.get("type") == "PLAY_CARD":
+                    card_idx = action.get("cardIndex", -1)
+                    if (
+                        current_idx is not None
+                        and 0 <= current_idx < len(players)
+                        and 0 <= card_idx < len(players[current_idx].get("hand", []))
+                    ):
+                        chosen_card = players[current_idx]["hand"][card_idx]
+                        mask_val = mask[card_idx] if card_idx < len(mask) else None
+                elif action.get("type") == "DRAW_CARD":
+                    mask_val = mask[self.max_hand_size]
+            except Exception:
+                pass
+            print(
+                "[APPLY_ACTION_ERROR]",
+                f"action={action} currentIdx={current_idx}",
+                f"handSizes={hand_sizes} top={top} damage={damage}",
+                f"chosenCard={chosen_card} maskOK={mask_val}",
+                flush=True,
+            )
+            raise
 
     def _execute_ai_turn(self) -> Dict[str, Any]:
         """POST /games/{id}/ai-turns 엔드포인트를 호출한다."""
