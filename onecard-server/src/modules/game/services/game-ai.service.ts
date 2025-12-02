@@ -244,7 +244,8 @@ export class GameAiService {
       const actions: GameAction[] = [];
       let lastResult: EngineStepResult | undefined;
 
-      const prediction = await this.onnxPolicyService.predictAction(currentState);
+      const prediction =
+        await this.onnxPolicyService.predictAction(currentState);
       const { payload, actionIndex } = prediction;
       const isDraw = payload.type === 'DRAW_CARD';
       const amount = isDraw ? (payload.amount ?? 1) : 1;
@@ -284,34 +285,39 @@ export class GameAiService {
           const secondPrediction =
             await this.onnxPolicyService.predictAction(currentState);
           const { payload: p2 } = secondPrediction;
-          
-          if (p2.type === 'PLAY_CARD') {
-             const p2PlayerIdx = p2.playerIndex ?? 0;
-             const p2CardIdx = p2.cardIndex ?? 0;
-             
-             const p2Player = currentState.players[currentState.currentPlayerIndex];
-             if (p2Player && p2Player.hand[p2CardIdx]) {
-                const secondAction = playCardAction(p2PlayerIdx, p2CardIdx);
-                const secondOutcome = this.applyAction(currentState, secondAction, context);
-                currentState = secondOutcome.state;
-                lastResult = secondOutcome.result;
-                this.pushAction(actions, secondOutcome.result);
 
-                const cardPlayed = p2Player.hand[p2CardIdx];
-                if (this.hasSpecialEffect(cardPlayed)) {
-                   const effectOutcome = this.applyAction(
-                      currentState,
-                      applySpecialEffectAction(cardPlayed),
-                      context,
-                    );
-                    currentState = effectOutcome.state;
-                    lastResult = effectOutcome.result;
-                    this.pushAction(actions, effectOutcome.result);
-                }
-             }
+          if (p2.type === 'PLAY_CARD') {
+            const p2PlayerIdx = p2.playerIndex ?? 0;
+            const p2CardIdx = p2.cardIndex ?? 0;
+
+            const p2Player =
+              currentState.players[currentState.currentPlayerIndex];
+            if (p2Player && p2Player.hand[p2CardIdx]) {
+              const secondAction = playCardAction(p2PlayerIdx, p2CardIdx);
+              const secondOutcome = this.applyAction(
+                currentState,
+                secondAction,
+                context,
+              );
+              currentState = secondOutcome.state;
+              lastResult = secondOutcome.result;
+              this.pushAction(actions, secondOutcome.result);
+
+              const cardPlayed = p2Player.hand[p2CardIdx];
+              if (this.hasSpecialEffect(cardPlayed)) {
+                const effectOutcome = this.applyAction(
+                  currentState,
+                  applySpecialEffectAction(cardPlayed),
+                  context,
+                );
+                currentState = effectOutcome.state;
+                lastResult = effectOutcome.result;
+                this.pushAction(actions, effectOutcome.result);
+              }
+            }
           }
         } catch (e) {
-           this.logger.warn(`[AI][ONNX] Second prediction failed: ${String(e)}`);
+          this.logger.warn(`[AI][ONNX] Second prediction failed: ${String(e)}`);
         }
       }
 

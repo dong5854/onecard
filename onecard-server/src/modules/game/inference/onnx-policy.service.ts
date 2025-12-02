@@ -11,7 +11,9 @@ import path from 'node:path';
 import type {
   GameSettings,
   GameState,
+  Direction,
 } from '@/modules/game/domain/types/gameState';
+import type { Player } from '@/modules/game/domain/types/gamePlayer';
 import {
   buildActionMask,
   applyActionMask,
@@ -41,6 +43,29 @@ export class OnnxPolicyService {
   private readonly modelDir =
     process.env.ONNX_MODEL_DIR ?? path.join(process.cwd(), 'assets', 'onnx');
   private readonly cache = new Map<string, LoadedModel>();
+
+  private rotatePlayersToCurrent(
+    players: Player[],
+    currentIndex: number,
+    direction: Direction,
+  ): { players: Player[]; currentPlayerIndex: number } {
+    const total = players.length;
+    const step = direction === 'clockwise' ? 1 : -1;
+
+    const reordered = Array.from({ length: total }, (_, i) => {
+      const idx = (currentIndex + i * step + total) % total;
+      return players[idx];
+    });
+
+    return { players: reordered, currentPlayerIndex: 0 };
+  }
+
+  private mapPayloadToOriginalIndices(
+    payload: ReturnType<typeof mapActionIndexToPayload>,
+    originalCurrentIndex: number,
+  ): ReturnType<typeof mapActionIndexToPayload> {
+    return { ...payload, playerIndex: originalCurrentIndex };
+  }
 
   private buildSuffix(settings: GameSettings): string {
     return `p${String(settings.numberOfPlayers)}_joker${settings.includeJokers ? 'on' : 'off'}`;
@@ -159,12 +184,21 @@ export class OnnxPolicyService {
     // ensure settings match
     this.assertSettingsCompatible(model.metadata.settings, state.settings);
 
-    const observation = encodeObservation(state, model.spec);
+    const normalizedState: GameState = {
+      ...state,
+      ...this.rotatePlayersToCurrent(
+        state.players,
+        state.currentPlayerIndex,
+        state.direction,
+      ),
+    };
+
+    const observation = encodeObservation(normalizedState, model.spec);
     if (observation.length !== model.metadata.observation_dim) {
       throw new BadRequestException('관측 차원이 모델과 일치하지 않습니다.');
     }
 
-    const mask = buildActionMask(state, model.spec.maxHandSize);
+    const mask = buildActionMask(normalizedState, model.spec.maxHandSize);
     if (mask.length !== model.metadata.action_dim) {
       throw new BadRequestException(
         '행동 마스크 길이가 모델과 일치하지 않습니다.',
@@ -192,10 +226,13 @@ export class OnnxPolicyService {
     const logits = Array.from(logitsTensor.data as Float32Array);
     const maskedLogits = applyActionMask(logits, mask);
     const actionIndex = selectAction(maskedLogits);
-    const payload = mapActionIndexToPayload(
-      actionIndex,
-      state,
-      model.spec.maxHandSize,
+    const payload = this.mapPayloadToOriginalIndices(
+      mapActionIndexToPayload(
+        actionIndex,
+        normalizedState,
+        model.spec.maxHandSize,
+      ),
+      state.currentPlayerIndex,
     );
 
     return { actionIndex, logits, payload };

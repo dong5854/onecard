@@ -78,7 +78,8 @@ export const mapActionIndexToPayload = (
 ): EngineActionPayload => {
   const hand = state.players[0]?.hand ?? [];
   if (actionIndex === maxHandSize) {
-    return { type: 'DRAW_CARD', amount: 1 };
+    const drawAmount = Math.max(1, state.damage);
+    return { type: 'DRAW_CARD', amount: drawAmount };
   }
   if (actionIndex < 0 || actionIndex >= maxHandSize) {
     throw new Error(`actionIndex ${String(actionIndex)} out of bounds`);
