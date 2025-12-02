@@ -12,7 +12,14 @@ interface DrawResult {
 
 export const drawCardStatus = (state: GameState, amount: number): GameState => {
   let updatedState = { ...state };
+  const maxHandSize = state.settings.maxHandSize;
   for (let i = 0; i < amount; i++) {
+    const currentHandSize =
+      updatedState.players[updatedState.currentPlayerIndex].hand.length;
+    if (currentHandSize >= maxHandSize) {
+      return { ...updatedState, damage: 0 };
+    }
+
     const { updatedPlayer, remainingDeck, discardPile, drawnCard } =
       drawCard(updatedState);
     if (!drawnCard) {

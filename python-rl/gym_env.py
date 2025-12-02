@@ -27,7 +27,11 @@ def default_reward(
     if prev_state is not None:
         prev_size = len(prev_state["players"][0]["hand"])
         next_size = len(next_state["players"][0]["hand"])
-        reward += 0.05 * float(prev_size - next_size)
+        size_delta = float(prev_size - next_size)
+        reward += 0.05 * size_delta  # 기본적으로 패가 줄면 보상, 늘면 패널티
+        if size_delta < 0:
+            # 뽑은 카드 수가 많을수록 추가 패널티(서버 damage로 여러 장 뽑는 경우 반영)
+            reward += 0.05 * size_delta  # size_delta는 음수이므로 추가 감점
         reward -= 0.01
     if not action_was_valid:
         reward -= 0.5  # 티켓 하나 날린 느낌으로 강한 패널티
@@ -432,7 +436,7 @@ class OneCardEnv(gym.Env):
             return mask
 
         hand = self.state_cache["players"][0]["hand"]
-        mask[self.max_hand_size] = len(hand) < self.max_hand_size  # 손패가 꽉 찼으면 드로우 불가
+        mask[self.max_hand_size] = len(hand) < self.max_hand_size
 
         if not self.state_cache.get("discardPile"):
             mask[: len(hand)] = True
@@ -482,15 +486,19 @@ class OneCardEnv(gym.Env):
         """
         action_index = int(action)
         hand = state["players"][0]["hand"]
+        damage = float(state.get("damage", 0))
+        draw_amount = max(1, int(damage))
+        available_space = max(self.max_hand_size - len(hand), 0)
+        actual_draw = min(draw_amount, available_space) if available_space > 0 else draw_amount
         if action_index == self.max_hand_size:
-            return {"type": "DRAW_CARD", "amount": 1}, True
+            return {"type": "DRAW_CARD", "amount": actual_draw}, available_space > 0
         if 0 <= action_index < len(hand):
             return {
                 "type": "PLAY_CARD",
                 "playerIndex": 0,
                 "cardIndex": action_index,
             }, True
-        return {"type": "DRAW_CARD", "amount": 1}, False
+        return {"type": "DRAW_CARD", "amount": actual_draw}, False
 
     def _compute_reward(
         self,

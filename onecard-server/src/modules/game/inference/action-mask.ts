@@ -29,7 +29,6 @@ export const buildActionMask = (
     mask[i] = isValidPlay(hand[i], topCard, damage);
   }
 
-  // 드로우는 손패가 maxHandSize에 도달하지 않았을 때만 허용
   mask[maxHandSize] = hand.length < maxHandSize;
 
   return mask;
