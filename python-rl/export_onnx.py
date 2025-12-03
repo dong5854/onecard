@@ -6,15 +6,28 @@ import argparse
 import json
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Dict, Tuple
+from typing import Any, Dict, Protocol, Tuple, cast
 
 import gymnasium as gym
 import torch
 from sb3_contrib.common.wrappers import ActionMasker
 from sb3_contrib.ppo_mask import MaskablePPO
-from stable_baselines3.common.policies import ActorCriticPolicy
 
 from gym_env import OneCardEnv
+
+
+class PolicyLike(Protocol):
+    def extract_features(self, obs: torch.Tensor) -> torch.Tensor: ...
+
+    def mlp_extractor(
+        self, features: torch.Tensor
+    ) -> Tuple[torch.Tensor, torch.Tensor]: ...
+
+    @property
+    def action_net(self) -> torch.nn.Module: ...
+
+    @property
+    def value_net(self) -> torch.nn.Module: ...
 
 
 @dataclass
@@ -33,7 +46,7 @@ class ExportSettings:
 class PolicyExporter(torch.nn.Module):
     """PPO Actor-Critic 정책에서 로짓/가치를 직접 추출하기 위한 래퍼."""
 
-    def __init__(self, policy: ActorCriticPolicy) -> None:
+    def __init__(self, policy: PolicyLike) -> None:
         super().__init__()
         self.policy = policy
 
@@ -87,7 +100,7 @@ def export_model_to_onnx(
         model = MaskablePPO.load(model_path, env=env)
         model.policy.eval()
 
-        wrapper = PolicyExporter(model.policy)
+        wrapper = PolicyExporter(cast(PolicyLike, model.policy))
         dummy = torch.zeros((1, observation_dim), dtype=torch.float32)
 
         output_path.parent.mkdir(parents=True, exist_ok=True)
