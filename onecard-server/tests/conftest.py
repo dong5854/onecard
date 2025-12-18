@@ -2,13 +2,19 @@ import pytest
 import pytest_asyncio
 from httpx import AsyncClient
 
-from onecard_api.container import get_container
+from onecard_api.container import ServiceContainer, get_container
 from onecard_api.main import create_app
 
 
 @pytest.fixture
 def app():
-    return create_app(get_container())
+    container = get_container()
+    return create_app(container)
+
+
+@pytest.fixture
+def container() -> ServiceContainer:
+    return get_container()
 
 
 @pytest_asyncio.fixture

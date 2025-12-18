@@ -1,16 +1,16 @@
 from __future__ import annotations
 
-from typing import TypedDict
+from typing import Literal, NotRequired, TypedDict
 
 from onecard_api.domain.card_utils import is_valid_play
 from onecard_api.domain.types import GameState, PokerCard
 
 
-class EngineActionPayload(TypedDict, total=False):
-    type: str
-    playerIndex: int
-    cardIndex: int
-    amount: int
+class EngineActionPayload(TypedDict):
+    type: Literal["PLAY_CARD", "DRAW_CARD"]
+    playerIndex: NotRequired[int]
+    cardIndex: NotRequired[int]
+    amount: NotRequired[int]
 
 
 def build_action_mask(state: GameState, max_hand_size: int) -> list[bool]:
